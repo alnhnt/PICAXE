@@ -3,7 +3,8 @@
 
             File: "Debugger.basinc"
          License: MIT (See end of file) 
-  Change History: 2024/9/30 by Alan Hunt - 1st issue.
+  Change History: 2024/10/1 by Alan Hunt - Improved help text.
+                  2024/9/30 by Alan Hunt - 1st issue.
 
 
 Description
@@ -17,15 +18,15 @@ This simple module provides:
 
 It can be useful to easily turn off debugging because this avoids serial transmissions delays that could affect program performance.  These transmissions also temporarily disable software interrupts too.  
 
-The statements in this module start with "Debug", which I find it easier on the eye than sertxd.  In fact the sertxd command is being used, so any information about program execution points or particular program state can be sent.  Hopefully, you will find a key benefit of brief text is that the debug messages help static reviews of the program too, such as ``DebugLine("Not started after 10S")``.  
+The statements in this module start with "Debug", which I find it easier on the eye than sertxd.  In fact the sertxd command is being used, so any information about program execution points or particular program state can be sent.  Hopefully, you will find a key benefit of using brief text is that the debug messages help static reviews of the program too, such as ``DebugLine("Not started after 10S")``.  
 
-Taking this further, it's nice to see macros with text explanations highlighted by the PICAXE Editor, rather than over use of comments in your program.  For example, it would be awful to remember or lookup the contents of audio track 112, but this line makes it very clear ``PlayNow(0112, "The cell voltages are")``.  In the PlayNow macro you can use the text with debugging statements and either comment out these lines when things are working or turn all the debugging off in one go.  Whatever you choose the PICAXE Editor keeps on displaying the bright red text as part of your program.  
+Taking this further, it's nice to see macros with text explanations highlighted by the PICAXE Editor, rather than over use of comments in your program.  For example, it would be awful to remember or lookup the contents of audio track 112, but this line makes it very clear ``PlayNow(0112, "The cell voltages are")``.  In the PlayNow macro you can use the text with debugging statements and comment out these lines when things are working, or turn all the debugging off in one go.  Whatever you choose the PICAXE Editor keeps on displaying the bright red text as part of your program.  
 
 The DebugBinary(val) statement can be used when a byte is holding important information in individual bits.  For readability the byte is written as two nibbles separated by a space.  For example, to view logic level inputs on port C it's just ``DebugBinary(pinsC)``, which would show "0010 0001" if C.0 and C.5 were high.
 
 The Debugger's sertxd output is the usual way to perform PICAXE debugging because it sends text or data to the PICAXE Editor Terminal window with the same connection as the programming interface.  Most of the functionality in this module is achieved by creating a unique alias for sertxd.  When debugging is turned off this alias becomes comment lines instead off sertxd.  Any sertxd commands in your program remain intact, so these can provide always-on basic information in addition to turning on or off detailed debugging.  However, in normal situations, just using the Debugger statements is recommended.
 
-In comparison to the debugger/sertxd output, the PICAXE debug command only performs a large snapshot of variable values.  For an X2 chip with default clock rate the debugger/sertxd output will send 10 bytes in 15mS, compared to the debug output which this takes 180mS, without any indication of the execution points.  For M2 chips at 4800bps the times will double.  The PICAXE Editor will also try to disable its Terminal when debug is active, rendering sertxd useless.  Debugging output would then need to be directed to another pin using serout/hserout and to a different com port and Terminal on the PC.
+In comparison to the Debugger/sertxd output, the PICAXE debug command only performs a large snapshot of variable values.  For an X2 chip with default clock rate the debugger/sertxd output will send 10 bytes in 15mS, compared to the debug output which takes 180mS, without any indication of the execution points.  For M2 chips at 4800bps the times will double.  The PICAXE Editor will also try to disable its Terminal when debug is active, rendering sertxd useless.  Debugging output would then need to be directed to another pin using serout/hserout and to a different com port and Terminal on the PC.
 
 
 Programming Guide
@@ -38,22 +39,22 @@ The following statements are defined in this module:
     DebugLine(msg)          This is a 1 line macro that takes text and adds a CR and LF to it, e.g. ``DebugLine("@Initialising")``.
    
 
-The module uses just a few lines of pre-processor directives, with no program memory space unless the debug statements are used and debugging is turned on.
+This module uses just a few lines of pre-processor directives, with no program memory space unless the debug statements are used and debugging is turned on.
 
-The debugging information can be descriptive text, such as status or program position, and/or variable values.  For example, ``Debugger("@Interrupt")`` would indicate the passing of a significant program execution point.  To output a value/variable use the "#" sign, such as ``Debugger("Battery = ",#BattVoltage," mV",cr,lf)``. The cr and lf provide a carriage return and line feed to move the cursor down to the start of the next line.
+The debugging information can be descriptive text, such as status or program position, and/or variables and constants.  For example, ``Debugger("@Interrupt")`` would indicate the passing of a significant program execution point.  To output a value as text use the "#" sign, such as ``Debugger("Battery = ",#BattVoltage," mV",cr,lf)``. The cr and lf provide a carriage return and line feed to move the cursor down to the start of the next line.
 
-The statements are turned off with the compiler directive ``#define no_debugger`` in the main program and turned on by just commenting out that line.  The compiler directive must be defined before the include statement for this file.
+The Debugger statements are turned off in your main program with the compiler directive ``#define no_debugger`` and turned on by just commenting out that line.  The compiler directive must be defined before the include statement for this file.
 
 Variable b0 is used by this module to provide the byte to binary string conversion.  To remind yourself, it's recommended that you add the line ``symbol _Debugger = b0`` in your program.
 
 The PICAXE Editor will take some time to open its Terminal window for the debug output, so a two second pause is recommended in your program initialisation before its first use.
 
-The problem with keeping both sertxd commands and debug statements in your program is that debugging can't be fully turned off.  The recommended approach is to rely only the debug statements, just create them and then comment out one's that were used for detailed debugging.
+The problem with keeping both sertxd commands and debug statements in your program is that debugging can't be fully turned off.  The recommended approach is to rely only on the Debugger statements, just create them and then comment out one's that were used for detailed debugging.
 
 Debugging quickly consumes program memory space, so text should be kept as short as possible and debugging that is no longer necessary should be commented out.
 
 
-Below is sample configuration, assuming the following program structure:
+Below is a sample configuration, assuming the following program structure:
 
     1) Program Notes
     2) Compiler Directives
