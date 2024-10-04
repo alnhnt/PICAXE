@@ -77,7 +77,7 @@ This macro is available for use from this module:
 
 This module requires the type of PICAXE chip to be declared in your program, which is normal practise, e.g. #picaxe 20X2.
 
-If you have ``#terminal`` defined in your main program this module will state an error requesting that this is deleted or commented out.  The #terminal directive is defined within this module with the optimal baud rate for your clock rate.  If the terminal is not open it should open after a program download.  The PE will not change the Terminal baud rate if the Terminal is already open.  So if you download a new clock rate, either close the Terminal beforehand or change the baud rate manually. 
+If you have ``#terminal`` defined in your main program you should delete or comment out this line.  The #terminal directive is defined within this module with the optimal baud rate for your clock rate.  If the terminal is not open it should open after a program download, but the PE will not change the Terminal baud rate if the Terminal is already open.  So if you download a new clock rate, either close the Terminal beforehand or change the baud rate manually.
 
 As shown in the sample configuration below, your program needs to "#define" pre-processor directives before the inclusion of this file:
 
