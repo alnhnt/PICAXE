@@ -3,7 +3,8 @@
 
             File: "Voltage_X2.basinc"
          License: MIT (See end of file) 
-  Change History: 2024/10/22 by Alan Hunt - 1st issue.
+  Change History: 2024/10/23 by Alan Hunt - Corrected typos of Denominator to Dividend.
+                  2024/10/22 by Alan Hunt - 1st issue.
 
 
 Description
@@ -22,7 +23,7 @@ Limitations
 -----------
 M2 chips do not have the X2 operator "*/" that is used here for simplification.  It keeps the code simple and short by obtaining the middle word of a word multiplication, which goes most of the way towards making a division of 1024 while achieving good accuracy on the maths.
 
-In the PICAXE Forum there are several solutions to calculate Vdd and ADC input voltages with some accuracy.  There are methods to average ADC readings, or using large denominators and divisors to make the integer math easier, or a neat method of using the DAC to obtain higher value ADC readings for more accuracy etc.  Sadly, there's no DAC on my 20X2 and I was extremely short on program space too, even after swapping out a 20M2.
+In the PICAXE Forum there are several solutions to calculate Vdd and ADC input voltages with some accuracy.  There are methods to average ADC readings, or using large dividends and divisors to make the integer math easier, or a neat method of using the DAC to obtain higher value ADC readings for more accuracy etc.  Sadly, there's no DAC on my 20X2 and I was extremely short on program space too, even after swapping out a 20M2.
 
 The key problem in calculating Vdd seems to be the accuracy of the PICAXE 1.024V FVR (Fixed Voltage Reference).  In my case it was 1.1% high, which is expected as per Microchip application note AN1072 and datasheet PIC18(L)F1XK22.  If the power supply is known and stable it's preferable to use a fixed constant for Vdd to calculate ADC input voltages, which is what the SetVdd macro does.  If the supply voltage varies, perhaps being connected directly to a battery, another option to improve accuracy is to calibrate, as shown in a section below.
 
@@ -60,7 +61,7 @@ How it Works
 ------------
 The maximum ADC value is 1023 and in basic configuration this approximately represents the PICAXE supply voltage, Vdd.  Actually, the specification states this should be a half value, so 1023 represents a voltage over 2047/2048 of Vdd, whereas a value of 1 should represent 1/2048 to 3/2048 of Vdd.  In testing the tipping point to 1023, it was found to be just under 1023/1024 of Vdd, which is a good approximation. 
 
-To measure Vdd this module simply takes an ADC reading for the internal FVR of 1.024V and scales that up.  The math is Vdd=1023*1.024/Val_ADC, but the ADC value is quite large divisor for integer maths.  Dependent on the chip and its supply voltage range of perhaps 1.8V to 5.2V, the ADC reading will be between 581 (1023*1.024V/1.8V) and 201 (1023*1.024V/5.2V).  The denominator is therefore scaled up to 10476, which is a rounding of 1023*1.024*10.  The remainder of this division is then scaled up by 100 for the final part of the division.  The integer result is then 1,000 times bigger and accurate to the last digit, meaning the answer for Vdd is given in millivolts.
+To measure Vdd this module simply takes an ADC reading for the internal FVR of 1.024V and scales that up.  The math is Vdd=1023*1.024/Val_ADC, but the ADC value is quite large divisor for integer maths.  Dependent on the chip and its supply voltage range of perhaps 1.8V to 5.2V, the ADC reading will be between 581 (1023*1.024V/1.8V) and 201 (1023*1.024V/5.2V).  The dividend is therefore scaled up to 10476, which is a rounding of 1023*1.024*10.  The remainder of this division is then scaled up by 100 for the final part of the division.  The integer result is then 1,000 times bigger and accurate to the last digit, meaning the answer for Vdd is given in millivolts.
 
 To calculate an ADC input voltage, the ADC reading is just scaled according to Vdd with ADC_Volts=Vdd*ADC_Val/1024.  This formula gives the lowest possible voltage at the input.  The math is performed with the X2 operator "*/", which returns the middle word of a multiplication.  This effectively divides the result by 256 and this is then divided by 4 to get the overall division of 1024.
 
@@ -68,7 +69,7 @@ Calibration
 -----------
 The fixed voltage reference of 1.024V can vary by several percent between chips and it's also dependent on supply voltage and temperature. To halve the supply voltage errors across the possible range, Microchip AN1072 recommends calibrating at 4V.  Coincidently, 4V calibration is good when monitoring charge voltages on Li-ion cells too.
 
-To calibrate, set the supply voltage to 4000mV as monitored on the PICAXE supply pins.  Uncomment the line "'#define VoltageDebug_On", which will output information to the PICAXE Editor Terminal, then repeatedly call GetVdd from your program with 1 second pauses.  Note the ADC Value and adjust the supply up and down so you find voltages where the ADC value occasionally reads 1 higher and 1 lower.  The midpoint between these voltages is used to calculate a constant named VoltageDenominator, using the formula VoltageDenominator=Midpoint*ADC_Value*10.  If your FVR is accurate the reading should be 10476.  In my case, two 20X2 chips gave an ADC reading of 265, the edge voltages were 3991mV and 4004mV, the chosen midpoint was 3998mV, so VoltageDenominator was 10595.  The FVR spec for the 20X2 chip is -8% to +6% and the error seen was +1.1%.
+To calibrate, set the supply voltage to 4000mV as monitored on the PICAXE supply pins.  Uncomment the line "'#define VoltageDebug_On", which will output information to the PICAXE Editor Terminal, then repeatedly call GetVdd from your program with 1 second pauses.  Note the ADC Value and adjust the supply up and down so you find voltages where the ADC value occasionally reads 1 higher and 1 lower.  The midpoint between these voltages is used to calculate a constant named VoltageDividend, using the formula VoltageDividend=Midpoint*ADC_Value*10.  If your FVR is accurate the reading should be 10476.  In my case, two 20X2 chips gave an ADC reading of 265, the edge voltages were 3991mV and 4004mV, the chosen midpoint was 3998mV, so VoltageDividend was 10595.  The FVR spec for the 20X2 chip is -8% to +6% and the error seen was +1.1%.
 
 
 Programming Guide
@@ -93,7 +94,7 @@ An example configuration is shown below and these statements should appear in yo
 
 #Constants
     '@Voltage_X2.basinc Constant
-    symbol VoltageDenominator = 10595       'Adjust value for FVR inaccuracy, see "Voltage_X2.basinc" Calibration.
+    symbol VoltageDividend = 10595       'Adjust value for FVR inaccuracy, see "Voltage_X2.basinc" Calibration.
 
 'Modules
     #include "Voltage_X2.basinc"
@@ -121,8 +122,8 @@ goto VoltageEnd                             'There is no code to execute, just m
 #macro GetVdd
     _VoltageDebug("@GetVdd")
     calibadc10 _VoltageADCval                                   'Read reference 1.024V (Value = 1023 * 1.024V / Vdd)
-    Voltage_Vdd = VoltageDenominator / _VoltageADCval * 100     'Obtain first 2 digits, nnxx. Max=5200(5211), Min=1800(1803)
-    _VoltageModulus = VoltageDenominator // _VoltageADCval      'Find remainder. Max=580, Min=0
+    Voltage_Vdd = VoltageDividend / _VoltageADCval * 100     'Obtain first 2 digits, nnxx. Max=5200(5211), Min=1800(1803)
+    _VoltageModulus = VoltageDividend // _VoltageADCval      'Find remainder. Max=580, Min=0
     Voltage_Vdd = 100 * _VoltageModulus / _VoltageADCval + Voltage_Vdd  'Obtain last 2 digits, xxnn. Max=99(=100*580/581), Min=0
     _VoltageDebug("  (Ref_1.024V=",#_VoltageADCval,",  Vdd=",#Voltage_Vdd," mV)",cr,lf)
 #endmacro
@@ -171,4 +172,3 @@ SOFTWARE.
 
 #EndRem
 #EndRegion
-
