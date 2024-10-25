@@ -1,7 +1,10 @@
-# Track List
-For the audio files under this folder, the table below shows the folder, filename, file source and whether the file is used in the Buzz Wire Race Game.  The filename consists of a numbered track followed by a short description of its contents.  Filenames that are described as purely {Idle Track} or {Background Track} are not part of this repository:
+# License Information
+Please see LICENSE.md in this folder.
 
-Folder | Track | Content | Source | Buzz Wire Use
+# Track List of Audio Files
+The table below lists the files under this folder, including their subfolder, filename, content and source. Each filename consists of a numbered track followed by a short description of its contents. The last column indicates if the audio file was used in the Buzz Wire Race Game. Filenames with the description of purely {Idle Track} or {Background Track} were used in the Buzz Wire Race Game but are not part of this repository:
+
+Folder | Track | Content | Source | Used in Buzz Wire Race Game
 :---: | :---: | :--- | :---: | :---:
 MP3 | 0000 | zero | ttsmp3.com | y
 MP3	|	0001	|	one	|	ttsmp3.com	|	y
