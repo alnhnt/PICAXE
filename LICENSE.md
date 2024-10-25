@@ -1,6 +1,6 @@
 Contents of this repository are covered by different licenses.
 
-A folder may indicate the license informaiton for its contents with a LICENSE.md file; if the folder does not contain a LICENSE.md file then the material is covered by the MIT License below:
+The default and preferred license is MIT, as shown below. A folder may contain a LICENSE.md file that specifies an alternate license for its contents, including subfolders.  If a folder does not contain a LICENSE.md file, it inherits the license from its parent folder.
 
 MIT License
 
