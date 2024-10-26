@@ -152,4 +152,4 @@ Contents of this project are covered by different licenses.
 
 Each folder may contain licensing, shown in a LICENSE.md file, that is different from its parent. If a folder does not contain a LICENSE.md file, it inherits the license from its nearest ancestor folder where LICENSE.md is defined.
 
-To summarise, this folder and the PICAXE BASIC software has the [MIT](https://choosealicense.com/licenses/mit/)  License, as per their LICENSE.md files. Restrictions on the audio files is covered in the Audio section above. Most other materials have the [CERN OHL v2 Permissive](https://choosealicense.com/licenses/cern-ohl-p-2.0/) license.
+To summarise, this folder and the PICAXE BASIC software have the [MIT](https://choosealicense.com/licenses/mit/) License. Restrictions on the audio files is covered in the Audio section above. Most other materials have the [CERN OHL v2 Permissive](https://choosealicense.com/licenses/cern-ohl-p-2.0/) license.
