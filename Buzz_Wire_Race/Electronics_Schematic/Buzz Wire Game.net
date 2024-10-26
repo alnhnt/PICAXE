@@ -1,0 +1,232 @@
+( { EESchema Netlist Version 1.1 created  2024-07-17T21:09:26+0100 }
+ ( /a254f52d-3b0e-4ace-a17e-b951b5e6f233 Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R6 10k
+  (    1 BattV )
+  (    2 GNDPWR )
+ )
+ ( /f8f5f3cd-5909-474f-9a8a-586ba13003c1 Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R5 10k
+  (    1 Net-(JM1-Pin_1) )
+  (    2 BattV )
+ )
+ ( /eceb48dd-3c00-4592-9f03-61d86fb01d00 Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R4 1k
+  (    1 CellV )
+  (    2 Net-(JM1-Pin_2) )
+ )
+ ( /d904d4e8-2a4d-4508-b598-3100d2836445 Maker:3PinHeader  JM1 JST_Header
+  (    1 Net-(JM1-Pin_1) )
+  (    2 Net-(JM1-Pin_2) )
+  (    3 GNDPWR )
+ )
+ ( /f0de065d-aeaf-4bce-8d18-a577e6660a43 Capacitor_THT:C_Rect_L9.0mm_W2.5mm_P7.50mm_MKT  C1 100n
+  (    1 GNDPWR )
+  (    2 Net-(RN1-R4) )
+ )
+ ( /20cb6576-601e-441a-9b54-fc752a65185b Capacitor_THT:C_Rect_L9.0mm_W2.5mm_P7.50mm_MKT  C3 100n
+  (    1 GNDPWR )
+  (    2 Net-(RN1-R2) )
+ )
+ ( /4956032c-6176-4058-8413-788a108ba41f Capacitor_THT:C_Rect_L9.0mm_W2.5mm_P7.50mm_MKT  C2 100n
+  (    1 GNDPWR )
+  (    2 Net-(RN1-R3) )
+ )
+ ( /ae27f754-99a6-4e5a-a607-8e56399a0dfe Diode_THT:D_DO-201AD_P12.70mm_Horizontal  D3 SA5.0A
+  (    1 BuzzWire )
+  (    2 GNDPWR )
+ )
+ ( /083527ee-5776-4a74-9b32-abea46988554 Resistor_THT:R_Array_SIP9  RN1 8_*_10k
+  (    1 GNDPWR )
+  (    2 Net-(RN1-R1) )
+  (    3 Net-(RN1-R2) )
+  (    4 Net-(RN1-R3) )
+  (    5 Net-(RN1-R4) )
+  (    6 Net-(JM2-Pin_3) )
+  (    7 Net-(JM2-Pin_2) )
+  (    8 Net-(JM2-Pin_1) )
+  (    9 unconnected-(RN1-R8-Pad9) )
+ )
+ ( /4ef755e8-5a62-4770-ab6b-14ae7d814bee Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R2 1k
+  (    1 Net-(RN1-R3) )
+  (    2 Net-(D2-A1) )
+ )
+ ( /3cefbfae-b870-435e-94d3-68cbfd63dac3 Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R3 1k
+  (    1 Net-(RN1-R2) )
+  (    2 BuzzWire )
+ )
+ ( /715b3dae-cc87-498f-8a34-f8e4d4bc0ba4 Maker:DF_Player_Mini  U5 DF_Player_Mini
+  (    1 +5V )
+  (    2 Net-(U5-Rx) )
+  (    3 unconnected-(U5-Tx-Pad3) )
+  (    4 Net-(U5-DAC_R) )
+  (    5 unconnected-(U5-DAC_L-Pad5) )
+  (    6 unconnected-(U5-Speaker+-Pad6) )
+  (    7 GNDPWR )
+  (    8 unconnected-(U5-Speaker--Pad8) )
+  (   10 GNDPWR )
+  (   16 Net-(U1-In/Out/ADC4/Comp2+_B.2) )
+ )
+ ( /5d4b6610-e92d-4a3f-9d91-a221db3e6b7e Capacitor_THT:C_Rect_L9.0mm_W2.5mm_P7.50mm_MKT  C7 100n
+  (    1 +5V )
+  (    2 GNDPWR )
+ )
+ ( /25c0bd3f-3c1e-487a-97f6-0eebcb345cab Diode_THT:D_DO-201AD_P12.70mm_Horizontal  D2 SA5.0A
+  (    1 Net-(D2-A1) )
+  (    2 GNDPWR )
+ )
+ ( /1a106022-04ea-4e28-9282-9855d0a7f6dc Diode_THT:D_DO-201AD_P12.70mm_Horizontal  D1 SA5.0A
+  (    1 Net-(D1-A1) )
+  (    2 GNDPWR )
+ )
+ ( /8892d457-aaa7-4f0b-b682-fc7285c4671b Connector_PinHeader_2.54mm:PinHeader_1x07_P2.54mm_Vertical  JM2 JST_Header
+  (    1 Net-(JM2-Pin_1) )
+  (    2 Net-(JM2-Pin_2) )
+  (    3 Net-(JM2-Pin_3) )
+  (    4 Net-(D1-A1) )
+  (    5 Net-(D2-A1) )
+  (    6 BuzzWire )
+  (    7 GNDPWR )
+ )
+ ( /82a46264-2d55-46b5-bce5-f372c9556d9d Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R1 1k
+  (    1 Net-(RN1-R4) )
+  (    2 Net-(D1-A1) )
+ )
+ ( /390ea36c-160a-4c1c-99b4-3679d4d50234 Maker:PCB_Switch_Push_Button  SW1 Clear_Leaderboard
+  (    1 GNDPWR )
+  (    2 Net-(RN1-R1) )
+ )
+ ( /54c588f9-0c91-4da8-8e27-af1b2db283af Capacitor_THT:C_Rect_L9.0mm_W2.5mm_P7.50mm_MKT  C6 100n
+  (    1 GNDPWR )
+  (    2 +5V )
+ )
+ ( /215b13e5-2f38-47f4-bbea-c6a2b763ebae Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R9 22k
+  (    1 Net-(J1-Pad5) )
+  (    2 Net-(U1-Rx) )
+ )
+ ( /02c408df-9470-455f-9349-1085cc91eb1f Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R7 10k
+  (    1 Net-(U1-Rx) )
+  (    2 GNDPWR )
+ )
+ ( /9c8b888f-5b44-4660-a04a-d4f6dabb8fcc Package_DIP:DIP-20_W7.62mm  U1 PICAXE_20X2
+  (    1 +5V )
+  (    2 Net-(U1-Rx) )
+  (    3 BattV )
+  (    4 Net-(JM2-Pin_1) )
+  (    5 Net-(JM2-Pin_2) )
+  (    6 Net-(JM2-Pin_3) )
+  (    7 Net-(RN1-R4) )
+  (    8 Net-(RN1-R3) )
+  (    9 Net-(RN1-R2) )
+  (   10 Net-(RN1-R1) )
+  (   11 Net-(U1-In/Out/hi2c_sci/hspi_sck_B.7) )
+  (   12 Net-(U1-In/Out/ADC11/hserin_B.6) )
+  (   13 Net-(U1-In/Out/ADC10/hi2c_sda/hspi_sdi_B.5) )
+  (   14 PWM )
+  (   15 Net-(U1-In/Out/ADC5/Comp2-_B.3) )
+  (   16 Net-(U1-In/Out/ADC4/Comp2+_B.2) )
+  (   17 CellV )
+  (   18 Net-(U1-In/Out/ADC1/hint1_B.0) )
+  (   19 Net-(U1-Tx) )
+  (   20 GNDPWR )
+ )
+ ( /9f305969-2719-40fb-bcbb-5d9537184b7a Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R12 330
+  (    1 Net-(JM3-Pin_4) )
+  (    2 Net-(U1-In/Out/ADC5/Comp2-_B.3) )
+ )
+ ( /1cee35cb-9b8b-4cd1-b410-94e5e931db19 Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R14 330
+  (    1 Net-(JM3-Pin_2) )
+  (    2 Net-(U1-In/Out/ADC11/hserin_B.6) )
+ )
+ ( /6ff7c77c-fe40-434a-8c7e-85921c3dd237 Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R13 330
+  (    1 Net-(JM3-Pin_3) )
+  (    2 Net-(U1-In/Out/ADC10/hi2c_sda/hspi_sdi_B.5) )
+ )
+ ( /9a292d29-5a4b-410f-acf8-9bead9760f1a Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R17 1k
+  (    1 Net-(C8-Pad1) )
+  (    2 Net-(JM4-Pin_6) )
+ )
+ ( /4d1b6e18-306f-44c7-9929-24c6d16a37d0 Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R8 1k
+  (    1 Net-(U1-In/Out/ADC1/hint1_B.0) )
+  (    2 Net-(U5-Rx) )
+ )
+ ( /f4afaf85-89e8-492b-a5e5-9048a039155a Package_TO_SOT_THT:TO-220-3_Vertical  U3 L4940V5
+  (    1 Net-(JM1-Pin_1) )
+  (    2 GNDPWR )
+  (    3 +5V )
+ )
+ ( /c1b28070-908d-4c6f-9bd2-8d9630d9c545 Capacitor_THT:C_Radial_D10.0mm_H16.0mm_P5.00mm  C5 22u
+  (    1 +5V )
+  (    2 GNDPWR )
+ )
+ ( /56dec01d-8363-4233-ab6d-12d9523cdeee Capacitor_THT:C_Rect_L9.0mm_W2.5mm_P7.50mm_MKT  C4 100n
+  (    1 Net-(JM1-Pin_1) )
+  (    2 GNDPWR )
+ )
+ ( /c2caa7dc-4707-4aa4-b7e0-85ebbbb06926 Connector_Audio:Jack_3.5mm_CUI_SJ1-3525N_Horizontal  J1 PICAXE_CON039
+  (    1 Net-(U1-Tx) )
+  (    2 GNDPWR )
+  (    3 unconnected-(J1-Pad3) )
+  (    4 unconnected-(J1-Pad4) )
+  (    5 Net-(J1-Pad5) )
+ )
+ ( /84ef3a63-4812-4c08-ad84-c3e38d78b188 Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical  JM3 JST_Header
+  (    1 Net-(JM3-Pin_1) )
+  (    2 Net-(JM3-Pin_2) )
+  (    3 Net-(JM3-Pin_3) )
+  (    4 Net-(JM3-Pin_4) )
+  (    5 GNDPWR )
+ )
+ ( /2ca8657e-00fd-403a-a1a9-669bc0f94ea6 Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R15 330
+  (    1 Net-(JM3-Pin_1) )
+  (    2 Net-(U1-In/Out/hi2c_sci/hspi_sck_B.7) )
+ )
+ ( /e2a82c2b-5c85-4d81-9a1e-1285fcfa74b8 Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R18 560
+  (    1 Net-(U5-DAC_R) )
+  (    2 Net-(JM4-Pin_1) )
+ )
+ ( /3903643d-d0e5-4104-9af2-e713f1be72de Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical  JM4 JST_Header
+  (    1 Net-(JM4-Pin_1) )
+  (    2 Amp- )
+  (    3 GNDPWR )
+  (    4 GNDPWR )
+  (    5 Amp+ )
+  (    6 Net-(JM4-Pin_6) )
+ )
+ ( /c401a145-1a89-4978-8f9e-644d5f7eee82 Package_TO_SOT_THT:TO-92_Inline  Q1 2N3904
+  (    1 Net-(Q1-E) )
+  (    2 Net-(Q1-B) )
+  (    3 Net-(Q1-C) )
+ )
+ ( /d8ff306a-a088-4153-8113-f51126b0c66c Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R16 10k
+  (    1 +5V )
+  (    2 Net-(Q1-C) )
+ )
+ ( /9e173975-d3db-4ae2-9e3d-0fdb64b42ded Maker:PAM8302_Amplifier  U4 PAM8302
+  (    1 Amp+ )
+  (    2 Amp- )
+  (    3 +5V )
+  (    4 +5V )
+  (    5 GNDPWR )
+  (    6 Net-(U4-Speaker+) )
+  (    7 Net-(U4-Speaker-) )
+ )
+ ( /aa1e48ad-e0d0-440c-b4b4-c13f2cab2a6d Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R10 10k
+  (    1 Net-(Q1-B) )
+  (    2 PWM )
+ )
+ ( /de9d6380-fed1-4c46-b8b1-ec816799a878 Capacitor_THT:C_Rect_L9.0mm_W2.5mm_P7.50mm_MKT  C8 100n
+  (    1 Net-(C8-Pad1) )
+  (    2 Net-(Q1-C) )
+ )
+ ( /57eb6100-1e62-4a9c-a7de-fb8c873601c6 Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R11 10k
+  (    1 Net-(Q2-B) )
+  (    2 BuzzWire )
+ )
+ ( /ea419cf3-9b7a-4baa-b376-91f250c94018 Package_TO_SOT_THT:TO-92_Inline  Q2 2N3904
+  (    1 GNDPWR )
+  (    2 Net-(Q2-B) )
+  (    3 Net-(Q1-E) )
+ )
+ ( /d3d3482a-4072-4826-af6a-7d30e7c03261 Capacitor_THT:C_Rect_L9.0mm_W2.5mm_P7.50mm_MKT  C9 100n
+  (    1 Amp- )
+  (    2 GNDPWR )
+ )
+)
+*
