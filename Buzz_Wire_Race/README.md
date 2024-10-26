@@ -1,12 +1,19 @@
+
 # BUZZ WIRE RACE
 Buzz Wire Race is an electronic game representing a car on a racetrack.  The player gets a lap time that includes time penalties for bumps along the track.  The game uses a PICAXE 20X2 microcontroller to provide timing and a leaderboard; and to control LED start lights and a DF Player Mini daughter board for sound effects, music and speech.
 
 ## Contents
 This file contains:	
-- Game Description
-- Maker Information
-- Suggested Improvements
-- License
+- [Game Description](#Game)
+- [Maker Information](#Maker)
+	- [Metalwork, Woodword and Plastic](#Metalwork)
+	- [Electrical](#Electrical)
+	- [Electronics](#Electronics)
+	- [Programming](#Programming)
+	- [Audio](#Audio)
+	- [Graphics](#Graphics)
+- [Suggested Improvements](#Suggested)
+- [License Information](#License)
 
 Other files in this folder include:
 - Contents of a presentation folder intended for public viewing, which includes a 1 page summary, photos, diagrams, functional specification, and program listing.
@@ -127,7 +134,7 @@ The racetrack venue guide was recreated using Inkscape, which is popular free op
 
 The base of the game had various stickers with the Cars movie theme. These were children's wall stickers, which can be variable quality and too large, so pick carefully if you're using them.
 
-### Suggested Improvements
+## Suggested Improvements
 1. *Fuses* - There should really be fuses on the battery and the cell voltage tap!
 2. *Compensate Performance* - The "stock car racing" penalty is there to prevent cheats racing the track without caring about crashes.  It works great for adults and teenagers, however, young children performed far worse than expected and this was disheartening for them.  The algorithm should avoid this penalty if the time is already slow, or the game adjust itself to the age group in some way.
 3. *Racetrack Connector* - The racetrack endpoints should have an individual connector on the circuit board.  There was a 2 pin inline connector to make removal easier, for storage or swapping to alternate racetracks.  However, connectors take time to make and this inline connector adds a potential point of failure.
@@ -146,6 +153,3 @@ The software is provided with the [MIT](https://choosealicense.com/licenses/mit/
 Restrictions on the audio files is covered in the Audio section above.
 
 All other materials are provided with the [CERN OHL v2 Permissive](https://choosealicense.com/licenses/cern-ohl-p-2.0/) license.
-
-
-*Written with [StackEdit](https://stackedit.io/).*
