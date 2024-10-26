@@ -148,8 +148,8 @@ The base of the game had various stickers with the Cars movie theme. These were 
 11. *Visuals and Personalisation* - It would be nice to add a leaderboard screen and name inputs but this seems too over-the-top.
 
 ## License
-The software is provided with the [MIT](https://choosealicense.com/licenses/mit/) license.
+Contents of this project are covered by different licenses. 
 
-Restrictions on the audio files is covered in the Audio section above.
+Each folder may contain licensing, shown in a LICENSE.md file, that is different from its parent. If a folder does not contain a LICENSE.md file, it inherits the license from its nearest ancestor folder where LICENSE.md is defined.
 
-All other materials are provided with the [CERN OHL v2 Permissive](https://choosealicense.com/licenses/cern-ohl-p-2.0/) license.
+To summarise, this folder and the PICAXE BASIC software has the [MIT](https://choosealicense.com/licenses/mit/)  License, as per their LICENSE.md files. Restrictions on the audio files is covered in the Audio section above. Most other materials have the [CERN OHL v2 Permissive](https://choosealicense.com/licenses/cern-ohl-p-2.0/) license.
