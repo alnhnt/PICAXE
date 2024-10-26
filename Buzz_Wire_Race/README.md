@@ -24,7 +24,7 @@ Other files in this folder include:
 - Software modules for PICAXE programs that ease Timing, Debugging, Voltage Monitoring and Audio Output.  
 - Some of the audio tracks that are for non-commercial use.
 
-## Game Description
+## Game_Description
 The game emulates a timed lap of a racetrack.  The game provides a fair bit of humour and activity with lots of effects, music and speech.  The game is always playing sound, with sets of audio tracks for idle, racing, adverts, crashes and fanfares.
 
 To set the scene the base of the game had a laminated sheet with a venue guide to the racetrack.  A metal rod depicts the shape of the racetrack and in the original game the Snetterton Racetrack in Norfolk, England was chosen.  A toy racing car was fixed to the player's handle, which moves a metal ring along the racetrack, hopefully without bumping. 
@@ -40,7 +40,7 @@ During a race messages are played based on the game time and number of crashes. 
 There are help, race and leaderboard buttons and two volume controls, one for the buzz level and the other for the effects.
 
 ## Maker Information
-### Metalwork, Woodwork and Plastic <a name="Metalwork"></a>
+### Metalwork,_Woodwork_and_Plastic <a name="Metalwork"></a>
 The hollow base was made from 18 mm plywood, the 800 mm width made it marginally wider than the track and 450 mm depth made it stable.  The height was 90 mm to keep it fairly low but sufficient for the internals.  To ensure stability on uneven surfaces there were only 3 rubber feet, at the front corners and at the centre on the back.
 
 The racetrack is a 3 metre long, 5 mm diameter, A2 stainless steel rod (5 mm was a nice diameter but 4 mm diameter would make cold bending easier and is probably sufficient).  The ends of the rod pass through a Startbox at 60 mm height, turn 90 downwards and pass through a cutout in the base. Underneath the base the rod is clamped in place against the side of an internal beam.  
@@ -134,7 +134,7 @@ The racetrack venue guide was recreated using Inkscape, which is popular free op
 
 The base of the game had various stickers with the Cars movie theme. These were children's wall stickers, which can be variable quality and too large, so pick carefully if you're using them.
 
-## Suggested Improvements
+## Suggested_Improvements
 1. *Fuses* - There should really be fuses on the battery and the cell voltage tap!
 2. *Compensate Performance* - The "stock car racing" penalty is there to prevent cheats racing the track without caring about crashes.  It works great for adults and teenagers, however, young children performed far worse than expected and this was disheartening for them.  The algorithm should avoid this penalty if the time is already slow, or the game adjust itself to the age group in some way.
 3. *Racetrack Connector* - The racetrack endpoints should have an individual connector on the circuit board.  There was a 2 pin inline connector to make removal easier, for storage or swapping to alternate racetracks.  However, connectors take time to make and this inline connector adds a potential point of failure.
