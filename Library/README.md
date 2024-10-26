@@ -1,5 +1,7 @@
+# Viewing Documentation
+Each module contains supporting documentation within itself, just click on a file to view its contents.  To have soft line wraps, either click Raw or click the three dots and then enable "Wrap lines".
 # Library Contents
-The table below describes the PICAXE BASIC modules in this library:
+Here's a description of the PICAXE BASIC modules in this library:
 
 Module Name | Module Description
 :--- | :--- 
