@@ -5,8 +5,8 @@ Buzz Wire Race is an electronic game representing a car on a racetrack.  The pla
 ## Contents
 This file contains:	
 - [Game_Description](#Game_Description)
-- [Maker_Information](#Maker)
-	- [Metalwork, Woodword and Plastic](#Maker)
+- [Maker_Information](#Maker_Information)
+	- [Metalwork, Woodword and Plastic](#Maker_Information)
 	- [Electrical](#Electrical)
 	- [Electronics](#Electronics)
 	- [Programming](#Programming)
@@ -39,8 +39,8 @@ During a race messages are played based on the game time and number of crashes. 
 
 There are help, race and leaderboard buttons and two volume controls, one for the buzz level and the other for the effects.
 
-## <a name="Maker" /> Maker Information
-### Metalwork,_Woodwork_and_Plastic <a name="Metalwork"></a>
+## Maker_Information
+### Metalwork,_Woodwork_and_Plastic
 The hollow base was made from 18 mm plywood, the 800 mm width made it marginally wider than the track and 450 mm depth made it stable.  The height was 90 mm to keep it fairly low but sufficient for the internals.  To ensure stability on uneven surfaces there were only 3 rubber feet, at the front corners and at the centre on the back.
 
 The racetrack is a 3 metre long, 5 mm diameter, A2 stainless steel rod (5 mm was a nice diameter but 4 mm diameter would make cold bending easier and is probably sufficient).  The ends of the rod pass through a Startbox at 60 mm height, turn 90 downwards and pass through a cutout in the base. Underneath the base the rod is clamped in place against the side of an internal beam.  
