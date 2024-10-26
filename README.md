@@ -15,11 +15,11 @@ The easiest way to get started, without needing to understand GitHub, is to just
 
 The modules end with a ``.basinc`` file extension and the easiest way to use them is to copy them to the same folder as your program, and then use ``#include "ModuleFileName.basinc"`` in your program initialization steps.  The modules contain inline documentation for their use.
 
-## Help
-If you have any problems then you could read the [PICAXE Manuals](https://picaxe.com/getting-started/picaxe-manuals/), or log an [Issue](https://github.com/alnhnt/PICAXE/issues/new) in this repository, or contact the [PICAXE Forum](https://picaxeforum.co.uk/).
+## Help and Feedback
+If you have any problems then you could read the [PICAXE Manuals](https://picaxe.com/getting-started/picaxe-manuals/), start a [Discussion](https://github.com/alnhnt/PICAXE/discussions/new/choose) or log an [Issue](https://github.com/alnhnt/PICAXE/issues/new) in this repository, or contact the [PICAXE Forum](https://picaxeforum.co.uk/).
 
 
 ## License
 Contents of this repository are covered by different licenses.
 
-As per LICENSE.md, the license is MIT unless a folder contains an alternate ``LICENSE.md`` for its contents.
+The default and preferred license is [MIT](https://choosealicense.com/licenses/mit/). A folder may contain a LICENSE.md file that specifies any license for its contents, including subfolders. If a folder does not contain a LICENSE.md file, it inherits the license from its nearest ancestor folder where LICENSE.md is defined.
