@@ -24,7 +24,7 @@ Other files in this folder include:
 - Software modules for PICAXE programs that ease Timing, Debugging, Voltage Monitoring and Audio Output.  
 - Some of the audio tracks that are for non-commercial use.
 
-## Game Description
+## Game Description <a name="Game"></a>
 The game emulates a timed lap of a racetrack.  The game provides a fair bit of humour and activity with lots of effects, music and speech.  The game is always playing sound, with sets of audio tracks for idle, racing, adverts, crashes and fanfares.
 
 To set the scene the base of the game had a laminated sheet with a venue guide to the racetrack.  A metal rod depicts the shape of the racetrack and in the original game the Snetterton Racetrack in Norfolk, England was chosen.  A toy racing car was fixed to the player's handle, which moves a metal ring along the racetrack, hopefully without bumping. 
@@ -39,8 +39,8 @@ During a race messages are played based on the game time and number of crashes. 
 
 There are help, race and leaderboard buttons and two volume controls, one for the buzz level and the other for the effects.
 
-## Maker Information 
-### Metalwork, Woodwork and Plastic
+## Maker Information <a name="Maker"></a>
+### Metalwork, Woodwork and Plastic <a name="Metalwork"></a>
 The hollow base was made from 18 mm plywood, the 800 mm width made it marginally wider than the track and 450 mm depth made it stable.  The height was 90 mm to keep it fairly low but sufficient for the internals.  To ensure stability on uneven surfaces there were only 3 rubber feet, at the front corners and at the centre on the back.
 
 The racetrack is a 3 metre long, 5 mm diameter, A2 stainless steel rod (5 mm was a nice diameter but 4 mm diameter would make cold bending easier and is probably sufficient).  The ends of the rod pass through a Startbox at 60 mm height, turn 90 downwards and pass through a cutout in the base. Underneath the base the rod is clamped in place against the side of an internal beam.  
@@ -53,7 +53,7 @@ The Startbox was a Hammond 1591XXGSBK (112 x 96 x 38 mm), which is a good size f
 
 Self adhesive tie wraps kept the cables tidy inside the base and anything potentially removable used the plastic ladder style. The electronics area is meant to be rainproof so a compartment was made with a small strip of wood to act as a drip barrier.  Sealant along the drip barrier and beam prevents water running to the electronics.  Some old plastic gutter was cut to act as cable clamps and a cable protector. 
 
-### Electrical
+### Electrical <a name="Electrical"></a>
 The racetrack rod has an electrical connection via a crimped lug on one of its fixing bolts.  The racetrack endpoints are formed by wrapping copper tape over heat shrink where the rod enters the Startbox.  If you haven't come across copper tape before it's used by gardeners to keep slugs off their plant pots.  Some stranded wire was soldered to the copper tape and the other end went to a connector for easy disassembly.  These 3 of racetrack connections are digital inputs on the MCU with 10k ohm pulldown resistors to 0V via an external resistor array.  They are potential human touch points, so they also have unidirectional TVS diodes to 0 V to protect against extreme static voltages.
 
 The wire from the game handle crimped to a through-hole lug, with a bolt going through the lug, a wide washer and then the base.  Underneath there was another washer and lug, with its electrical connection taken to 5 V via a circuit board connector.
@@ -62,7 +62,7 @@ The power switch is mounted inside the base in the drip protection area at the r
 
 The game ran on two Li-ion cells, the Samsung INR18650-30Q with 3000 mAhr capacity and 2.5 V min cut-off.  Note that Li-ion cells often have a 3.0 V cut-off instead.  The cells were in series and powered the game via a 5 V very low drop-out regulator with protection.  Using 5 V helped to provide sufficient audio power and to drive the large LEDs reliably due to there high forward voltage.  The game lasts for over a day at low to medium volume, or about 10 hours at max volume. If either cell voltage is below 3,400 mV, about 18%, the game will speak warnings between idle tracks.  If a cell is nearly exhausted, reading below 3100 mV,  about 6%, the microcontroller issues a notice and goes to sleep.  These tests were performed at 22°C with "TestController" software taking logs from an East Tester ET5410A+ set at 200mA constant current, which is representative of the game being near maximum volume.
 
-### Electronics
+### Electronics <a name="Electronics"></a>
 The circuit board used 2.7" by 5.4" of stripboard and all connectors were based on JST-XH clones with 2.54 mm spacing.  The PICAXE 20X2 was mounted in a socket whereas the audio player and audio amplifier daughter boards were soldered in placed for security.
 
 In addition to TVS diodes protecting MCU inputs for the buzz wire and end points, there's a resistor to the MCU input and a capacitor to 0 V.  This helps to debounce inputs so the interrupt routine can read the changed input correctly and they provide some added voltage protection too.
@@ -78,7 +78,7 @@ The MCU has 10 bit ADC rail to rail inputs that are used to monitor the battery 
 To provide good sunlight visibility the 10 mm red LEDs had to be driven hard at 16mA (I~Max~= 18 mA), whereas the green seemed to just exceed this brightness at 7 mA.  It was noticeable how the MCU output, rated for 25 mA sink or source (I~Max~= 50 mA), sagged with load.  With a 4.99V supply the logic output high, V~OH~ was 4.98V with no load; with the green LED load V~OH~=4.54V (V~f~=2.15V, I~f~=7mA, R~L~=330Ω); and for the red LEDs load V~OH~=3.61 (V~f~=2.03, I~f~=16mA ,R~L~=100Ω).  The three red LEDs are briefly on together and each causes an internal chip load of 22mW, which this is well below the chip specification of 250mA supply current and 800mW dissipation.
 
 
-### Programming
+### Programming <a name="Programming"></a>
 The program is written in PICAXE BASIC that is organized into the following regions:
 1. Program Notes
 2. Compiler Directives
@@ -120,7 +120,7 @@ Interrupt handling is fairly "basic" with the PICAXE and it was implemented in a
 
 Throughout the programming it was a joy, and often necessity, to see the game's activity in execution, which relied on typical debug usage of the `sertx`.  The use of `Debugger.basinc` made it more controllable and a little easier, but a very significant advantage of this approach was code readability, so I hope you find the same too.  The downside was program memory usage, so pruning was required as the program features grew.  The debug causes very small delays during its serial transmissions but these were not important for the game and it's nice to show others what the game is up to.
 
-### Audio
+### Audio <a name="Audio"></a>
 All the audio editing was performed in NCH WavePad, which trimmed start and end silences, normalized volume levels, and where necessary changed pitch, speed or added cartoon effects.  WavePad also converted a  couple of tracks to mono because the left and right channels were far too different.
 
 The speech was provided by https://ttsmp3.com/ and is free to use without restriction.  Mostly the AI voice "Alloy" was used and the mp3 filenames were given the numbering of 000 to 255 that the DF Player expects and a short description, which is either word, or paraphrased longer speech.  For some phrases, natural UK or USA voices from https://ttsmp3.com/ were used, most of these were slightly increased in speed to keep interest in the game and some had cartoon effects or changes in tone for comedy value.
@@ -129,12 +129,12 @@ The sound effects are from https://www.101soundboards.com, they are made availab
 
 It's fun to add some music tracks too, but you do that on your own discretion because they are not provided in this site.
 
-### Graphics
+### Graphics <a name="Graphics"></a>
 The racetrack venue guide was recreated using Inkscape, which is popular free open source software for editing vector graphics.
 
 The base of the game had various stickers with the Cars movie theme. These were children's wall stickers, which can be variable quality and too large, so pick carefully if you're using them.
 
-## Suggested Improvements
+## Suggested Improvements <a name="Suggested"></a>
 1. *Fuses* - There should really be fuses on the battery and the cell voltage tap!
 2. *Compensate Performance* - The "stock car racing" penalty is there to prevent cheats racing the track without caring about crashes.  It works great for adults and teenagers, however, young children performed far worse than expected and this was disheartening for them.  The algorithm should avoid this penalty if the time is already slow, or the game adjust itself to the age group in some way.
 3. *Racetrack Connector* - The racetrack endpoints should have an individual connector on the circuit board.  There was a 2 pin inline connector to make removal easier, for storage or swapping to alternate racetracks.  However, connectors take time to make and this inline connector adds a potential point of failure.
@@ -147,7 +147,7 @@ The base of the game had various stickers with the Cars movie theme. These were 
 10. *Wood Glue Cleaning* - Take more care cleaning off any wood glue residue before varnishing.
 11. *Visuals and Personalisation* - It would be nice to add a leaderboard screen and name inputs but this seems too over-the-top.
 
-## Licenses
+## License Information <a name="License"></a>
 The software is provided with the [MIT](https://choosealicense.com/licenses/mit/) license.
 
 Restrictions on the audio files is covered in the Audio section above.
