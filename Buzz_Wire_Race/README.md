@@ -17,10 +17,10 @@ This file contains:
 
 Other files in this folder include:
 - Contents of a presentation folder intended for public viewing, which includes a 1 page summary, photos, diagrams, functional specification, and program listing.
-- Electronics Schematic, produced in KiCad.
-- Circuit board layout, based on stripboard and produced in VeroRoute from the KiCad netlist.
+- Electronics Schematic, produced in KiCad v8.0.3.
+- Circuit board layout, based on stripboard and produced in VeroRoute v2.39 from the KiCad netlist.
 - Bill of Materials from the KiCad schematic.
-- Program, written in PICAXE BASIC.
+- Program, written in PICAXE BASIC with the PICAXE Editor v6.2.0.0.
 - Software modules for PICAXE programs that ease Timing, Debugging, Voltage Monitoring and Audio Output.  
 - Some of the audio tracks that are for non-commercial use.
 
