@@ -5,7 +5,7 @@ Buzz Wire Race is an electronic game representing a car on a racetrack.  The pla
 ## Contents
 This file contains:	
 - [Game_Description](#Game_Description)
-- [Maker_Information](#Maker_Information)
+- [Maker_Information](#Maker)
 	- [Metalwork, Woodword and Plastic](#Maker)
 	- [Electrical](#Electrical)
 	- [Electronics](#Electronics)
