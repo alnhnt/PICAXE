@@ -39,7 +39,7 @@ During a race messages are played based on the game time and number of crashes. 
 
 There are help, race and leaderboard buttons and two volume controls, one for the buzz level and the other for the effects.
 
-## Maker Information
+## <a name="Maker" /> Maker Information
 ### Metalwork,_Woodwork_and_Plastic <a name="Metalwork"></a>
 The hollow base was made from 18 mm plywood, the 800 mm width made it marginally wider than the track and 450 mm depth made it stable.  The height was 90 mm to keep it fairly low but sufficient for the internals.  To ensure stability on uneven surfaces there were only 3 rubber feet, at the front corners and at the centre on the back.
 
