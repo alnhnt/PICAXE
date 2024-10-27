@@ -8,12 +8,12 @@ This file contains:
 - [Maker_Information](#Maker_Information)
 	- [Metalwork, Woodword and Plastic](#Maker_Information)
 	- [Electrical](#Electrical)
-	- [Electronics](./README.md#Electronics)
-	- [Programming](./README.md#Programming)
-	- [Audio](./README.md#Audio)
-	- [Graphics](./README.md#Graphics)
-- [Suggested_Improvements](./README.md#Suggested_Improvements)
-- [License](./README.md#License)
+	- [Electronics](#Electronics)
+	- [Programming](#Programming)
+	- [Audio](#Audio)
+	- [Graphics](#Graphics)
+- [Suggested_Improvements](#Suggested_Improvements)
+- [License](#License)
 
 Other files in this folder include:
 - Contents of a [Presentation_Folder](./Documents/Presentation_Folder-Main.pdf) intended for public viewing, which includes a 1 page summary, photos, diagrams and functional specification.
