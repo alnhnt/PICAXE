@@ -83,10 +83,10 @@ The program is written in PICAXE BASIC that is organized into the following regi
 1. Program Notes
 2. Compiler Directives
 3. Resources
-    a.	Pins
-    b.	Variables
-    c.	Constants
-    d.	Modules
+    1. Pins
+    2.	Variables
+    3.	Constants
+    4.	Modules
 4.	Initialisation
 5.	Main:
 6. Interrupt:
