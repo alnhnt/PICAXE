@@ -4,25 +4,25 @@ Buzz Wire Race is an electronic game representing a car on a racetrack.  The pla
 
 ## Contents
 This file contains:	
-- [Game_Description](#Game_Description)
-- [Maker_Information](#Maker_Information)
-	- [Metalwork, Woodword and Plastic](#Maker_Information)
-	- [Electrical](#Electrical)
-	- [Electronics](#Electronics)
-	- [Programming](#Programming)
-	- [Audio](#Audio)
-	- [Graphics](#Graphics)
-- [Suggested_Improvements](#Suggested_Improvements)
-- [License](#License)
+- [Game_Description](./README.md#Game_Description)
+- [Maker_Information](./README.md#Maker_Information)
+	- [Metalwork, Woodword and Plastic](./README.md#Maker_Information)
+	- [Electrical](./README.md#Electrical)
+	- [Electronics](./README.md#Electronics)
+	- [Programming](./README.md#Programming)
+	- [Audio](./README.md#Audio)
+	- [Graphics](./README.md#Graphics)
+- [Suggested_Improvements](./README.md#Suggested_Improvements)
+- [License](./README.md#License)
 
 Other files in this folder include:
-- Contents of a presentation folder intended for public viewing, which includes a 1 page summary, photos, diagrams, functional specification, and program listing.
-- Electronics Schematic, produced in KiCad v8.0.3.
-- Circuit board layout, based on stripboard and produced in VeroRoute v2.39 from the KiCad netlist.
-- Bill of Materials from the KiCad schematic.
-- Program, written in PICAXE BASIC with the PICAXE Editor v6.2.0.0.
-- Software modules for PICAXE programs that ease Timing, Debugging, Voltage Monitoring and Audio Output.  
-- Some of the audio tracks that are for non-commercial use.
+- Contents of a [Presentation_Folder](./Documents/Presentation_Folder-Main.pdf) intended for public viewing, which includes a 1 page summary, photos, diagrams and functional specification.
+- [Electronics_Schematic](./Pictures/KiCAD_Schematic.jpg), produced in KiCad v8.0.3.
+- [Circuit_Board_Layout](./Pictures/VeroRoute_Circuit_Board.jpg), based on stripboard and produced in VeroRoute v2.39 from the KiCad netlist.
+- [Bill_of_Materials](./Electronics_Schematic/Buzz_Wire_Game_BOM.csv) from the KiCad schematic.
+- [Program](./Software/Buzz_Wire_Game.bas) written in PICAXE BASIC with the PICAXE Editor v6.2.0.0.
+- [Software_Modules](./Software) for PICAXE programs that ease Timing, Debugging, Voltage Monitoring and Audio Output.  
+- Some of the [Audio_Tracks](./Audio) that are for non-commercial use.
 
 ## Game_Description
 The game emulates a timed lap of a racetrack.  The game provides a fair bit of humour and activity with lots of effects, music and speech.  The game is always playing sound, with sets of audio tracks for idle, racing, adverts, crashes and fanfares.
