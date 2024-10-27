@@ -1,0 +1,360 @@
+#Region "Read Me"
+#REM
+
+            File: "DF_Player_Mini.basinc"
+         License: MIT (See end of file) 
+  Change History: 2024/10/16 by Alan Hunt - 1st issue.
+
+
+Description
+===========
+Designed for the DF Player Mini audio board, this module provides macros and subroutines to speak numbers and play audio tracks to emulate speech and play music and sound effects.
+
+The DF Player module does not behave entirely as expected, so this module eases its use.  The busy pin takes time to become active and effectively reports audio output without file seek time delays.  Testing also found the minimum pause times between different instructions, so this module takes care of that too and shares the info with inline comments.  Using the module should mean that individual words can be sequenced to be as quick and reliable as practical.
+
+The list of macros include:
+    PlayMP3(Track, Title)               Plays the Track after the previous track is finished. Title is for debugging/information. 
+    PlayNow(Track, Title)               Stops anything currently played or queued and plays the selected Track.
+    PlayAdvert(Track, Title)            Plays the Advert and temporarily suspends anything currently playing.
+    AudioSpeakNumber(Val)               Speaks the number Val, which is a Word value from 0 to 65,535.
+    AudioSpeakTenths(Val)               Speaks the number Val divided by 10
+    AudioSpeakHundreths(Val)            Speaks the number Val divided by 100
+    AudioSpeakThousandths(Val)          Speaks the number Val divided by 1000
+    
+The list of subroutines include:
+    AudioInitialise                     To be included in program initialisation.
+    AudioWaitForIdle                    Wait for sound to stop.
+    AudioClear                          Stop sound.
+    _AudioPlayMP3                       Internal routine to play the track defined by _Audio_MP3Track.
+    _AudioPlayAdvert                    Internal routine to play the advert defined by _Audio_AdvertTrack.
+    _AudioSpeakInteger                  Internal routine to speak the number defined by _Audio_Integer.
+    _AudioSpeakDecimalPlaces            Internal routine to speak a number as individual digits, as spoken after a decimal place.
+    
+
+Limitations
+-----------
+The DF Player Mini comms is 9,600bps, so the minimum clock speed for a PICAXE chip is 8MHz, this is the X2 default whereas an M2 needs setting to run faster than default.  
+
+The DF Player Mini can support several folders and thousands of files but this module is limited to using the default MP3 and ADVERT folders, so a maximum of 256 files in each.
+
+Even with trimming silences, chaining tracks with individual words is a little staccato.  For personal use it's quick and very clear but not smooth, or so impressive for others.  To get the best results use joined phrases, such as "The total solar power is" {n} "kilo watt hours over the last week".  Otherwise, you need solutions to replace the DF Player, such as online interfaces or a far more powerful speech synthesis device.
+
+
+Dependencies
+------------
+Certain pause statements and symbols must be defined for timing, pin usage and variable usage, see the Programming Guide section.
+
+
+
+About the DF Player Mini
+========================
+
+Sourcing the hardware
+---------------------
+The DF Player Mini can be obtained from many sources and in many variants.  Some of these are unreliable or appeared faulty.  Here's a summary of types I compared:
+
+1) Good: The PICAXE SPE035, labelled "DF Player Mini", with processor "YX5200-24SS, OE64 1607" provided good results and this utility is based on its timings.  Like other units, completion of a track is reported twice from its serial output and the track number appears to be a random number, which is perhaps the file position in the SD card FAT.
+2) Good: The "DF Player Mini, VO5.1, HW-247A" with processor "TD5580A".  Initially I thought only 1 of 3 modules worked but this was due to timing differences from (1).  The differences I noted were that:  Boot-up delays were more than 100mS, so the subroutine AudioIniailise now pauses for 1 second; the Busy signal went active earlier but stayed on later, typically 160mS after the modules track completion message; and there's a 10ms gap in the double reporting of track completion.
+3) Bad: A batch labelled "MP-TF-16P-V3.0" with processor "MH2024K-24SS, 240113" were not usable.  They were very slow, only reported track completion occasionally and did not reliably accept track requests.
+4) Based on the findings above I'd buy from an electronics store unless I had time on my hands to check cheap packs from eBay, Amazon, AliExpress etc.
+
+
+Some Reference Notes
+--------------------
+The DF Player Mini is loaded with an SD card containing .mp3 or .wav tracks in the root MP3 folder, these are then easily selected for playback.  The filename simply must begin with a number, I use 0000 to 0255 followed by a space and a short description.  Likewise, numbered Advert tracks can also be played and these temporarily suspend the main playing track.  The Adverts have uses such as playing a crash sound during a game and they are placed in the root ADVERTS folder.  Adverts are a really cool feature!
+
+* The "DF Player Mini" supply is 3.2V to 5.0V.  TTL is 3.3v level so a 1kOhm series must be placed between its Rx pin and 5V signals.
+* At startup the module may need up to 4 seconds to boot and load a very long file list.
+* The Busy signal only indicates audio output.  After requesting a track to be played there's a delay before it goes active.  
+* Various commands take time to respond or need short wait periods before another command is supplied.  This module takes care of it and includes comments on them.
+* The serial comms is True(Idle high), 9600 bps.  This module needs the baud rate parameter adjusting when PICAXE clock speed changes from 8MHz.
+* The command packet format is: $7E(Start), $FF(Version), $06(Length), $xx(Command), $00(No feedback), $xx(Param1), $xx(Param2), {Optional 2 byte checksum},$EF(End)
+    - Normally the optional checksums are not used, the packet length stays as $06 regardless.
+    - If required, the checksum is easily calculated as zero minus each of the byte values in the message.
+* Manuals are widely available on the Internet, including https://picaxe.com/docs/spe033.pdf.  
+* A simple starter kit is shown here: https://picaxe.com/docs/spe035.pdf.
+* A nice little weatherproof speaker is the Eagle B185.
+* The speaker volume is software controllable, and the maximum is very loud indoors.  Outdoors it won't carry far in a noisy environment.
+* Playing an Advert when an advert is already running seems to either clear the underlying track or cause longer delays on the Busy signal (I haven't investigated this).
+
+ 
+   
+Programming Guide
+==================
+The main 3 macros PlayMP3, PlayNow and PlayAdvert include a Title parameter, which allows short descriptive text to be passed.  The Title can greatly improve readability of your program, and it consumes no program memory if debugging remains commented out, e.g. if track 29 is configured to say "thousand" the program statement to use it is PlayMP3(29,"thousand").  The Title output can be helpful when debugging is enabled, but program memory will diminish very quickly, so the text should be short.
+
+This module requires the following pause statements to be defined Pause3mS, Pause30mS, Pause100mS, Pause300mS and Pause1S.  These can be defined in your main program with pre-processor directives like '#define Pause3mS pause 3'; or instead, you can '#include "Timing.basinc"' before this file, which will provide these statements and give consistent timing across different clock rates.  
+
+When changing PICAXE clock rates be sure to change the AUDIO_BAUD constant too, valid settings are T9600_8, T9600_16, T9600_32 and, if using X2 chips, T9600_64.
+
+Using phrases instead words for most tracks will greatly reduce program memory space.  It will also make speech smoother and the code more readable with fewer lines.
+
+When reading voltage levels it's tempting to use millivolts but this adds extra words like "thousand", "and" and "hundred".  If you have a variable representing millivolts, try using AudioSpeakThousandths(Val) because "12325" would be spoken as separate digits like twelve-point-three-two-five, which is quicker and seems natural with a little staccato.
+
+Your program can and probably should work asynchronously with the DF Player.  In the sample config below, you can see the DF Player Busy Pin is connected to the PICAXE B.2 input, which is symbolised by AUDIO_STATUS; and the Busy Pin idle state of 1 is symbolised by AUDIO_IDLE.  So for example, in a main program loop you can test to see if a music track is finished and play the next track with "if AUDIO_STATUS = AUDIO_IDLE then {.....} endif".  Taking this a stage further you could probably trigger interrupts on the pin represented by AUDIO_STATUS but take care of time delays in this going active and inactive.
+
+You should be careful that your program isn't blocked unintentionally by the PlayMP3(Track, Title) macro.  This macro waits for any existing track to complete before it sends its track request to the DF Player.  PlayNow is an alternative macro, but this simply stops anything being played and plays what it wants.
+
+
+My preferred program structure is:
+
+    1) Program Notes
+    2) Compiler Directives
+    3) Resources
+        3a) Pins
+        3b) Variables
+        3c) Constants
+        3d) Modules
+    4) Initialisation
+    5) Main:
+    6) Interrupt:
+    7) Subroutines
+
+
+Based on the program structure above, here is an example configuration for this module:
+
+#Region "Resources"
+'Pins
+    symbol AUDIO_TX = B.0               '@DF_Player_Mini.basinc: PICAXE Serial Tx to DF Player via 1K resistor.
+    symbol AUDIO_STATUS = pinB.2        '@DF_Player_Mini.basinc: Busy indication from DF Player is active low after about 230mS.
+
+'Variables
+    '@DF_Player_Mini.basinc Variables
+    symbol _Audio_Digit = b43           'Assign symbol to any spare Byte.
+    symbol _Audio_Integer = w22         'Assign symbol to any spare Word.
+    symbol _Audio_Fraction = w23        'Assign symbol to any spare Word.
+    symbol _Audio_Track = b48           'Assign symbol to any spare Byte.
+    symbol _Audio_Byte = b49            'Assign symbol to any spare Byte.
+    
+'Constants
+    '@DF_Player_Mini.basinc Constants
+    symbol AUDIO_VOLUME = 15            '0 to 31(Maximum).  You can assign this symbol to a variable if you don't want fixed volume.
+    symbol AUDIO_BAUD = T9600_8         'Tx logic is idle high (T) and 9600 bps, adjust the last character(s) to your clock speed in MHz.
+    symbol AUDIO_ACTIVE = 0             'The AUDIO_STATUS pin is active low, indicating audio playing.
+    symbol AUDIO_IDLE = 1               'AUDIO_STATUS high indicates the module is idle OR seeking a track to play on the disk.
+    
+'Modules
+    #include "Timing.basinc"
+    #include "DF_Player_Mini.basinc"
+    
+'Initialisation
+    gosub AudioInitialise               'Prepares PICAXE output pin, Resets the DF Player, selects SD input and sets volume.
+
+#Endregion
+
+#EndREM
+#EndRegion
+
+#Region "Program"
+
+goto DF_Player_End                                      'This module only contains macro and subroutine definitions.
+
+'Debugging
+'=========
+'Caution, debugging provides some nice info but causes serial transmission delays and consumes program space.
+'#define DebugAudio_On                                  'Comment out this line to turn debugging off.                                             
+#ifdef DebugAudio_On
+    #define DebugAudio sertxd
+#else
+    #define DebugAudio 'Do nothing
+#endif
+
+
+'Audio Macros
+'============
+    #macro PlayMP3(Track, Title)
+        'DebugAudio("@PlayMP3 ",#Track,Title,cr,lf)     'Enabling this line consumes program space extremely quickly with track title info.
+        _Audio_Track = Track
+        gosub AudioWaitForIdle
+        gosub _AudioPlayMP3
+    #endmacro
+    #macro PlayNow(Track, Title)
+        'DebugAudio("@PlayNow ",#Track,Title,cr,lf)     'Enabling this line consumes program space extremely quickly with track title info.
+        _Audio_Track = Track
+        gosub AudioClear
+        gosub _AudioPlayMP3
+    #endmacro
+    #macro PlayAdvert(Track, Title)
+        'DebugAudio("@PlayAdvert ",#Track,Title,cr,lf)  'Enabling this line consumes program space extremely quickly with track title info.
+        _Audio_Track = Track
+        gosub _AudioPlayAdvert
+    #endmacro
+    #macro AudioSpeakNumber(Val)
+        _Audio_Integer = Val
+        gosub _AudioSpeakInteger
+    #endmacro
+    #macro AudioSpeakTenths(Val)
+        _Audio_Integer = Val / 10
+        _Audio_Fraction = Val % 10
+        gosub _AudioSpeakInteger
+        PlayMP3(031,"point")
+        _Audio_Byte = 1
+        gosub _AudioSpeakDecimalPlaces
+    #endmacro
+    #macro AudioSpeakHundreths(Val)
+        _Audio_Integer = Val / 100
+        _Audio_Fraction = Val % 100
+        gosub _AudioSpeakInteger
+        PlayMP3(031,"point")
+        _Audio_Byte = 2
+        gosub _AudioSpeakDecimalPlaces
+    #endmacro
+    #macro AudioSpeakThousandths(Val)
+        _Audio_Integer = Val / 1000
+        _Audio_Fraction = Val % 1000
+        gosub _AudioSpeakInteger
+        PlayMP3(031,"point")
+        _Audio_Byte = 3
+        gosub _AudioSpeakDecimalPlaces
+    #endmacro
+    
+
+'Audio Subroutines
+'=================
+AudioInitialise:
+    DebugAudio("@AudioInitialise",cr,lf)
+    high AUDIO_TX                                       'Output pins are default low, so this prepares communication.
+    Pause1S                                             'Some types of DF Player need more than 100mS boot time.
+    
+    serOut AUDIO_TX, AUDIO_BAUD, _
+        ($7E, $FF, $06, $0C, $0, $0, $0, $EF)           'Command $0C (Reset)
+    Pause1S                                             'AUDIO_ACTIVE after 220mS and module messages going to sleep at 900mS.
+    
+    serOut AUDIO_TX, AUDIO_BAUD, _
+        ($7E, $FF, $06, $09, $0, $0, $2, $EF)           'Command $09 (Playback source), Arg $0002 (SD card)
+    Pause1S                                             'Pause to read SD card
+        
+    serOut AUDIO_TX, AUDIO_BAUD, _
+        ($7E, $FF, $06, $06, $0, $0, AUDIO_VOLUME, $EF) 'Command $06 (Set Audio volume)
+    Pause100mS                                          'Pause to ensure volume set
+    return
+
+AudioWaitForIdle:
+    DebugAudio("@AudioWaitForIdle",cr,lf)
+    do while AUDIO_STATUS = AUDIO_ACTIVE
+        Pause3mS
+    loop
+    return
+
+AudioClear:
+    DebugAudio("@AudioClear",cr,lf)
+    serOut AUDIO_TX, AUDIO_BAUD, _
+        ($7E, $FF, $06, $15, $0, $0, $0, $EF)           'Command $15.  Stop Advert(Crash), if playing.
+    Pause100mS                                          '75mS required for settling time.
+                                                        'NB: Contrary to manual, command $16 did not stop everything.
+    serOut AUDIO_TX, AUDIO_BAUD, _
+        ($7E, $FF, $06, $16, $0, $0, $0, $EF)           'Command $16.  Stop main track, if playing
+    Pause30mS                                           '14mS required before requesting the new track
+    return
+    
+_AudioPlayMP3:
+    DebugAudio("@_AudioPlayMP3 - ",#_Audio_Track,cr,lf)
+    serOut AUDIO_TX, AUDIO_BAUD, _
+        ($7E, $FF, $06, $12, $0, $0, _Audio_Track, $EF) 'Command $12.  Play from MP3 folder.
+    do while AUDIO_STATUS = AUDIO_IDLE                  'Ensures AUDIO_STATUS caught up (seen delays up to 290mS)
+        Pause3mS
+    loop
+    return
+    
+_AudioPlayAdvert:
+    'Known issue:
+    '   - This applies to the PICAXE SPE035 hardware, but not the DF Player Mini, VO5.1, HW-247A.
+    '   - When an advert tries to play over the top of another advert the underlying MP3 track is lost. 
+    '   - Finally, a bug I liked because it kept my Buzz Wire Game more active and interesting by shifting to the next track :)  
+    DebugAudio("@_AudioPlayAdvert - ",#_Audio_Track,cr,lf)
+    serOut AUDIO_TX, AUDIO_BAUD, _
+        ($7E, $FF, $06, $13, $0, $0, _Audio_Track, $EF) 'Command $13.  Play ADVERT (suspends current track while playing).
+    Pause300mS                                          '170mS required because AUDIO_STATUS goes Idle before main track resumed.
+    return
+
+_AudioSpeakInteger:
+    DebugAudio("@_AudioSpeakInteger - ",#_Audio_Integer,cr,lf)
+    'Thousands
+    _Audio_Byte = _Audio_Integer / 1000
+    if _Audio_Byte > 0 then
+        gosub _AudioSpeak1to99
+        PlayMP3(29,"thousand")
+    endif
+
+    'Hundreds
+    _Audio_Digit = _Audio_Integer dig 2
+    if _Audio_Digit > 0 then 
+        PlayMP3(_Audio_Digit,"aDigit[0to9]")
+        PlayMP3(28,"hundred")
+    endif
+
+    'Units
+    _Audio_Byte = _Audio_Integer % 100
+    if _Audio_Integer > 99 AND _Audio_Byte > 0 then
+        PlayMP3(0030,"and")
+    endif
+    gosub _AudioSpeak1to99
+    if _Audio_Integer = 0 then
+        PlayMP3(0,"zero")
+    endif
+
+    return
+
+_AudioSpeakDecimalPlaces:
+    DebugAudio("@_AudioSpeakDecimalPlaces - ",#_Audio_Byte," places for ",#_Audio_Fraction,cr,lf) 
+    dec _Audio_Byte
+    for _Audio_Digit = _Audio_Byte to 0 step -1
+        _Audio_Track = _Audio_Fraction dig _Audio_Digit
+        PlayMP3(_Audio_Track,"aDigit[0to9]")
+    next _Audio_Digit    
+    return
+
+_AudioSpeak1to99:
+    'Speak numbers 1 to 99 (zero is not sounded here).  NB: "dig" operator needs to be the first or only argument.
+    _Audio_Digit = _Audio_Byte dig 1
+    if _Audio_Digit >= 2 then 
+        _Audio_Track = _Audio_Digit + 18
+        PlayMP3(_Audio_Track,"aDecade[20to90]")         'Twenty=20, Thirty=21 etc
+        _Audio_Track = _Audio_Byte dig 0
+        if _Audio_Track > 0 then
+            PlayMP3(_Audio_Track,"[0to9]")
+        endif
+    else
+        if _Audio_Digit = 1 then
+            _Audio_Track = _Audio_Byte dig 0 + 10     
+            PlayMP3(_Audio_Track,"[10to19]")
+        else
+            _Audio_Track = _Audio_Byte dig 0
+            if _Audio_Track <> 0 then
+                PlayMP3(_Audio_Track,"[0to9]")
+            endif
+        endif        
+    endif
+    return
+
+DF_Player_End:
+#Endregion
+
+#Region "License" 
+#Rem
+
+MIT License
+
+Copyright (c) 2024 Alan Hunt
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+#EndRem
+#EndRegion
+
