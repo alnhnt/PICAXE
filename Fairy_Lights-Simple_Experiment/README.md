@@ -1,6 +1,6 @@
 # Fairy Lights - Simple Experiment
 
-This experiment records some findings about PICAXE output resistance and voltage drop with load.  It exists because of the fun in creating AC for LED strings without using the usual series resistor.  This goes against best practise of using a resistor or current limiter with LEDs and, as a word of caution, you have to prove sufficient LED forward voltage first!
+This experiment records some findings about PICAXE output resistance and voltage drop with load.  It exists because of the fun in creating AC for LED strings without the usual series resistor.  This goes against best practise of using a resistor or current limiter with LEDs and, as a word of caution, you have to prove sufficient LED forward voltage first!
 
 In the experiment the PICAXE 08M2 managed to raise the current from 13mA to 20mA for a set of fairly dim ex-solar power lights.  The eventual project used the 08M2 to drive a L9110 H-Bridge with higher load though.  At 8MHz the 08M2 toggled 2 outputs at 114Hz and provided 140us deadbands to prevent shoot-through current on the H-Bridge.
 
