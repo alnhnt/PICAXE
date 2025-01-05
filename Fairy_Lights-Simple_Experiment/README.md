@@ -7,7 +7,7 @@ In the experiment the PICAXE 08M2 managed to raise the current from 13mA to 20mA
 For future reference, the Electronics Schematic provides a record of the circuit, the PICAXE output voltages and internal resistances at different load currents, plus some thoughts on the effects of LED failures.
 
 Full details are contained in the:
-- [Electronics_Schematic](./Electronics_Schematic/Fairy_Lights-Simple_Experiment.kicad_pro) produced in KiCad v8.0.6.
+- [Electronics_Schematic](./Electronics_Schematic) produced in KiCad v8.0.6.
 - [Program](./Software/Fairy_Lights-Simple_Experiment.bas) written in PICAXE BASIC with the PICAXE Editor v6.2.0.0.
 
 ## License
