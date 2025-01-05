@@ -8,7 +8,7 @@ For future reference, the Electronics Schematic provides a record of the circuit
 
 Full details are contained in the:
 - [Electronics_Schematic](./Electronics_Schematic) produced in KiCad v8.0.6.
-- [Program](./Software/Fairy_Lights-Simple_Experiment.bas) written in PICAXE BASIC with the PICAXE Editor v6.2.0.0.
+- [Software](./Software/Fairy_Lights-Simple_Experiment.bas) written in PICAXE BASIC with the PICAXE Editor v6.2.0.0.
 
 ## License
 Contents of this project are covered by the [MIT](https://choosealicense.com/licenses/mit/) License.  
