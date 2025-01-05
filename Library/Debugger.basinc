@@ -3,26 +3,35 @@
 
             File: "Debugger.basinc"
          License: MIT (See end of file) 
-  Change History: 2024/10/1 by Alan Hunt - Improved help text.
-                  2024/9/30 by Alan Hunt - 1st issue.
+  Change History: 
+        2024/12/29 by Alan Hunt - Added debugHex(val) and a splash display of program information at startup. 
+            For ergonomics, renamed "DebugOut" to "debugger", "DebugBinary" to "debugBin" and removed "DebugLine".
+        2024/10/1 by Alan Hunt - Improved help text.
+        2024/9/30 by Alan Hunt - 1st issue.
 
 
 Description
 ===========
 This simple module provides:
 
-    *  A debugging feature that can easily be turned on or off using a single compiler directive.  
+    *  A debugging feature using sertxd that can easily be turned on or off using a single compiler directive.  
+    *  The option to display the program name, programming time and reference information at boot-up.
+    *  An efficient and visually easy way to represent a byte (or port) as individual bit values, spaced as 2 nibbles.
+    *  The ability to display byte information as hex.
     *  Improved program readability in addition to debugging.
-    *  An efficient and visually easy way to represent a byte (or port) as individual bit values.
     *  The option of having 2 debug levels.
 
-It can be useful to easily turn off debugging because this avoids serial transmissions delays that could affect program performance.  These transmissions also temporarily disable software interrupts too.  
+A compiler directive is used to easily turn off debugging, which avoids serial transmissions delays that could affect program performance and temporarily disable software interrupts too.  
 
-The statements in this module start with "Debug", which I find it easier on the eye than sertxd.  In fact the sertxd command is being used, so any information about program execution points or particular program state can be sent.  Hopefully, you will find a key benefit of using brief text is that the debug messages help static reviews of the program too, such as ``DebugLine("Not started after 10S")``.  
+A bootup splash screen is helpful to understand what program is loaded, when it was loaded and where extra information can be found. The splash screen can be disabled with another compiler directive and extra information can be specified in a compiler #define statement too. 
 
-Taking this further, it's nice to see macros with text explanations highlighted by the PICAXE Editor, rather than over use of comments in your program.  For example, it would be awful to remember or lookup the contents of audio track 112, but this line makes it very clear ``PlayNow(0112, "The cell voltages are")``.  In the PlayNow macro you can use the text with debugging statements and comment out these lines when things are working, or turn all the debugging off in one go.  Whatever you choose the PICAXE Editor keeps on displaying the bright red text as part of your program.  
+The debugBin(val) statement can be used when a byte is holding important information in individual bits.  For readability the byte is written as two nibbles separated by a space.  For example, to view logic level inputs on port C it's just ``debugBin(pinsC)``, which would show "0010 0001" if C.0 and C.5 were high.
 
-The DebugBinary(val) statement can be used when a byte is holding important information in individual bits.  For readability the byte is written as two nibbles separated by a space.  For example, to view logic level inputs on port C it's just ``DebugBinary(pinsC)``, which would show "0010 0001" if C.0 and C.5 were high.
+The debugHex(val) statement can be used to represent a byte as hexadecimal text, e.g. debugHex(36) displays "24".  As you wish you can precede the statement with ?debugger(?$?)?, or ?debugger(?0x?)?, proceed it with ?debugger(?h?)?.
+
+The statements in this module start with "debug", which I find it easier on the eye than sertxd.  In fact the sertxd command is being used, so any information about program execution points or particular program state can be sent.  Hopefully, you will find a key benefit of using brief text is that the debug messages help static reviews of the program too, such as ``debugger("Not started after 10S",cr,lf)``.  
+
+Taking this further, it's nice to see macros with text explanations highlighted by the PICAXE Editor, rather than over use of comments in your program.  For example, it would be awful to remember or lookup the contents of audio track 112, but this line makes it very clear ``PlayNow(0112, "The cell voltages are")``.  In the PlayNow macro you can use the text with debugging statements and later comment out these lines when things are working, or turn all debugging on or off in one go.  Whatever you choose the PICAXE Editor keeps on displaying the bright red text as part of your program.
 
 The Debugger's sertxd output is the usual way to perform PICAXE debugging because it sends text or data to the PICAXE Editor Terminal window with the same connection as the programming interface.  Most of the functionality in this module is achieved by creating a unique alias for sertxd.  When debugging is turned off this alias becomes comment lines instead off sertxd.  Any sertxd commands in your program remain intact, so these can provide always-on basic information in addition to turning on or off detailed debugging.  However, in normal situations, just using the Debugger statements is recommended.
 
@@ -33,21 +42,22 @@ Programming Guide
 ==================
 The following statements are defined in this module:
 
-    DebugOut                This is an alias for sertxd, so use in the same way, e.g. ``DebugOut("Player ",#player," Wins",cr,lf)``.
-    DebugBinary(val)        This is a 2 line macro that displays a byte value as two nibbles, e.g. ``DebugBinary(18)`` displays "0001 0010".
-                            NB: It's very useful to display the status of 8 bit input/output ports, e.g. ``DebugBinary(pinsC)``.
-    DebugLine(msg)          This is a 1 line macro that takes text and adds a CR and LF to it, e.g. ``DebugLine("@Initialising")``.
+    debugger                This is an alias for sertxd, so use in the same way, e.g. ``debugger("Player ",#player," Wins",cr,lf)``.
+    debugBin(val)           This is a 2 line macro that displays a byte value as two nibbles, e.g. ``debugBin(18)`` displays "0001 0010".
+                            NB: It's very useful to display the status of 8 bit input/output ports, e.g. ``debugBin(pinsC)``.
+    debugHex(val)           This is a macro that displays a byte value as hex, e.g. debugHex(36) displays "$24".
+
    
 
 This module uses just a few lines of pre-processor directives, with no program memory space unless the debug statements are used and debugging is turned on.
 
-The debugging information can be descriptive text, such as status or program position, and/or variables and constants.  For example, ``Debugger("@Interrupt")`` would indicate the passing of a significant program execution point.  To output a value as text use the "#" sign, such as ``Debugger("Battery = ",#BattVoltage," mV",cr,lf)``. The cr and lf provide a carriage return and line feed to move the cursor down to the start of the next line.
+The debugging information can be descriptive text, such as status or program position, and/or variables and constants.  For example, ``debugger("@Interrupt")`` would indicate the passing of a significant program execution point.  To output a value as text use the "#" sign, such as ``debugger("Battery = ",#BattVoltage," mV",cr,lf)``. The cr and lf provide a carriage return and line feed to move the cursor down to the start of the next line.
 
 The Debugger statements are turned off in your main program with the compiler directive ``#define no_debugger`` and turned on by just commenting out that line.  The compiler directive must be defined before the include statement for this file.
 
-Variable b0 is used by this module to provide the byte to binary string conversion.  To remind yourself, it's recommended that you add the line ``symbol _Debugger = b0`` in your program.
+Variable b0 is used by this module to provide the byte to binary string conversion.  To remind yourself, it's recommended that you add the line ``'symbol _Debugger = b0`` in your program.
 
-The PICAXE Editor will take some time to open its Terminal window for the debug output, so a two second pause is recommended in your program initialisation before its first use.
+The PICAXE Editor will take some time to open its Terminal window for the debug output, so the debugger splash screen adds a 2 second pause before it's displayed at startup.
 
 The problem with keeping both sertxd commands and debug statements in your program is that debugging can't be fully turned off.  The recommended approach is to rely only on the Debugger statements, just create them and then comment out one's that were used for detailed debugging.
 
@@ -77,30 +87,53 @@ Sample Configuration
     #no_table
     #no_debug
     #terminal 9600
-    '#define no_debugger                     'Comment out this line to enable Debugging.
+
+    '@Debugger.basinc
+    'The Debugger config must not use an equals sign, or add comments or spaces to the end of these lines:
+    '#define no_debugger
+    '#define no_debugger_splash
+    #define Debugger_SplashExtra "https://github.com/alnhnt/PICAXE"
+
 
 'Variables
-    symbol _Debugger = b0                   '"Debugger.basinc" module is limited to using b0 for Byte to ASCII bitstream conversion.
+    'symbol _Debugger = b0                   '@Debugger.basinc: b0 must be used for ASCII representation of binary and hex.
 
 'Modules
     #include "Debugger.basinc"
-
-'Initialisation
-    pause 2000                              'Wait for the PICAXE Editor Terminal window to come online.
 
 #EndRem
 #EndRegion
 
 #Region "Program"
+
+    symbol _Debugger = b0                   '@Debugger.basinc: b0 must be used for ASCII representation of binary and hex. 
+    
 'If ``#define no_debugger`` is present the pre-processor comments out the Debugger statements.
 #ifndef no_debugger
-    #define DebugOut sertxd
-    #define DebugBinary(val) b0=val : sertxd(#bit7,#bit6,#bit5,#bit4," ",#bit3,#bit2,#bit1,#bit0)
-    #define DebugLine(msg) sertxd(msg,cr,lf)
+    #define debugger sertxd
+    #define debugBin(val) b0=val : sertxd(#bit7,#bit6,#bit5,#bit4," ",#bit3,#bit2,#bit1,#bit0)
+    #define debugHex(val) b0=val/16 : b0=b0/10*7+b0+"0" : sertxd(b0) : b0=val AND $0F : b0=b0/10*7+b0+"0" : sertxd(b0)
 #else
-    #define DebugOut                        'Replaced with comment.
-    #define DebugBinary(val)                'Replaced with comment.
-    #define DebugLine(msg)                  'Replaced with comment.
+    #define debugger                        'Replaced with comment.
+    #define debugBin(val)                   'Replaced with comment.
+    #define debugHex(val)                   'Replaced with comment.
+
+#endif
+
+'If ``#define no_debugger_splash`` is present the programming info will not be shown at boot-up.
+#ifndef no_debugger_splash
+    'PICAXE Editor Terminal may need a 2 second pause to come online.
+    #ifdef Pause2s
+        Pause2s                             'Ideally Timing.basinc is loaded before this module to provide this statement.
+    #else
+        pause 2000                          'May need to edit value, if using non-stand clock rate without Timing.basinc.
+    #endif
+    'Send information about program to the PICAXE Editor Terminal 
+    sertxd(ppp_filename,cr,lf)              'Displays the programming filename.
+    sertxd(ppp_datetime,cr,lf)              'Displays the programming date and time.
+    #ifdef Debugger_SplashExtra
+        sertxd(Debugger_SplashExtra,cr,lf)  'Intended to display further information, such as a URI link.
+    #endif
 #endif
 
 #Endregion
@@ -132,4 +165,4 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 #EndRem
-#EndRegion
+#EndRegion?
