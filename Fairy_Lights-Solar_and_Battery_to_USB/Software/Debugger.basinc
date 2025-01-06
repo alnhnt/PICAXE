@@ -1,0 +1,168 @@
+#Region "Read Me"
+#REM
+
+            File: "Debugger.basinc"
+         License: MIT (See end of file) 
+  Change History: 
+        2024/12/29 by Alan Hunt - Added debugHex(val) and a splash display of program information at startup. 
+            For ergonomics, renamed "DebugOut" to "debugger", "DebugBinary" to "debugBin" and removed "DebugLine".
+        2024/10/1 by Alan Hunt - Improved help text.
+        2024/9/30 by Alan Hunt - 1st issue.
+
+
+Description
+===========
+This simple module provides:
+
+    *  A debugging feature using sertxd that can easily be turned on or off using a single compiler directive.  
+    *  The option to display the program name, programming time and reference information at boot-up.
+    *  An efficient and visually easy way to represent a byte (or port) as individual bit values, spaced as 2 nibbles.
+    *  The ability to display byte information as hex.
+    *  Improved program readability in addition to debugging.
+    *  The option of having 2 debug levels.
+
+A compiler directive is used to easily turn off debugging, which avoids serial transmissions delays that could affect program performance and temporarily disable software interrupts too.  
+
+A bootup splash screen is helpful to understand what program is loaded, when it was loaded and where extra information can be found. The splash screen can be disabled with another compiler directive and extra information can be specified in a compiler #define statement too. 
+
+The debugBin(val) statement can be used when a byte is holding important information in individual bits.  For readability the byte is written as two nibbles separated by a space.  For example, to view logic level inputs on port C it's just ``debugBin(pinsC)``, which would show "0010 0001" if C.0 and C.5 were high.
+
+The debugHex(val) statement can be used to represent a byte as hexadecimal text, e.g. debugHex(36) displays "24".  As you wish you can precede the statement with ?debugger(?$?)?, or ?debugger(?0x?)?, proceed it with ?debugger(?h?)?.
+
+The statements in this module start with "debug", which I find it easier on the eye than sertxd.  In fact the sertxd command is being used, so any information about program execution points or particular program state can be sent.  Hopefully, you will find a key benefit of using brief text is that the debug messages help static reviews of the program too, such as ``debugger("Not started after 10S",cr,lf)``.  
+
+Taking this further, it's nice to see macros with text explanations highlighted by the PICAXE Editor, rather than over use of comments in your program.  For example, it would be awful to remember or lookup the contents of audio track 112, but this line makes it very clear ``PlayNow(0112, "The cell voltages are")``.  In the PlayNow macro you can use the text with debugging statements and later comment out these lines when things are working, or turn all debugging on or off in one go.  Whatever you choose the PICAXE Editor keeps on displaying the bright red text as part of your program.
+
+The Debugger's sertxd output is the usual way to perform PICAXE debugging because it sends text or data to the PICAXE Editor Terminal window with the same connection as the programming interface.  Most of the functionality in this module is achieved by creating a unique alias for sertxd.  When debugging is turned off this alias becomes comment lines instead off sertxd.  Any sertxd commands in your program remain intact, so these can provide always-on basic information in addition to turning on or off detailed debugging.  However, in normal situations, just using the Debugger statements is recommended.
+
+In comparison to the Debugger/sertxd output, the PICAXE debug command only performs a large snapshot of variable values.  For an X2 chip with default clock rate the debugger/sertxd output will send 10 bytes in 15mS, compared to the debug output which takes 180mS, without any indication of the execution points.  For M2 chips at 4800bps the times will double.  The PICAXE Editor will also try to disable its Terminal when debug is active, rendering sertxd useless.  Debugging output would then need to be directed to another pin using serout/hserout and to a different com port and Terminal on the PC.
+
+
+Programming Guide
+==================
+The following statements are defined in this module:
+
+    debugger                This is an alias for sertxd, so use in the same way, e.g. ``debugger("Player ",#player," Wins",cr,lf)``.
+    debugBin(val)           This is a 2 line macro that displays a byte value as two nibbles, e.g. ``debugBin(18)`` displays "0001 0010".
+                            NB: It's very useful to display the status of 8 bit input/output ports, e.g. ``debugBin(pinsC)``.
+    debugHex(val)           This is a macro that displays a byte value as hex, e.g. debugHex(36) displays "$24".
+
+   
+
+This module uses just a few lines of pre-processor directives, with no program memory space unless the debug statements are used and debugging is turned on.
+
+The debugging information can be descriptive text, such as status or program position, and/or variables and constants.  For example, ``debugger("@Interrupt")`` would indicate the passing of a significant program execution point.  To output a value as text use the "#" sign, such as ``debugger("Battery = ",#BattVoltage," mV",cr,lf)``. The cr and lf provide a carriage return and line feed to move the cursor down to the start of the next line.
+
+The Debugger statements are turned off in your main program with the compiler directive ``#define no_debugger`` and turned on by just commenting out that line.  The compiler directive must be defined before the include statement for this file.
+
+Variable b0 is used by this module to provide the byte to binary string conversion.  To remind yourself, it's recommended that you add the line ``'symbol _Debugger = b0`` in your program.
+
+The PICAXE Editor will take some time to open its Terminal window for the debug output, so the debugger splash screen adds a 2 second pause before it's displayed at startup.
+
+The problem with keeping both sertxd commands and debug statements in your program is that debugging can't be fully turned off.  The recommended approach is to rely only on the Debugger statements, just create them and then comment out one's that were used for detailed debugging.
+
+Debugging quickly consumes program memory space, so text should be kept as short as possible and debugging that is no longer necessary should be commented out.
+
+
+Below is a sample configuration, assuming the following program structure:
+
+    1) Program Notes
+    2) Compiler Directives
+    3) Resources
+        3a) Pins
+        3b) Variables
+        3c) Constants
+        3d) Modules
+    4) Initialisation
+    5) Main:
+    6) Interrupt:
+    7) Subroutines
+
+
+Sample Configuration
+====================
+'Compiler Directives
+    #picaxe 20X2 
+    #no_data
+    #no_table
+    #no_debug
+    #terminal 9600
+
+    '@Debugger.basinc
+    'The Debugger config must not use an equals sign, or add comments or spaces to the end of these lines:
+    '#define no_debugger
+    '#define no_debugger_splash
+    #define Debugger_SplashExtra "https://github.com/alnhnt/PICAXE"
+
+
+'Variables
+    'symbol _Debugger = b0                   '@Debugger.basinc: b0 must be used for ASCII representation of binary and hex.
+
+'Modules
+    #include "Debugger.basinc"
+
+#EndRem
+#EndRegion
+
+#Region "Program"
+
+    symbol _Debugger = b0                   '@Debugger.basinc: b0 must be used for ASCII representation of binary and hex. 
+    
+'If ``#define no_debugger`` is present the pre-processor comments out the Debugger statements.
+#ifndef no_debugger
+    #define debugger sertxd
+    #define debugBin(val) b0=val : sertxd(#bit7,#bit6,#bit5,#bit4," ",#bit3,#bit2,#bit1,#bit0)
+    #define debugHex(val) b0=val/16 : b0=b0/10*7+b0+"0" : sertxd(b0) : b0=val AND $0F : b0=b0/10*7+b0+"0" : sertxd(b0)
+#else
+    #define debugger                        'Replaced with comment.
+    #define debugBin(val)                   'Replaced with comment.
+    #define debugHex(val)                   'Replaced with comment.
+
+#endif
+
+'If ``#define no_debugger_splash`` is present the programming info will not be shown at boot-up.
+#ifndef no_debugger_splash
+    'PICAXE Editor Terminal may need a 2 second pause to come online.
+    #ifdef Pause2s
+        Pause2s                             'Ideally Timing.basinc is loaded before this module to provide this statement.
+    #else
+        pause 2000                          'May need to edit value, if using non-stand clock rate without Timing.basinc.
+    #endif
+    'Send information about program to the PICAXE Editor Terminal 
+    sertxd(ppp_filename,cr,lf)              'Displays the programming filename.
+    sertxd(ppp_datetime,cr,lf)              'Displays the programming date and time.
+    #ifdef Debugger_SplashExtra
+        sertxd(Debugger_SplashExtra,cr,lf)  'Intended to display further information, such as a URI link.
+    #endif
+#endif
+
+#Endregion
+
+#Region "License" 
+#Rem
+License
+=======
+MIT License
+
+Copyright (c) 2024 Alan Hunt
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+#EndRem
+#EndRegion?
