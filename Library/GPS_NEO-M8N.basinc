@@ -3,25 +3,44 @@
 #REM
             File: "GPS_NEO-M8N.basinc"
          License: MIT (See end of file) 
-  Change History: 2025/1/5 by Alan Hunt - 1st issue.
+  Change History: 2025/1/13 by Alan Hunt - 1st issue.
 
 
-Notes
-=====
-This module supports the NEO-M8N board named gy-gpsv3-neo it has 5V to 3.3V supply but IO is 3.3V so need level converter. A simple approach is 3k3 ohms from PICAXE, tapped to module with 5k6 ohms to ground, which gives 3.14V. Baud rate is 9600. Antenna connector is IPEX MHF 1.uFL male.
+Description
+===========
+This module is used to set the configuration of a u-blox NEO-M8N GNSS board and to receive its time data, it could easily be expanded to receive position data too. The serial connection uses a PICAXE high speed serial port, receive data is buffered to Scratch Pad Memory, which limits the usage of this module to X2 type chips.
 
-Conventionally NMEA data is output by default by the NEO-M8N and is used by many with all types of GPS boards. This module stops the streaming of this data, so the serial connection is quiet. The module uses the UBX protocol to request specific data and receive the response, this format is binary rather than ASCII, which I found easier to process. The www.u-blox.com "u-blox M8 Receiver Description Including Protocol Specification" is your go to document, with the UBX-NAV-PVT providing all GPS data and UBX-NAV-TIMEUTC for just time.
+If "#define GPS_Debugging" is specified in your program, debugging information will be sent via sertxd and the module will stop streaming various NMEA messages and save this config. After this, the module uses u-blox's UBX protocol to request data and the response data is thoroughly checked. 
 
-To get a UBX response just poll the message with zero payload. The reply will be the expected payload plus 6 bytes, 2 for framing, 2 for message class and ID and 2 for checksum.  The u-blox u-centre software is an easy way to see the data you need to send, including the CRC checksums.
+There are various power saving modes for the GPS and example routines and packet data are shown in this module. However, all of these still consume relatively high power, so externally disabling the power source with a MOSFET is recommended, and to save program space the power saving routines GPR_Doze and GPS_Snooze are normally commented out.
 
+The following routines are provided:
 
-Limitations
------------
-This module uses the PICAXE X2 "timer" variable as timeout for the hserin port, which is configured for scratchpad buffering. The timer is expected to increment in tenths of second and it will be reset to 0 after a packet request is issued to the GPS.
+gosub GPS_Initialise
+--------------------
+This runs hsersetup to setup the PICAXE high speed serial port, stops the streaming of NMEA messages and saves this config. The routine contains a commented out UBX message that allows you to revert the NEO-M8N to its default configuration if needed.
 
-The GPS module is a heavy power consumer.  The power management settings seemed to have little affect in my case, with 
-UBX-CFG-PMS set as 1Hz or 12 hours, the power only dropped from 50mA to 47mA.  With UBX-RXM-PMREQ the 50mA dropped to 15mA, but this would still be high for battery use. In my projects I aim to control the GPS power supply with a MOSFET to cut the drain completely and to save some PICAXE program space, but if you want to take the soft approaches to power reduction you can remove the surrounding REM and ENDREM around the GPS_Doze and GPS_Snooze subroutines.
+gosub GPS_GetTime
+-----------------
+This primes and calls "_GPS_Receive", specifying a "UBX-NAV-TIMEUTC" message response is needed. The response is then either loaded into year, month, day, hour, minute, second and weekday variables, or an error code is returned. If "_GPS_Error" is 0 the response is OK, if it's 255 the GPS is operating but still trying to determine the time, which could take 5 minutes. Other "_GPS_Error" values are rare, but you can look up their meanings in "_GPS_Receive".
 
+gosub _GPS_Receive
+------------------
+This is an internal routine that services message requests and checks their response. If there's an error the "_GPS_Error" symbol will contain a non-zero value.
+    
+    
+NEO-M8N Notes
+=============
+This module supported the NEO-M8N board named gy-gpsv3-neo it has 5V to 3.3V supply but IO is 3.3V so it needs a level converter. A simple approach is 3k3 ohms from PICAXE, tapped to module with 5k6 ohms to ground, which gives 3.14V. Baud rate is 9600. Antenna connector is IPEX MHF 1.uFL male.
+
+Conventionally, GPS decoding often filters and decodes various streaming messages based on the NMEA protocol, which is ASCII based. Disabling these messages makes the serial connection from the NEO-M8N silent, apart from boot-up. U-Blox's own UBX protocol can then be used to request specific data and receive that response. UBX messages are binary rather than ASCII, which I found easier to process. The www.u-blox.com "u-blox M8 Receiver Description Including Protocol Specification" is your go to document, with the UBX-NAV-PVT providing all GPS data and UBX-NAV-TIMEUTC for just time.
+
+To get a UBX response just poll the message with zero payload. The reply will be the expected payload plus 6 bytes, 2 for framing, 2 for message class and ID, and 2 for checksum. The u-blox u-centre software is an easy way to see the data you need to send, including the CRC checksums.
+
+The GPS module is a heavy power consumer. The power management settings seemed to have little effect in my case, with 
+UBX-CFG-PMS set as 1Hz or 12 hours, the power only dropped from 50mA to 47mA. Disabling the receiver with UBX-RXM-PMREQ dropped the 50mA to 15mA, but this would still be high for battery use. In my projects I aim to control the GPS power supply with a MOSFET to cut the drain completely and to save some PICAXE program space, but if you want to take the soft approaches to power reduction you can remove the surrounding REM and ENDREM around the GPS_Doze and GPS_Snooze subroutines.
+
+If the board has been powered off, then dependent on signal quality, it may take up to 5 minutes to gain time information.
 
 UBX Message Example
 -------------------
@@ -50,6 +69,38 @@ Byte        Hex Values
 Get UTC time (UBX-NAV-TIMEUTC) = B5 62 01 21 00 00 22 67
 
 Another useful sentence is to Save Config (UBX-CFG-CFG) = $B5,$62,$06,$09,$0D,$00,$00,$00,$00,$00,$FF,$FF,$00,$00,$00,$00,$00,$00,$17,$31,$BF
+
+
+Programming Guide
+=================
+The PICAXE X2 "timer" variable is used as a timeout for the hserin port. The timer is expected to increment in tenths of second and it will be reset to 0 after a packet request is issued to the GPS.
+
+Your program must associate byte variables to these symbols: year, month, day, hours, minutes, seconds, weekday. The data will be binary values, not ASCII encoded text, which can be easier to alter or to send to a RTC.
+
+Four symbols named _GPS_ChecksumA, _GPS_ChecksumB, _GPS_Length and _GPS_Error also need assigning to byte variables.
+
+8 bytes of bptr addressed memory is required to check the GPS message responses, the start location needs to be specified in a symbol called "GPS_Variables". 
+
+Use "#define GPS_Debugging" at least once to disable NMEA messages and save that config change.
+
+To obtain a time reading use "gosub GPS_Initialise" once in your program, then call "gosub GPS_GetTime" repeatedly until "_GPS_Error = 0".
+
+
+Sample Configuration
+====================
+
+'@GPS_NEO-M8N.basinc Variables    
+    symbol _GPS_ChecksumA = b17             'Assign symbol to any byte.
+    symbol _GPS_ChecksumB = b18             'Assign symbol to any byte.
+    symbol _GPS_Length = b19                'Assign symbol to any byte.
+    symbol _GPS_Error = b20                 'Assign symbol to any byte.
+
+'@GPS_NEO-M8N.basinc Constants
+    symbol GPS_Variables = 113              '"GPS_NEO-M8N.basinc" requires 8 bptr variables to check packet(sentence) data.
+
+'Modules
+    #include "GPS_NEO-M8N.basinc"
+
 
 #EndREM
 #EndRegion
@@ -135,13 +186,13 @@ GPS_Snooze:
 GPS_Doze:
     GPS_Debug("@GPS_Doze",cr,lf)
     
-    'UBX-CFG-PMS as 1 Hz agressive = B5 62 06 86 08 00 00 03 00 00 00 00 00 00 97 6F
-    '   This only reduced NEO-M8N 5V supply current from 50mA to 47mA in my case, so "gosub GPS_PowerDown" is preferred.
+    'UBX-CFG-PMS as 1 Hz aggressive = B5 62 06 86 08 00 00 03 00 00 00 00 00 00 97 6F
+    'In my case the NEO-M8N 5V supply current went from 50mA to 47mA, so externally powering down the GPS is preferred.
     'hserout 0,(_
     '    $B5,$62,$06,$86,$08,$00,_
     '    $00,$03,$00,$00,$00,$00,$00,$00,_
     '    $97,$6F)
-    'GPS_Debug(" - 1 Hz agressive",cr,lf)
+    'GPS_Debug(" - 1 Hz aggressive",cr,lf)
     'return    
     
     'UBX-CFG-PMS as 12hr interval with 300s on = B5 62 06 86 08 00 00 02 C0 A8 2C 01 00 00 2B E3
@@ -163,7 +214,6 @@ GPS_GetTime:
     @bptrinc = $14 : @bptrinc = $00             'Frame data length (20 bytes). Decimal: 20, 0
     @bptrinc = $22 : @bptrinc = $67             'Frame checksums. Decimal: 34, 103
     
-    high InGPS_GetTime
     gosub _GPS_Receive                          'Issue the UBX request and ensure the reply is valid.
     
     if _GPS_Error = 0 then
@@ -188,16 +238,13 @@ GPS_GetTime:
     else
         GPS_Debug("No valid data",cr,lf)
     endif
-    low InGPS_GetTime
     
     return
     
 _GPS_Receive:
 'This subroutine makes a full check of the received frame/sentence. 
-'NB: This excludes status flags contained in the data.
     
     GPS_Debug("@_GPS_Receive - ")
-    high In_GPS_Receive
     'Prepare to receive data.
     ptr = 0                             'Start data storage from Scratchpad 0 (ptr)
     @ptr = 0
@@ -257,7 +304,6 @@ _GPS_Receive:
     if _GPS_Error > 0 then 
         GPS_Debug("Bad packet: hserptr=",#hserptr,"   _GPS_Error=",#_GPS_Error)
         select case _GPS_Error
-           '1=Timeout; 2=SyncChar; 3=Header; 5=ChecksumA; 6=ChecksumB.
         case 1
                GPS_Debug("(Timeout)")
         case 2
@@ -282,9 +328,8 @@ _GPS_Receive:
         GPS_Debug(cr,lf)
 #endif
     
-    hsersetup B9600_8, %00000           'Turn off background receiving of hserin.    
+    hsersetup B9600_8, %00000           'Turn off background receiving of hserin.
 
-    low In_GPS_Receive
     return
   
 GPS_End:   
@@ -295,12 +340,12 @@ GPS_End:
 
 MIT License
 
-Copyright (c) 2024 Alan Hunt
+Copyright (c) 2025 Alan Hunt
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distrOutBute, sublicense, and/or sell
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 
