@@ -1,0 +1,359 @@
+#Region "Read Me"
+#REM
+
+            File: "Timing.basinc"
+         License: MIT (See end of file) 
+  Change History: 
+        2024/12/29 by Alan Hunt - Added clock independent hsersetup definitions B9600, B19200, B38400, B76800 and B115200.
+        2024/12/09 by Alan Hunt - Added Pause2s and Pause5s. Changed references to seconds from "S" to "s".
+        2024/10/4 by Alan Hunt - Added the error handling of #terminal if it is already defined in the main program.
+        2024/10/4 by Alan Hunt - 1st issue.
+
+
+Description
+===========
+This software was originally used for a game where the clock rate hadn't been finalised and the audio interface required consistent timings to be near minimum levels.  Modifying more than a few pause commands by hand is unwieldy and error prone, particularly because arithmetic like "Pause 1 * ClockMultiplier" is not allowed with the pause commands.  Ultimately, a short list of logarithmic timings was easy to remember and they provided all the accuracy needed on most projects.  It became a bit of fun to delve deeper into PICAXE timing and record some timing on an oscilloscope and this module emerged.  This module's list of pause statements doesn't consume any extra program memory, and the module has these features: 
+
+    * A list of pause statements that provide timing delays regardless of the PICAXE clock rate: Pause1ms, Pause3ms, Pause10ms, Pause30ms, Pause100ms, Pause300ms, Pause1s, Pause2s, Pause3S, Pause5s and Pause10S.
+    * The macro ``Pause_mSec(t)`` allows you to specify specific pause times regardless PICAXE clock rate.
+    * The PICAXE clock rate is set using a kHz value: 31, 250, 500, 1000, 2000, 4000, 8000, 16000, 32000, or 64000 (Dependent on chip).
+    * The debug terminal baud rate is automatically set to the appropriate value for the PICAXE clock rate.
+    * For X2 chips, the "timer" variable is set to increment at a configured rate if ``TIMER_IN_HUNDRETHS`` is defined in your program and given a value.  This proved useful to measure lap time in a game.
+    * A reference list of actual pause timings is shown in the Programming Guide notes below, these are valid if you use this module, or just use regular pause commands and do integer math based on the ratio of actual clock rate to default clock.  From this some subjective recommendations are made for minimum clock rates with certain durations.  Just don't expect a 1mS delay to be added when you use ``pause 1`` :)
+
+
+Limitations
+===========
+
+Processing Delays
+-----------------
+There are processing delays around a pause statement, just to process each line of a program. For example, an output toggling test with ``high b.1`` immediately followed by ``low b.1`` created a 267us pulse width with a 20X2 or 419us with a 20M2 when using their default clock rates.  Please note, if you just wanted an accurate or short time pulse output then you would use the ``pulsout pinName, timeWord``, it supports 10us increments based on either an M2 or X2 running at 4MHz.
+
+Continuing with the testing and processing delays, the processing time is approximately doubled when inserting a ``pause 1 `` between the high and low sequence.  The test pulse then became 1.50ms with a 20X2 and 2.1mS with an 20M2, instead of the idealistic 1.00ms.  The 2 lines of processing delay grow significantly at low clock rates.  For an 20X2 with a 31kHz clock the ClockDivider is 256, so ``pause 1`` and ``pause 2`` should cause a 256mS and 512mS pulse, but the results were 371ms and 633ms respectively.  They were roughly 256ms apart but with an added 115ms.  Even with a minimum ``pauseus 1``, this added 54ms to the output toggling test.  Changing to an X2 running at 64MHz the ClockMultiplier is 8, so 125us and 250us expected, but 185us and 316us totals were seen, so the gap is still about right and the processing delays have come down to 60us.  
+
+So it's worth keeping in mind that: incrementing pause values gives quite accurate results; the pause command introduces a processing delay in addition to its timed delay; the processing delays are a large factor for small pause times or slow clock rates; and high clock rates will make pauses more accurate, albeit at the cost of power and heat.
+
+It would be possible to compensate for processing delays in most situations, but it should not be necessary. A pause statement may be only one of many statements each causing their own processing delay.  If more accurate delays are needed, you can take a measurement and make a delta change if the clock rate is fixed.  Just remember to check timings again if you modify any of your program between the events you're trying to pause.
+
+
+Available Clock Rates
+---------------------
+Parameters for CLOCK_SET_KHZ have chipset limitations as defined in PICAXE documentation, see Manual 2, setfreq.  Only the common internal clock rates are included in this module: K31, K250, K500, M1, M2, M4, M8, M16, M32 and M64, where K=kHz and M=MHz.
+
+
+Other Factors
+-------------
+When using clock rates below the chips default, the accuracy of integer division needs to be considered. This module compensates for most of this by scaling up to use ``pauseus``.  Short delays are realy not be possible anyway due to the processing time mentioned earlier.  Another key consideration is the granularity of the Pause_mS(t) macro at lowered clock rates.  Its simplistic implementation means the macro will only affect changes if the value of t increases by the modulus of the clock divisor amount, so if an X2 is clocked at 1MHz instead of the default 8MHz, the actual pause value increments at 8, 16, 24 etc.
+
+Unfortunately, when using a clock rate of 31kHz it's impossible to use the sertxd command with the PE (PICAXE Editor) Terminal.  The data is still being sent at 37.5bps, so it takes a very long time, but the minimum baud rate for the PE Terminal is 110 bps.
+
+
+Programming Guide & Timing Tests
+================================
+Below is a list of statements defined in this module, these can be used just like any other PICAXE command if this module is included.  The statements are equivalent to using ``pause t * ClockRatio`` when using integer maths and converting some statements to ``pauseus t * ClockRatio * 100`` to help with scaling of low clock rates.  The timings shown are based on the test described in the Processing Delays section above.  The recommended minimum clock rates are subjective, based on needs:
+
+    Pause1ms            Minimum recommended clock rate is 8MHz, the X2 default:
+                            - 20X2@8MHz(Default) ``Pause 1`` and ``Pause1ms``=1.50ms, @64MHz=1.07ms.
+                            - 20M2@4MHz(Default)=2.11ms, @8MHz=1.55ms, @32MHz=1.15ms
+    Pause3ms            Minimum recommended clock rate is 4MHz, the M2 default:
+                            - 20X2@4MHz=3.98ms, @8MHz=3.56ms, @64MHz=3.08ms.
+                            - 20M2@4MHz=4.23ms, @8MHz=3.66ms, @32MHz=3.15ms.
+    Pause10ms           Minimum recommended clock rate is 1MHz:
+                            - 20X2@1MHz=14.1ms, @8MHz=10.6ms, @64MHz=10.1ms.
+                            - 20M2@1MHz=14.4ms, @4MHz=11.4ms, @8MHz=10.6ms, @32MHz=10.2ms
+    Pause30ms           Minimum recommended clock rate is 500kHz.
+                            - 20X2@500KHz=38.3ms, @8MHz=30.6ms.
+                            - 20M2@500kHz=40.1ms
+    Pause100ms          Minimum recommended clock rate is 250kHz.
+                            - 20X2@250kHz=118.6ms, @8MHz=100.7ms.
+                            - 20M2@250kHz=120.1ms
+    Pause300ms          Use any clock rate.
+                            - 20X2@31kHz=418.4ms, @250kHz=318.7ms.
+                            - 20M2@31kHz=477.8ms, @250kHz=320.2ms.
+    Pause1s	            Use any clock rate.
+    Pause2s	            Use any clock rate.
+    Pause3s	            Use any clock rate.
+    Pause5s	            Use any clock rate.
+    Pause10s            Maximum clock rate is 32MHz due to word variable overflow at 64MHz.
+
+This macro is available for use from this module:
+
+    Pause_mSec(t)       This macro takes a variable or constant "t" and conveniently creates the pause according to the clock rate.  
+                        A good use of this macro is where you need to increment a pause fairly accurately, for example ``Pause_mSec(1)``=2.15ms, whereas values above 1 add precisely 1.024mS per step.  The macro also provides a quick and dirty solution when playing with clock timing, but other than that this macro should be avoided. The issue is that it consumes program memory and speed/accuracy in addition to requiring "_Timing" to be defined to a spare word variable, for example "#define _Timing w21".  For fixed pause times that are not already included in this file, you can create your own based on the definitions of the standard delays shown in this file.  They are calculated in pre-compilation, which avoids memory usage and calculation delays.
+
+This module requires the type of PICAXE chip to be declared in your program, which is normal practise, e.g. #picaxe 20X2.
+
+If you have ``#terminal`` defined in your main program you should delete or comment out this line.  The #terminal directive is defined within this module with the optimal baud rate for your clock rate.  If the terminal is not open it should open after a program download, but the PE will not change the Terminal baud rate if the Terminal is already open.  So if you download a new clock rate, either close the Terminal beforehand or change the baud rate manually. 
+
+As shown in the sample configuration below, your program needs to "#define" pre-processor directives before the inclusion of this file:
+
+
+Sample Configuration
+====================
+#Region "Resources"
+
+'Variables
+    'Timing.basinc Variables
+    #define _Timing w21                 'Assign symbol to any spare Word.
+
+'Constants
+    '@Timing.basinc Constants
+    'The "CLOCK_SET_KHZ" options are 31,250,500,1000,2000,4000,8000,16000,32000,or 64000 (Dependent on chip).
+    'The "TIMER_IN_HUNDRETHS" is optional, if present settimer is used to set the tick rate for the "timer" variable.
+    'Do not use an equals sign or place any spaces or comments after the number in the next 2 lines:
+    #define CLOCK_SET_KHZ 16000
+    #define TIMER_IN_HUNDRETHS 10
+
+'Modules
+    #include "Timing.basinc"
+
+#Endregion
+
+#EndREM
+#EndRegion
+
+#Region "Program"
+
+'Determine the Default Clock Rate in kHz
+'=======================================
+'Your program should specify the chip that it's aligned to, for example ``#picaxe 20X2`` will define "_20X2".
+#ifdef _20X2
+    #define CLOCK_DEFAULT_KHZ 8000
+#elseifdef _28X2
+    #define CLOCK_DEFAULT_KHZ 8000
+#elseifdef _40X2
+    #define CLOCK_DEFAULT_KHZ 8000
+#else
+    'The chip is assumed to have a 4MHz default clock if the preceding if commands are false.
+    #define CLOCK_DEFAULT_KHZ 4000
+#endif
+
+'Determine and Set key parameters
+'================================
+'NB: TerminalRate is the bit rate for the Serial Out pin, as used for debugging with the sertxd command.
+#ifndef CLOCK_SET_KHZ
+    #define CLOCK_SET_KHZ CLOCK_DEFAULT_KHZ
+#endif
+
+#if CLOCK_DEFAULT_KHZ = 8000
+    #if CLOCK_SET_KHZ = 31
+        #define ClockDivider 256
+        setfreq K31
+        'NB: PE Terminal will not operate at 37.5 bps but PICAXE still sends.
+    #elseif CLOCK_SET_KHZ = 250
+        #define ClockDivider 32
+        setfreq K250
+        #terminal 300
+    #elseif CLOCK_SET_KHZ = 500
+        #define ClockDivider 16
+        setfreq K500
+        #terminal 600
+    #elseif CLOCK_SET_KHZ = 1000
+        #define ClockDivider 8
+        setfreq M1
+        #terminal 1200
+    #elseif CLOCK_SET_KHZ = 2000
+        #define ClockDivider 4
+        setfreq M2
+        #terminal 2400
+    #elseif CLOCK_SET_KHZ = 4000
+        #define ClockDivider 2
+        setfreq M4
+        #terminal 4800
+    #elseif CLOCK_SET_KHZ = 8000
+        #define ClockMultiplier 1
+        setfreq M8
+        #terminal 9600
+    #elseif CLOCK_SET_KHZ = 16000
+        #define ClockMultiplier 2
+        setfreq M16
+        #terminal 19200
+    #elseif CLOCK_SET_KHZ = 32000
+        #define ClockMultiplier 4
+        setfreq M32
+        #terminal 38400
+    #elseif CLOCK_SET_KHZ = 64000
+        #define ClockMultiplier 8
+        setfreq M64
+        #terminal 76800
+    #endif
+#else
+    #if CLOCK_SET_KHZ = 31
+        #define ClockDivider 128
+        setfreq K31
+        'NB: PE Terminal will not operate at 37.5 bps but PICAXE still sends.
+    #elseif CLOCK_SET_KHZ = 250
+        #define ClockDivider 16
+        setfreq K250
+        #terminal 300
+    #elseif CLOCK_SET_KHZ = 500
+        #define ClockDivider 8
+        setfreq K500
+        #terminal 600
+    #elseif CLOCK_SET_KHZ = 1000
+        #define ClockDivider 4
+        setfreq M1
+        #terminal 1200
+    #elseif CLOCK_SET_KHZ = 2000
+        #define ClockDivider 2
+        setfreq M2
+        #terminal 2400
+    #elseif CLOCK_SET_KHZ = 4000
+        #define ClockMultiplier 1
+        setfreq M4
+        #terminal 4800
+    #elseif CLOCK_SET_KHZ = 8000
+        #define ClockMultiplier 2
+        setfreq M8
+        #terminal 9600
+    #elseif CLOCK_SET_KHZ = 16000
+        #define ClockMultiplier 4
+        setfreq M16
+        #terminal 19200
+    #elseif CLOCK_SET_KHZ = 32000
+        #define ClockMultiplier 8
+        setfreq M32
+        #terminal 38400
+    #elseif CLOCK_SET_KHZ = 64000
+        #error "An M2 chip cannot clock at 64MHz"
+    #endif
+#endif
+
+'Set baud rate for potential "hsersetup" commands
+'================================================
+#if CLOCK_SET_KHZ = 4000
+    #define B9600 B9600_4
+    #define B19200 B19200_4
+    #define B38400 B38400_4
+    #define B76800 B76800_4
+    #define B115200 B115200_4
+#elseif CLOCK_SET_KHZ = 8000
+    #define B9600 B9600_8
+    #define B19200 B19200_8
+    #define B38400 B38400_8
+    #define B76800 B76800_8
+    #define B115200 B115200_8
+#elseif CLOCK_SET_KHZ = 16000
+    #define B9600 B9600_16
+    #define B19200 B19200_16
+    #define B38400 B38400_16
+    #define B76800 B76800_16
+    #define B115200 B115200_16
+#elseif CLOCK_SET_KHZ = 32000
+    #define B9600 B9600_32
+    #define B19200 B19200_32
+    #define B38400 B38400_32
+    #define B76800 B76800_32
+    #define B115200 B115200_32
+#elseif CLOCK_SET_KHZ = 64000
+    #define B9600 B9600_64
+    #define B19200 B19200_64
+    #define B38400 B38400_64
+    #define B76800 B76800_64
+    #define B115200 B115200_64
+#endif
+
+'Determine ClockRatio and Tick Rate and define Pause_mSec(t) macro
+'=================================================================
+'NB: ClockRatio is a pre-processor symbol that is used as a multiplier or divisor in timing symbols to generate pause statements.
+'NB: For X2 chips, TickRate is the incrementing rate for the system "timer" variable.
+#ifdef ClockMultiplier
+    symbol MinorTickus = 32 / ClockMultiplier   'Minor ticks = 256/Clock (Default=32us, x2=16us, x4=8us, x8=4us). 
+    #define ClockRatio * ClockMultiplier
+    #ifdef _Timing then
+        #define Pause_mSec(t) _Timing = t * ClockMultiplier: pause _Timing
+    #endif
+#else
+    symbol minorTickus = 32 * ClockDivider      'Minor ticks = 256/Clock (/2=64uS, /4=128uS, /8=256uS, /16=512uS, /32=1024uS, /256=8096us).
+    #define ClockRatio / ClockDivider
+    #ifdef _Timing then
+        #define Pause_mSec(t) _Timing = t / ClockDivider: pause _Timing
+    #endif
+#endif
+
+
+'If an X2 chip and TIMER_IN_HUNDRETHS is defined then set the timer rate
+'=======================================================================
+#if CLOCK_DEFAULT_KHZ = 8000
+    #ifdef TIMER_IN_HUNDRETHS
+        symbol MinorTicksIn_10ms = 10000 / MinorTickus
+        symbol TicksRequired = TIMER_IN_HUNDRETHS * MinorTicksIn_10ms
+        symbol TickToSet = 65536 - TicksRequired
+        settimer TickToSet                                  'Sets incrementing rate for the system "timer" word variable.  
+        'For example, at 16MHz the "timer" word value increments every 0.1s with a setting of 59,286 (65,536-(100,000/minorTickus).
+    #endif
+#endif
+
+
+'Pre-Processor definitions for standard pause statements
+'=======================================================
+'NB: These pause definitions work regardless of clockrate, just enter a statement like "Pause10mS" in your program:
+    'A "pauseus" has 10us units at default clock rate.  It's used here to provide better accuracy and low range.
+    symbol ustime1ms = 100 ClockRatio
+    #define Pause1ms pauseus ustime1ms
+    symbol ustime3ms = 300 ClockRatio
+     #define Pause3ms pauseus ustime3ms
+    symbol ustime10ms = 1000 ClockRatio
+    #define Pause10ms pauseus ustime10ms
+    symbol ustime30ms = 3000 ClockRatio
+    #define Pause30ms pauseus ustime30ms
+    
+    'This prevents a word overflow when the chip is clocked at 8 times its default.
+    #ifdef ClockMultiplier
+        symbol time100ms = 100 ClockRatio
+        #define Pause100ms pause time100ms
+    #else
+        symbol ustime100ms = 10000 ClockRatio
+        #define Pause100ms pauseus ustime100ms
+    #endif
+
+    'This extends the use of pauseus for low clock rates.
+    #ifdef ClockDivider
+        symbol ustime300ms = 30000 ClockRatio
+        #define Pause300ms pauseus ustime300ms
+    #else
+        symbol time300ms = 300 ClockRatio
+        #define Pause300ms pause time300ms
+    #endif    
+    
+    'A "pause" has 1ms units at default clock rate. Using pause here instead of pauseus gives top range.
+    symbol time1s = 1000 ClockRatio
+    #define Pause1s pause time1s
+    symbol time2s = 2000 ClockRatio
+    #define Pause2s pause time2s
+    symbol time3s = 3000 ClockRatio
+    #define Pause3s pause time3s
+    symbol time5s = 5000 ClockRatio
+    #define Pause5s pause time5s
+    symbol time10s = 10000 ClockRatio
+    #define Pause10s pause time10s
+
+#Endregion
+
+#Region "License" 
+#Rem
+
+MIT License
+
+Copyright (c) 2024 Alan Hunt
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+#EndRem
+#EndRegion

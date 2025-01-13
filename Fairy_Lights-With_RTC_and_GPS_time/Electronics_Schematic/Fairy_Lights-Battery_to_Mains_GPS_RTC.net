@@ -1,0 +1,228 @@
+( { EESchema Netlist Version 1.1 created  2024-12-16T00:37:22+0000 }
+ ( /f8ab250b-b463-48bd-a7be-0ba931c58288 Capacitor_THT:C_Rect_L9.0mm_W2.5mm_P7.50mm_MKT  C5 5p
+  (    1 Net-(U5-X2) )
+  (    2 GNDPWR )
+ )
+ ( /14e089b1-e1bc-4d05-b017-6d5c39147202 Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical  Y1 Crystal
+  (    1 Net-(U5-X2) )
+  (    2 Net-(U5-X1) )
+ )
+ ( /7b78f436-4c46-4b32-9fe9-1d630201115f Capacitor_THT:C_Rect_L9.0mm_W2.5mm_P7.50mm_MKT  C1 5p
+  (    1 Net-(U5-X1) )
+  (    2 GNDPWR )
+ )
+ ( /8ff5632c-7511-4059-a8c9-f2447357aa5f Capacitor_THT:C_Rect_L9.0mm_W2.5mm_P7.50mm_MKT  C4 100n
+  (    1 GNDPWR )
+  (    2 +5V )
+ )
+ ( /6e7cd839-7f15-4863-b0b1-c558e357be62 Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical  JP1 Link=Timed
+  (    1 Net-(JP1-A) )
+  (    2 GNDPWR )
+ )
+ ( /49e1fc83-8d1b-48c1-938c-9e00fa45528c Package_DIP:DIP-20_W7.62mm  U1 PICAXE_20X2
+  (    1 +5V )
+  (    2 unconnected-(U1-Rx-Pad2) )
+  (    4 Net-(JP1-A) )
+  (    5 Net-(U1-C.5_hpwmA{slash}pwm{slash}Out{slash}In) )
+  (    6 Net-(U1-C.4_hpwmB{slash}SRNQ{slash}Out{slash}In) )
+  (    7 Net-(U1-C.3_hpwmC{slash}ADC7{slash}Out{slash}In) )
+  (   10 GPS_Rx )
+  (   11 Net-(U1-In{slash}Out{slash}hi2c_sci{slash}hspi_sck_B.7) )
+  (   12 GPS_Tx )
+  (   13 Net-(U1-In{slash}Out{slash}ADC10{slash}hi2c_sda{slash}hspi_sdi_B.5) )
+  (   14 Net-(U1-In{slash}Out{slash}ADC6{slash}hpwmD{slash}Comp1-_B.4) )
+  (   18 Net-(U1-In{slash}Out{slash}ADC1{slash}hint1_B.0) )
+  (   19 Net-(U1-Tx) )
+  (   20 GNDPWR )
+ )
+ ( /5b55294d-abaf-453d-9209-a2fac1fa2007 Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R15 3k3
+  (    1 Net-(U6-RXD) )
+  (    2 GPS_Rx )
+ )
+ ( /1862ad4a-162c-4288-be66-a8518975b75c Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R14 5k6
+  (    1 GNDPWR )
+  (    2 Net-(U6-RXD) )
+ )
+ ( /d4a61a92-3766-4e9c-919e-91ee4cf053a7 Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical  Pad7 
+  (    1 Net-(U2-OutA) )
+ )
+ ( /85161f15-ea5c-41d6-be3a-abfff29d1cad Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical  Pad9 
+  (    1 Net-(U2-OutA) )
+ )
+ ( /66d136fa-e598-44bc-b9eb-f0062fb0f2d0 Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical  Pad8 
+  (    1 Net-(Pad8-Pad1) )
+ )
+ ( /a6c0f420-239f-425e-83f3-7cc5a0610fc9 Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical  Pad10 
+  (    1 Net-(Pad10-Pad1) )
+ )
+ ( /12e59d7c-02e8-4b97-a332-80b25b708e9f Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R2 33R
+  (    1 Net-(Pad6-Pad1) )
+  (    2 Net-(U2-OutB) )
+ )
+ ( /20ef3914-4e4a-435a-a970-b402f94bac9b Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R1 33R
+  (    1 unconnected-(Pad4-Pad1) )
+  (    2 Net-(U2-OutB) )
+ )
+ ( /584f3965-8b37-4e50-8746-7b9cf8a145d1 Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R3 33R
+  (    1 Net-(Pad8-Pad1) )
+  (    2 Net-(U2-OutB) )
+ )
+ ( /3310f81f-6a9e-40ed-a77c-e86d412e56ef Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical  Pad3 
+  (    1 Net-(U2-OutA) )
+ )
+ ( /45ca9595-aa46-4245-844b-8e0211ca2786 Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical  Pad6 
+  (    1 Net-(Pad6-Pad1) )
+ )
+ ( /8627963c-931b-4539-bd14-098cd20a4d35 Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical  Pad4 
+  (    1 unconnected-(Pad4-Pad1) )
+ )
+ ( /270bc6ce-315e-4db6-bfa5-7be81c1a59fd Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical  Pad5 
+  (    1 Net-(U2-OutA) )
+ )
+ ( /22e92889-6521-4011-988f-76ce8c98fe9d Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R8 1k
+  (    1 Net-(Q1-S) )
+  (    2 Net-(Q2-B) )
+ )
+ ( /01e5458c-ec37-4577-885e-16aa17174316 Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical  Pad11 
+  (    1 Net-(U4-+Vout) )
+ )
+ ( /ac4a29df-4b85-4a25-bfb0-47563f7fcd0c Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical  Pad12 
+  (    1 Net-(Q1-D) )
+ )
+ ( /2c5227f2-f3ad-489f-8e90-900d68d2d267 Package_TO_SOT_THT:TO-92_Inline  Q1 BS170
+  (    1 Net-(Q1-D) )
+  (    2 Net-(Q1-G) )
+  (    3 Net-(Q1-S) )
+ )
+ ( /e93a93ea-87df-4f3c-83ca-90580aa36eaf Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R5 22k
+  (    1 Net-(U4-+Vout) )
+  (    2 Net-(Q1-G) )
+ )
+ ( /d55d18c4-1e15-46d8-9e50-96840fa055d3 PICAXE_Maker:DC_Converter(13by9)  U4 DC_Converter
+  (    1 Net-(U4-+Vin) )
+  (    2 Net-(Q3-D) )
+  (    3 Net-(U4-+Vout) )
+  (    4 Net-(Q2-E) )
+ )
+ ( /1d8bf91b-d1d7-4c13-8299-6888a4516469 Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R10 33k
+  (    1 Net-(Q1-G) )
+  (    2 Net-(Q2-E) )
+ )
+ ( /ac96e8f2-7afc-4eae-b284-2f69e826ee6e Package_TO_SOT_THT:TO-92_Inline  Q2 2N3904
+  (    1 Net-(Q2-E) )
+  (    2 Net-(Q2-B) )
+  (    3 Net-(Q1-G) )
+ )
+ ( /bdfce6c9-c503-4f2d-9fcb-a24921967e25 Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R6 4R7
+  (    1 Net-(Q1-S) )
+  (    2 Net-(Q2-E) )
+ )
+ ( /91dc71a5-4be5-4ced-80a1-b8d3346e8b82 Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R11 100
+  (    1 Net-(Q1-S) )
+  (    2 Net-(Q2-E) )
+ )
+ ( /cfdc3e72-f510-4f7f-bc17-58330637f591 Package_DIP:DIP-8_W7.62mm  U2 L9110
+  (    1 Net-(U2-OutA) )
+  (    2 +5V )
+  (    3 +5V )
+  (    4 Net-(U2-OutB) )
+  (    5 GNDPWR )
+  (    6 Net-(U1-C.5_hpwmA{slash}pwm{slash}Out{slash}In) )
+  (    7 Net-(U1-C.4_hpwmB{slash}SRNQ{slash}Out{slash}In) )
+  (    8 GNDPWR )
+ )
+ ( /54c588f9-0c91-4da8-8e27-af1b2db283af Capacitor_THT:C_Rect_L9.0mm_W2.5mm_P7.50mm_MKT  C6 100n
+  (    1 GNDPWR )
+  (    2 +5V )
+ )
+ ( /59c15159-4628-4a39-bfd9-5a56d4219fbf Capacitor_THT:C_Radial_D10.0mm_H16.0mm_P5.00mm  C2 47u
+  (    1 GNDPWR )
+  (    2 +5V )
+ )
+ ( /1eaf1a6b-6c41-4f2f-8ea3-a75c4967ff71 Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R4 33R
+  (    1 Net-(Pad10-Pad1) )
+  (    2 Net-(U2-OutB) )
+ )
+ ( /8c5e5a3b-00c1-4dc1-8176-b2004d38bea5 Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R13 1k
+  (    1 LampPower )
+  (    2 Net-(U1-In{slash}Out{slash}ADC6{slash}hpwmD{slash}Comp1-_B.4) )
+ )
+ ( /c2caa7dc-4707-4aa4-b7e0-85ebbbb06926 Connector_Audio:Jack_3.5mm_CUI_SJ1-3525N_Horizontal  J1 PICAXE_CON039
+  (    1 Net-(U1-Tx) )
+  (    2 GNDPWR )
+  (    3 unconnected-(J1-Pad3) )
+  (    4 unconnected-(J1-Pad4) )
+  (    5 unconnected-(J1-Pad5) )
+ )
+ ( /215b13e5-2f38-47f4-bbea-c6a2b763ebae Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R9 22k
+  (    1 unconnected-(J1-Pad5) )
+  (    2 unconnected-(U1-Rx-Pad2) )
+ )
+ ( /02c408df-9470-455f-9349-1085cc91eb1f Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R7 10k
+  (    1 unconnected-(U1-Rx-Pad2) )
+  (    2 GNDPWR )
+ )
+ ( /bdf16e3b-2cd4-4b61-9966-56007f5f53c7 Package_DIP:DIP-8_W7.62mm  U5 MCP7490N
+  (    1 Net-(U5-X1) )
+  (    2 Net-(U5-X2) )
+  (    3 unconnected-(U5-Vbat-Pad3) )
+  (    4 GNDPWR )
+  (    5 Net-(U1-In{slash}Out{slash}ADC10{slash}hi2c_sda{slash}hspi_sdi_B.5) )
+  (    6 Net-(U1-In{slash}Out{slash}hi2c_sci{slash}hspi_sck_B.7) )
+  (    7 Net-(U1-In{slash}Out{slash}ADC1{slash}hint1_B.0) )
+  (    8 +5V )
+ )
+ ( /b7a2e85a-c6ca-4625-93f1-7974dd404f66 Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical  Pad1 
+  (    1 Net-(F2-Pad2) )
+ )
+ ( /d353fc82-589d-438c-9756-614b25bb7a06 Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical  Pad2 
+  (    1 Net-(Q3-S) )
+ )
+ ( /8512f4cd-1b87-4dda-a99f-344f7595db3f Fuse:Fuseholder_Cylinder-5x20mm_Schurter_0031_8201_Horizontal_Open  F1 500mA
+  (    1 unconnected-(U3-+Vin-Pad1) )
+  (    2 Net-(F2-Pad2) )
+ )
+ ( /b766c7ba-73cf-40f6-aad9-b772580f27af PICAXE_Maker:DC_Converter(13by9)  U3 DC_Converter
+  (    1 unconnected-(U3-+Vin-Pad1) )
+  (    2 Net-(Q3-S) )
+  (    3 +5V )
+  (    4 GNDPWR )
+ )
+ ( /5e2908d2-bc21-4bb8-aaf0-cb0797814711 Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R12 330k
+  (    1 LampPower )
+  (    2 Net-(Q3-S) )
+ )
+ ( /e1e69d84-78f0-490f-8dde-c7f676e36199 Package_TO_SOT_THT:TO-220-3_Vertical  Q3 IRLB8721PBF
+  (    1 LampPower )
+  (    2 Net-(Q3-D) )
+  (    3 Net-(Q3-S) )
+ )
+ ( /ea870885-660d-4702-8260-f1fb13edc28f Fuse:Fuseholder_Cylinder-5x20mm_Schurter_0031_8201_Horizontal_Open  F2 500mA
+  (    1 Net-(U4-+Vin) )
+  (    2 Net-(F2-Pad2) )
+ )
+ ( /dbc072a2-dc07-476c-b8fe-2fb9efd17c85 Capacitor_THT:C_Rect_L9.0mm_W2.5mm_P7.50mm_MKT  C3 100n
+  (    1 GNDPWR )
+  (    2 +5V )
+ )
+ ( /635cb7ae-4bb2-4bcf-aa60-7543ba04fac3 RF_GPS:ublox_NEO  U6 NEO-M8N
+  (    1 GNDPWR )
+  (    2 GPS_Tx )
+  (    3 Net-(U6-RXD) )
+  (    4 Net-(Q4-D) )
+ )
+ ( /b4ac21a6-e066-4d1e-80a4-2fad78caa996 Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R17 330k
+  (    1 Net-(Q4-G) )
+  (    2 +5V )
+ )
+ ( /b3c281d6-c66c-45a1-9b3b-c4e3e57d30cb Package_TO_SOT_SMD:SOT-23  Q4 IRLU9343
+  (    1 Net-(Q4-G) )
+  (    2 +5V )
+  (    3 Net-(Q4-D) )
+ )
+ ( /7a44f8a8-0d08-41b7-8949-87d458154ac7 Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R16 33k
+  (    1 Net-(Q4-G) )
+  (    2 Net-(U1-C.3_hpwmC{slash}ADC7{slash}Out{slash}In) )
+ )
+)
+*

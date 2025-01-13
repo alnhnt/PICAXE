@@ -1,0 +1,383 @@
+
+#Region "Program Notes"
+#REM
+            File: "RTC_MCP7940N.basinc"
+         License: MIT (See end of file) 
+  Change History: 2025/1/13 by Alan Hunt - 1st issue.
+
+
+Description
+===========
+This module provides a simple and basic interface for the MCP7940N Real-Time Clock. It provides these features:
+    * Check the clock is running.
+    * Set and read the time based on a 24 hour clock.
+    * Set, clear, enable and disable an alarm.
+    * Provide a digital output for the alarm on the chip's MFP (Multi-Function Pin), even in battery backup mode.
+    * Use with a crystal or an external clock.
+    * Use with or without a backup battery.
+    * Manually trim the clock for greater precision.
+    * The option to show debugging info.
+    * A listing of the time keeping and alarm0 registers, as shown in "_RTC_Time_Status:" and "_RTC_Alarm_Status:".
+    * If the MFP is not used for an alarm signal:
+            - Provide pulse output at 32.768 kHz, 8.192 kHz, 4.096 kHz, or 1 Hz; or
+            - Provide a digital output port.
+
+For simplicity and program space, this module does not provide chip functions that were not needed in the original project. These include a second alarm, some static RAM, a 12 hour clock interface, leap year information, and logging the power up time and power failure time to the nearest minute. As per the chip implementation, the weekday remains as an arbitary cycling number from 1 to 7.
+
+With this module these 1 line statements can be used like a normal BASIC command:
+
+    Clock_Set           Sets the time according to byte variables assigned with the symbol names of seconds, minutes,
+                        hours, weekday, day, month and year.
+    Clock_Read          Reads the time into the same variables as RTC_Set.
+    Clock_Trim(Val)     Sets the RTC Trim Register 8 with the byte Val. Trimming is not normally necessary because a
+                        20ppm crystal is accurate to 1.7 seconds per day.
+    Alarm_Set           Sets Alarm0 with the variables named seconds, minutes, hours, weekday, day and month.
+    Alarm_Clear         Clears Alarm0, if it's no longer triggered.
+    Alarm_Enable        Enables Alarm0.
+    Alarm_Disable       Disables Alarm0.
+    
+
+MCP7940N and Hardware Notes
+==========================
+
+Function                               MCP7940 Pinout     Function
+                                       ---------------
+Crystal_A or External Clock            |1           8|    +V (1.8V to 5.5V)
+Crystal_B                              |2           7|    Multi-Function Pin
+Optional Battery Backup (1.3V to 5.5V) |3           6|    I2C Clock
+Ground                                 |4           5|    I2C Data
+                                       ---------------
+
+This module has been used with the PDIP version of the MCP7940N Real-Time Clock, there are SMD versions too. Power consumption is a few micro amps and battery backup consumes 925nA maximum.
+
+The MCP7940N is similar to the DS1307 or DS1307+, but there are 2 key advantages:
+* It has alarms and that can change the state of an output pin, even in battery backup mode.
+* The typical DS1307 only has a specified temperature range down to 0C (instead of the DS1307N which is -40C). From good electronic distributors the MCP7940N is far cheaper and operates to -40C. 
+
+The disadvantages of the MCP7940N are:
+* Two additional capacitors connect each side of 32.768 kHz crystal to ground. 5pF worked for me. 
+* The crystal should have a 6pF to 9pF load capacitance, instead of the more common 12pF. Again, you'll probably need to source these from an electronic distributor instead of eBay/AliExpress, but they're still around ?0.20.
+
+Datasheet: https://ww1.microchip.com/downloads/en/DeviceDoc/MCP7940N-Battery-Backed-I2C-RTCC-with-SRAM-20005010G.pdf
+Comparison and migration from DS1307: https://ww1.microchip.com/downloads/en/DeviceDoc/20002337B.pdf
+
+If the RTC is the only I2C device connected to the PICAXE then you may be able to use the PICAXE internal pull-up resistors for the I2C lines at low speed, 100kHz. These pullups are about 30k compared to the I2C spec of 10k or lower.
+
+Battery Backup is typically provided by a coin cell like CR2032 but if it's not required connect MCP7940N pin 3 to Ground.
+
+An alarm output from the MFP will work when the MCP7940 is in battery backup. The MFP is recommended to be used as a PICAXE interrupt, for an X2 this can be a hardware interrupt that wakes from a Doze command.
+
+Most crystals are max 20ppm drift, so that's at most 1.7 seconds per day.
+
+
+Programming Guide
+=================
+When the module is loaded it performs some initialisation to:
+    * Configure the I2C communication with "hi2csetup i2cmaster, RTC_I2C_ADDRESS, i2cslow, i2cbyte".
+    * Send the "RTC_CONTROL" settings to the RTC.
+    * Enable the RTC oscillator.
+
+If required, this module can send debugging information to the PICAXE Editor Terminal by adding "#define RTC_Debugging" to your main program.
+
+For ease of use, the seconds, minutes, hours, weekday, day, month, year and alarmMask are stored as byte values in 8 general purpose variables. The main program is expected to define symbols for these names and then use the names to set and read values. To set the clock or alarm, just set these values and then call Clock_Set, or Alarm_Set.
+
+The communication to and from the RTC is in BCD format with added bit flag data. This module stores these 7 bytes above the general purpose variables, starting from the location specified by the symbol "RTC_VARIABLES".
+
+To allow more than 1 criteria for alarm matching, the alarmSetting symbol is assigned a value before Alarm_Set is called. If you only have 1 criterion there's no need to set the value more than once.
+
+Like "Alarm_Clear", the "Alarm_Set" statement also clears an alarm indication, provided the alarm condition isn't currently met.
+
+If "#define RTC_Debugging_Registers" is included in your main program you can also use subroutines "Clock_Status" and "Alarm_Status" in your program to display the contents of these RTC registers. This however consumes a lot of progam space.
+
+To use battery backup with the RTC, include "#define RTC_Battery_Backup" in your program.
+
+The example configuration below can be copied to your program and adjusted as you wish:
+
+'Compiler Directives
+    #picaxe 20X2 
+    #no_data
+    #no_table
+    #no_debug
+    #terminal 9600
+    '#define RTC_Debugging 
+    '#define RTC_Debugging_Registers
+    '#define RTC_Battery_Backup
+    
+'Variables
+    '@RTC_MCP7940N.basinc Variables
+    'These variables are for program use, the module makes copies in BCD format with register flags as per "RTC_VARIABLES".
+    symbol seconds = b1                     'Assign symbol to any byte.
+    symbol minutes = b2                     'Assign symbol to any byte.
+    symbol hours = b3                       'Assign symbol to any byte.
+    symbol weekday = b4                     'Assign symbol to any byte.
+    symbol day = b5                         'Assign symbol to any byte.
+    symbol month = b6                       'Assign symbol to any byte.
+    symbol year = b7                        'Assign symbol to any byte.
+    symbol alarmSetting = b8                'Assign symbol to any byte.
+    
+'Constants
+    '@RTC_MCP7940N.basinc Constants
+    symbol RTC_VARIABLES = 249              'The "RTC_MCP7940.basinc" module uses 7 bptr variables from this address.
+    symbol RTC_CONTROL = %00000000          'The RTC Control Register 7 settings are:
+                                            '   Bit7 MFP logic level output if no alarms or pulsing configured.
+                                            '   Bit6 Square Wave output. 1=Enabled.
+                                            '   Bit5 Alarm1. 1=Enabled.
+                                            '   Bit4 Alarm0. 1=Enabled.
+                                            '   Bit3 External Oscillator. 1=Enabled.
+                                            '   Bit2 Manual clock compensation. 1=Enabled.
+                                            '   Bit1 and Bit0 Pulse frequency: 
+                                            '       00=32.786kHz, 01=8.192kHz; 02=2.096kHz, 11=1Hz.
+    symbol RTC_ALARM_MASK = %11110000       'The RTC Alarm0 Weekday Register 13 settings are:
+                                            '   Bit7 controls MFP logic level for alarms. 1=Assert High.
+                                            '   Bit6 to Bit4 controls alarm matching:
+                                            '       000=Seconds; 001=Minutes; 010=Hours; 011=Weekday; 100=Day; 
+                                            '       111=Seconds, Minutes, Hours, Weekday, Day and Month.
+                                            '   Bit3 provides an alarm flag, its readable and is written as 0 to clear.
+                                            '   Bit 2 to 0 stores the weekday.
+'Modules
+    #include "RTC_MCP7940N.basinc"
+
+'User Program Example (this sets the time and sets an alarm to trigger 10 seconds later).
+Initialisation:
+    Clock_Check                             'This loops until the RTC oscillator is running.
+    year = 24
+    month = 12
+    day = 26
+    weekday = 4
+    hours = 21
+    minutes = 01
+    seconds = 00
+    Clock_Set
+
+Main:                                
+    seconds = 10
+    alarmSetting = RTC_ALARM_MASK
+    Alarm_Set
+    Alarm_Enable
+
+#EndREM
+#EndRegion
+
+#Region "RTC Program"
+'Define macros
+    #define Clock_Check gosub _RTC_Time_Check
+    #define Clock_Set gosub _RTC_Time_Set
+    #define Clock_Read gosub _RTC_Time_Read
+    #define Clock_Trim(RTC_TrimSetting) hi2cout 8, (RTC_TrimSetting)    
+    #define Alarm_Set gosub _RTC_Alarm_Set
+    #define Alarm_Clear gosub _RTC_Alarm_Clear
+    #define Alarm_Enable gosub _RTC_Alarm_Enable
+    #define Alarm_Disable gosub _RTC_Alarm_Disable
+    
+'Debugging
+    'Caution: Debugging provides some nice info but causes serial transmission delays and consumes program space.
+    #ifdef RTC_Debugging
+        #define RTC_Debug sertxd
+        #define RTC_DebugBin(val) b0=val : sertxd(#bit7,#bit6,#bit5,#bit4," ",#bit3,#bit2,#bit1,#bit0)
+        
+    #else
+        #define RTC_Debug                   'Do nothing.
+        #define RTC_DebugBin(val)           'Do nothing.
+    #endif
+    
+    #ifdef RTC_Debugging_Registers
+        #define Clock_Status gosub _RTC_Time_Status
+        #define Alarm_Status gosub _RTC_Alarm_Status
+    #else
+        #define Clock_Status                'Do nothing.
+        #define Alarm_Status                'Do nothing.
+    #endif
+
+
+'Constants
+    symbol RTC_I2C_ADDRESS = %11011110      'This is non-configurable for the MCP7940.
+    symbol RTC_OSC_RUNNING = %00100000      'Read-Only flag held in Register 3, bit 5. 1=Running.
+    symbol RTC_WEEKDAY_BITS = %00000111     'Data held in Register 3, bits 2 to 0.
+    symbol RTC_ENABLE_CLOCK = %10000000     'Read-Write flag held in Register 0, bit 7. 1=Enabled.
+    symbol RTC_MONTH_BITS = %00011111       'Data held in Register 5, bits 5 to 0.
+    symbol RTC_ALARM0_ENABLE = %00010000    'Read-Write flag held in Register 7, bit 4. 1=Enabled.
+    
+'RTC Initialisation
+    RTC_Debug("@RTC_MCP7940N.basinc Initialisation",cr,lf)
+    
+    'Setup I2C comms to RTC.
+    hi2csetup i2cmaster, RTC_I2C_ADDRESS, i2cslow, i2cbyte
+    
+    'Set config register covering MFP logic, pulsing, alarm enablement, external oscillator and clock trimming.
+    hi2cout 7, (RTC_CONTROL)                'RTC_CONTROL is defined in your main program.
+    
+    'Enable RTC Oscillator (Without battery backup the ST flag is cleared when main power is lost).
+    hi2cout 0, ($80)                        'Enable the oscillator (Register0, bit7 = 1).
+    
+    goto RTC_MCP7940_End
+    
+#Endregion
+
+#Region "RTC Gosubs"
+
+_RTC_Time_Check:
+    RTC_Debug("Checking the RTC oscillator (Register03):")
+    bptr = RTC_VARIABLES
+    do
+        hi2cin 3, (@bptr)
+        RTC_Debug("  ",#@bptr)
+        @bptr = @bptr AND RTC_OSC_RUNNING
+        pause 1000
+    loop until @bptr > 0
+    RTC_Debug(cr,lf,"The RTC oscillator is running.",cr,lf)
+    return
+    
+_RTC_Time_Set:
+    RTC_Debug("@_RTC_Time_Set - Day ",#weekday," ",#hours,":",#minutes,":",#seconds," ", #day,"/",#month,"/",#year,cr,lf)
+    bptr = RTC_VARIABLES
+    @bptrinc = bintobcd seconds OR RTC_ENABLE_CLOCK
+    @bptrinc = bintobcd minutes
+    @bptrinc = bintobcd hours
+    #ifdef RTC_Battery_Backup then
+        @bptrinc = weekday OR $08           'Register3, bit3 configures battery backup. 1=Enabled.
+    #else
+        @bptrinc = weekday
+    #endif
+    @bptrinc = bintobcd day
+    @bptrinc = bintobcd month
+    @bptr = year - 2000
+    @bptr = bintobcd @bptr
+    bptr =RTC_VARIABLES
+    hi2cout 0, (@bptrinc, @bptrinc, @bptrinc, @bptrinc, @bptrinc, @bptrinc, @bptrinc)
+    return   
+    
+_RTC_Time_Read:
+    RTC_Debug("@_RTC_Time_Read")
+    bptr = RTC_VARIABLES
+    hi2cin 0, (@bptrinc, @bptrinc, @bptrinc, @bptrinc, @bptrinc, @bptrinc, @bptrinc)
+    bptr = RTC_VARIABLES
+    @bptr = @bptr ANDNOT RTC_ENABLE_CLOCK
+    seconds = bcdtobin @bptrinc
+    minutes = bcdtobin @bptrinc
+    hours = bcdtobin @bptrinc
+    weekday = @bptrinc AND RTC_WEEKDAY_BITS
+    day = bcdtobin @bptrinc
+    @bptr = @bptr AND RTC_MONTH_BITS
+    month = bcdtobin @bptrinc
+    year = bcdtobin @bptrinc + 2000
+    RTC_Debug(" - Day ",#weekday," ",#hours,":",#minutes,":",#seconds," ", #day,"/",#month,"/",#year,cr,lf)
+    return  
+
+_RTC_Alarm_Set:
+    RTC_Debug("Alarm Set as ",#hours,":",#minutes,":",#seconds," ", #day,"/",#month," with Mask=")
+    RTC_DebugBin(alarmSetting)
+    RTC_Debug(cr,lf)
+    bptr = RTC_VARIABLES
+    @bptrinc = bintobcd seconds
+    @bptrinc = bintobcd minutes
+    @bptrinc = bintobcd hours
+    @bptrinc = weekday OR alarmSetting
+    @bptrinc = bintobcd day
+    @bptrinc = bintobcd month
+    bptr = RTC_VARIABLES
+    hi2cout 10, (@bptrinc, @bptrinc, @bptrinc, @bptrinc, @bptrinc, @bptrinc)
+    return
+
+_RTC_Alarm_Clear:
+    RTC_Debug("@_RTC_Alarm_Clear")
+    hi2cin 13, (weekday)
+    weekday = weekday AND RTC_WEEKDAY_BITS
+    weekday = weekday OR alarmSetting
+    hi2cout 13, (weekday)
+    return
+    
+_RTC_Alarm_Enable:
+    'Enable alarm while keeping other control settings.
+    RTC_Debug("@_RTC_Alarm_Enable",cr,lf)
+    bptr = RTC_VARIABLES
+    hi2cin 7, (@bptr)
+    @bptr = @bptr OR RTC_ALARM0_ENABLE
+    hi2cout 7, (@bptr)
+    return
+
+_RTC_Alarm_Disable:
+    'Disable alarm while keeping other control settings.
+    RTC_Debug("@_RTC_Alarm_Disable",cr,lf)
+    bptr = RTC_VARIABLES
+    hi2cin 7, (@bptr)
+    @bptr = @bptr ANDNOT RTC_ALARM0_ENABLE
+    hi2cout 7, (@bptr)
+    return
+
+#ifdef RTC_Debugging_Registers
+        _RTC_Time_Status:
+            'Subroutine to debug time keeping registers.
+            RTC_Debug(cr,lf,"@_RTC_Time_Status:")
+            bptr = RTC_VARIABLES
+            hi2cin 0, (@bptr)
+            RTC_Debug(cr,lf,"00h RTCSEC (ST,SECTEN,SECTEN,SECTEN,SEC,SEC,SEC,SEC): %"): RTC_DebugBin(@bptr)
+            hi2cin 1, (@bptr)
+            RTC_Debug(cr,lf,"01h RTCMIN (-,MINTEN,MINTEN,MINTEN,MIN,MIN,MIN,MIN): %"): RTC_DebugBin(@bptr)
+            hi2cin 2, (@bptr)
+            RTC_Debug(cr,lf,"02h RTCHOUR (-,12/24!,HRTEN,HRTEN,HR,HR,HR,HR): %"): RTC_DebugBin(@bptr)
+            hi2cin 3, (@bptr)
+            RTC_Debug(cr,lf,"03h RTCWKDAY (-,-,OSCRUN,PWRFAIL,VBATEN,WKDAY,WKDAY,WKDAY): %"): RTC_DebugBin(@bptr)
+            hi2cin 4, (@bptr)
+            RTC_Debug(cr,lf,"04h RTCDATE (-,-,DAYTEN,DAYTEN,DAY,DAY,DAY,DAY): %"): RTC_DebugBin(@bptr)
+            hi2cin 5, (@bptr)
+            RTC_Debug(cr,lf,"05h RTCMTH (-,-,LPYR,MTHTEN,MTH,MTH,MTH,MTH): %"): RTC_DebugBin(@bptr)
+            hi2cin 6, (@bptr)
+            RTC_Debug(cr,lf,"06h RTYEAR (YRTEN,YRTEN,YRTEN,YRTEN,YR,YR,YR,YR): %"): RTC_DebugBin(@bptr)
+            hi2cin 7, (@bptr)
+            RTC_Debug(cr,lf,"07h CONTROL (OUT,SQWEN,ALM0EN,ALM1EN,EXTOSC,TRIM,SQW0,SQW1): %"): RTC_DebugBin(@bptr)
+            hi2cin 8, (@bptr)
+            RTC_Debug(cr,lf,"08h OSCTRIM (SIGN,TRIM6,TRIM5,TRIM4,TRIM3,TRIM2,TRIM1,TRIM0): %"): RTC_DebugBin(@bptr)
+            RTC_Debug(cr,lf)
+            return
+            
+        _RTC_Alarm_Status:
+            'Subroutine to debug Alarm0 registers.
+            RTC_Debug(cr,lf,"@_RTC_Alarm0_Status:")
+            bptr = RTC_VARIABLES
+            hi2cin 10,(@bptr)
+            RTC_Debug(cr,lf,"0Ah ALM0SEC (-,SECTEN,SECTEN,SECTEN,SEC,SEC,SEC,SEC): %"): RTC_DebugBin(@bptr)
+            hi2cin 11, (@bptr)
+            RTC_Debug(cr,lf,"0Bh ALM0MIN (-,MINTEN,MINTEN,MINTEN,MIN,MIN,MIN,MIN): %"): RTC_DebugBin(@bptr)
+            hi2cin 12, (@bptr)
+            RTC_Debug(cr,lf,"0Ch ALM0HOUR (-,12/24!,HRTEN,HRTEN,HR,HR,HR,HR): %"): RTC_DebugBin(@bptr)
+            hi2cin 13, (@bptr)
+            RTC_Debug(cr,lf,"0Dh ALM0WKDAY (ALMPOL,MASK2,MASK1,MASK0,ALM0IF,WKDAY,WKDAY,WKDAY): %"): RTC_DebugBin(@bptr)
+            hi2cin 14, (@bptr)
+            RTC_Debug(cr,lf,"0Eh ALM0DATE (-,-,DAYTEN,DAYTEN,DAY,DAY,DAY,DAY): %"): RTC_DebugBin(@bptr)
+            hi2cin 15, (@bptr)
+            RTC_Debug(cr,lf,"0Fh ALM0MTH (-,-,-,MTHTEN,MTH,MTH,MTH,MTH): %"): RTC_DebugBin(@bptr)
+            RTC_Debug(cr,lf)
+            return
+#endif
+
+RTC_MCP7940_End:
+
+#EndRegion
+
+#Region "License" 
+#Rem
+
+MIT License
+
+Copyright (c) 2025 Alan Hunt
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+#EndRem
+#EndRegion
