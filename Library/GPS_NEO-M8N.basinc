@@ -1,0 +1,364 @@
+
+#Region "Program Notes"
+#REM
+            File: "GPS_NEO-M8N.basinc"
+         License: MIT (See end of file) 
+  Change History: 2025/1/13 by Alan Hunt - 1st issue.
+
+
+Description
+===========
+This module is used to set the configuration of a u-blox NEO-M8N GNSS board and to receive its time data, it could easily be expanded to receive position data too. The serial connection uses a PICAXE high speed serial port, receive data is buffered to Scratch Pad Memory, which limits the usage of this module to X2 type chips.
+
+If "#define GPS_Debugging" is specified in your program, debugging information will be sent via sertxd and the module will stop streaming various NMEA messages and save this config. After this, the module uses u-blox's UBX protocol to request data and the response data is thoroughly checked. 
+
+There are various power saving modes for the GPS and example routines and packet data are shown in this module. However, all of these still consume relatively high power, so externally disabling the power source with a MOSFET is recommended, and to save program space the power saving routines GPR_Doze and GPS_Snooze are normally commented out.
+
+The following routines are provided:
+
+gosub GPS_Initialise
+--------------------
+This runs hsersetup to setup the PICAXE high speed serial port, stops the streaming of NMEA messages and saves this config. The routine contains a commented out UBX message that allows you to revert the NEO-M8N to its default configuration if needed.
+
+gosub GPS_GetTime
+-----------------
+This primes and calls "_GPS_Receive", specifying a "UBX-NAV-TIMEUTC" message response is needed. The response is then either loaded into year, month, day, hour, minute, second and weekday variables, or an error code is returned. If "_GPS_Error" is 0 the response is OK, if it's 255 the GPS is operating but still trying to determine the time, which could take 5 minutes. Other "_GPS_Error" values are rare, but you can look up their meanings in "_GPS_Receive".
+
+gosub _GPS_Receive
+------------------
+This is an internal routine that services message requests and checks their response. If there's an error the "_GPS_Error" symbol will contain a non-zero value.
+    
+    
+NEO-M8N Notes
+=============
+This module supported the NEO-M8N board named gy-gpsv3-neo it has 5V to 3.3V supply but IO is 3.3V so it needs a level converter. A simple approach is 3k3 ohms from PICAXE, tapped to module with 5k6 ohms to ground, which gives 3.14V. Baud rate is 9600. Antenna connector is IPEX MHF 1.uFL male.
+
+Conventionally, GPS decoding often filters and decodes various streaming messages based on the NMEA protocol, which is ASCII based. Disabling these messages makes the serial connection from the NEO-M8N silent, apart from boot-up. U-Blox's own UBX protocol can then be used to request specific data and receive that response. UBX messages are binary rather than ASCII, which I found easier to process. The www.u-blox.com "u-blox M8 Receiver Description Including Protocol Specification" is your go to document, with the UBX-NAV-PVT providing all GPS data and UBX-NAV-TIMEUTC for just time.
+
+To get a UBX response just poll the message with zero payload. The reply will be the expected payload plus 6 bytes, 2 for framing, 2 for message class and ID, and 2 for checksum. The u-blox u-centre software is an easy way to see the data you need to send, including the CRC checksums.
+
+The GPS module is a heavy power consumer. The power management settings seemed to have little effect in my case, with 
+UBX-CFG-PMS set as 1Hz or 12 hours, the power only dropped from 50mA to 47mA. Disabling the receiver with UBX-RXM-PMREQ dropped the 50mA to 15mA, but this would still be high for battery use. In my projects I aim to control the GPS power supply with a MOSFET to cut the drain completely and to save some PICAXE program space, but if you want to take the soft approaches to power reduction you can remove the surrounding REM and ENDREM around the GPS_Doze and GPS_Snooze subroutines.
+
+If the board has been powered off, then dependent on signal quality, it may take up to 5 minutes to gain time information.
+
+UBX Message Example
+-------------------
+U-blox uses the term "sentences" for the data sent and received. An example message is UBX-NAV-TIMEUTC, for which the reply and request is shown below:
+
+UTC time Reply = B5 62 01 21 14 00 40 3D E3 03 11 00 00 00 7A 82 06 00 E8 07 0B 18 12 06 2E 37 3B 29 
+
+Explanation of the reply:
+
+Byte        Hex Values
+0,1         B5 62 (sync)
+2,3         01 21 (Class and ID)
+4,5         14 00 (length=20 bytes)
+6,7,8,9     40 3D E3 03 (iTOW)
+10,11,12,13 11 00 00 00 (tAcc)
+14,15,16,17 7A 82 06 00 (nano)
+18,19       E8 07 (year $07E8 = 2024)
+20          0B (month = 11)
+21          18 (day = 24)
+22          12 (hour = 18)
+23          06 (minutes = 6)
+24          2E (seconds = 46)
+25          37 (flags = $00110111, 20th byte (B19) is flags, bit2 high is validUTC.
+26,27          3B 29 (checksum)
+       
+Get UTC time (UBX-NAV-TIMEUTC) = B5 62 01 21 00 00 22 67
+
+Another useful sentence is to Save Config (UBX-CFG-CFG) = $B5,$62,$06,$09,$0D,$00,$00,$00,$00,$00,$FF,$FF,$00,$00,$00,$00,$00,$00,$17,$31,$BF
+
+
+Programming Guide
+=================
+The PICAXE X2 "timer" variable is used as a timeout for the hserin port. The timer is expected to increment in tenths of second and it will be reset to 0 after a packet request is issued to the GPS.
+
+Your program must associate byte variables to these symbols: year, month, day, hours, minutes, seconds, weekday. The data will be binary values, not ASCII encoded text, which can be easier to alter or to send to a RTC.
+
+Four symbols named _GPS_ChecksumA, _GPS_ChecksumB, _GPS_Length and _GPS_Error also need assigning to byte variables.
+
+8 bytes of bptr addressed memory is required to check the GPS message responses, the start location needs to be specified in a symbol called "GPS_Variables". 
+
+Use "#define GPS_Debugging" at least once to disable NMEA messages and save that config change.
+
+To obtain a time reading use "gosub GPS_Initialise" once in your program, then call "gosub GPS_GetTime" repeatedly until "_GPS_Error = 0".
+
+
+Sample Configuration
+====================
+
+'@GPS_NEO-M8N.basinc Variables    
+    symbol _GPS_ChecksumA = b17             'Assign symbol to any byte.
+    symbol _GPS_ChecksumB = b18             'Assign symbol to any byte.
+    symbol _GPS_Length = b19                'Assign symbol to any byte.
+    symbol _GPS_Error = b20                 'Assign symbol to any byte.
+
+'@GPS_NEO-M8N.basinc Constants
+    symbol GPS_Variables = 113              '"GPS_NEO-M8N.basinc" requires 8 bptr variables to check packet(sentence) data.
+
+'Modules
+    #include "GPS_NEO-M8N.basinc"
+
+
+#EndREM
+#EndRegion
+
+#Region "Programme Initialisation"
+'Debugging
+    'Caution: Debugging provides some nice info but causes serial transmission delays and consumes program space.
+    '#define GPS_Debugging                       'Comment out this line to turn module debugging off.
+    #ifdef GPS_Debugging
+        #define GPS_Debug sertxd
+        #define GPS_DebugBin(val) b0=val : sertxd(", bin=",#bit7,#bit6,#bit5,#bit4," ",#bit3,#bit2,#bit1,#bit0,cr,lf)
+    #else
+        #define GPS_Debug                       'Do nothing.
+        #define GPS_DebugBin(val)               'Do nothing.
+    #endif
+
+    goto GPS_End
+    
+#Endregion
+
+#Region "GPS Subroutines"
+
+GPS_Initialise:
+    pause 500                                   'Ensure GPS has booted-up.
+    
+    GPS_Debug("@GPS_Initialise")
+    'Setup hserout without background receive on hserin.
+    hsersetup B9600_8, %00000
+    #ifdef GPS_Debugging
+        'Revert to default configuration = B5 62 06 09 0D 00 FF FF 00 00 00 00 00 00 FF FF 00 00 17 2F AE
+        'hserout 0,(_
+        '    $B5,$62,$06,$09,$0D,$00,_
+        '    $FF,$FF,$00,$00,$00,$00,$00,$00,$FF,$FF,$00,$00,$17,_
+        '    $2F,$AE)
+        'pause 1000
+        
+        'The commands below stop the GPS streaming NMEA data and permanently save his config, it only needs to be run once.
+        GPS_Debug(" - Stopping NMEA streaming - ")
+        'Stop sending NMEA Data to UART port (Command UBX-CFG-PRT):
+        hserout 0,(_
+            $B5,$62,$06,$00,$14,$00,_
+            $01,$00,$00,$00,$D0,$08,$00,$00,$80,$25,$00,$00,$23,$00,$01,$00,$00,$00,$00,$00,_
+            $BC,$89)
+        pause 100
+        
+        GPS_Debug("Saving GPS config",cr,lf)
+        'Save PRT Config (UBX-CFG-CFG):
+        hserout 0,(_
+            $B5,$62,$06,$09,$0D,$00,_
+            $00,$00,$00,$00,$01,$00,$00,$00,$00,$00,$00,$00,$17,_
+            $34,$D9)
+        pause 1000
+    #endif
+    return
+
+#Rem   
+GPS_Snooze:
+    GPS_Debug("@GPS_Snooze")
+    'Sends UBX-RXM-PMREQ command to power down GPS receiver.
+    'In my case the 5V GPS supply current was reduced from 50mA to 15mA.
+    'Payload is 4 byte duration in ms, then 4 byte flag with byte0 bit1 as 1 to power down receiver.
+    
+    'To acheive maximum power saving you could wake the receiver on receive data:
+    'UBX-RXM-PMREQ with 0ms (wake only on receive data) = B5 62 02 41 08 00 00 00 00 00 02 00 00 00 4D 3B
+    hserout 0,(_
+        $B5,$62,$02,$41,$08,$00,_
+        $00,$00,$00,$00,$02,$00,$00,$00,_
+        $4D,$3B)
+    GPS_Debug(" - Wake on receive data only",cr,lf)
+    
+    'An alternative to the above is to refresh after a set time interval using the information below:
+    'UBX-RXM-PMREQ with 16384ms (wake after 16.384 seconds) = B5 62 02 41 08 00 00 40 00 00 02 00 00 00 8D FB
+    'hserout 0,(_
+    '    $B5,$62,$02,$41,$08,$00,_
+    '    $00,$40,$00,$00,$02,$00,$00,$00,_
+    '    $8D,$FB)
+    'GPS_Debug(" - Refresh every 16.384 seconds",cr,lf)
+    'Wake after 1 hour = B5 62 02 41 08 00 80 EE 36 00 02 00 00 00 F1 01
+    'Wake after 1 day  = B5 62 02 41 08 00 00 5C 26 05 02 00 00 00 D4 BC
+    
+    return
+
+GPS_Doze:
+    GPS_Debug("@GPS_Doze",cr,lf)
+    
+    'UBX-CFG-PMS as 1 Hz aggressive = B5 62 06 86 08 00 00 03 00 00 00 00 00 00 97 6F
+    'In my case the NEO-M8N 5V supply current went from 50mA to 47mA, so externally powering down the GPS is preferred.
+    'hserout 0,(_
+    '    $B5,$62,$06,$86,$08,$00,_
+    '    $00,$03,$00,$00,$00,$00,$00,$00,_
+    '    $97,$6F)
+    'GPS_Debug(" - 1 Hz aggressive",cr,lf)
+    'return    
+    
+    'UBX-CFG-PMS as 12hr interval with 300s on = B5 62 06 86 08 00 00 02 C0 A8 2C 01 00 00 2B E3
+    hserout 0,(_
+        $B5,$62,$06,$86,$08,$00,_
+        $00,$02,$C0,$A8,$2C,$01,$00,$00,_
+        $2B,$E3)
+    GPS_Debug(" - 12 hr interval",cr,lf)
+    return
+    
+#EndRem
+
+GPS_GetTime:
+    GPS_Debug("@GPS_GetTime",cr,lf)
+    'Setup pattern matching and checksum validation for received data.
+    bptr = GPS_Variables
+    @bptrinc = $B5 : @bptrinc = $62             'Frame start (UBX protocol). Decimal: 181, 98
+    @bptrinc = $01 : @bptrinc = $21             'Frame type (UBX-NAV-TIMEUTC). Decimal: 1, 33
+    @bptrinc = $14 : @bptrinc = $00             'Frame data length (20 bytes). Decimal: 20, 0
+    @bptrinc = $22 : @bptrinc = $67             'Frame checksums. Decimal: 34, 103
+    
+    gosub _GPS_Receive                          'Issue the UBX request and ensure the reply is valid.
+    
+    if _GPS_Error = 0 then
+        ptr = 25
+        weekday = @ptr AND %00000100            'Check Byte25(flags), bit2(validUTC=1). Weekday used as temp variable.
+        if weekday = 4 then
+            GPS_Debug("GPS time acquired - ")
+            ptr = 18    
+            year = @ptrinc
+            year = @ptrinc * 256 + year
+            month = @ptrinc
+            day = @ptrinc
+            hours = @ptrinc
+            minutes = @ptrinc
+            seconds = @ptrinc
+            weekday = 1                         'NB: GPS receivers are usually incapable of providing the weekday.
+            GPS_Debug("Day 1 ",#hours,":",#minutes,":",#seconds," ",#day,"/",#month,"/",#year,cr,lf)
+        else
+            GPS_Debug("GPS Time Not Available",cr,lf)
+            _GPS_Error = 255
+        endif
+    else
+        GPS_Debug("No valid data",cr,lf)
+    endif
+    
+    return
+    
+_GPS_Receive:
+'This subroutine makes a full check of the received frame/sentence. 
+    
+    GPS_Debug("@_GPS_Receive - ")
+    'Prepare to receive data.
+    ptr = 0                             'Start data storage from Scratchpad 0 (ptr)
+    @ptr = 0
+    bptr = GPS_Variables + 4
+    _GPS_Length = 6 + @bptrinc          'Position of 1st checksum (6 + data length)
+    inc bptr
+    _GPS_ChecksumA = @bptrinc           'Variables used to calculate Fletcher-16 checksum.
+    _GPS_ChecksumB = @bptr
+    bptr = GPS_Variables
+    timer = 0
+    hserptr = 0
+    
+    'Make hserin background receive to Scratchpad RAM (not M2 parts). The GPS data is accessed by @prt or @ptrinc.
+    hsersetup B9600_8, %00001           'For Rx received: hserptr-1=last byte. hserinflag=1.
+
+    'Request GPS Data by polling the command with zero payload.
+    'hserout 0,($B5,$62,$01,$21,0,0,$22,$67)
+    hserout 0,(@bptrinc,@bptrinc,@bptrinc,@bptrinc,0,0,_GPS_ChecksumA,_GPS_ChecksumB)
+    bptr = GPS_Variables
+    _GPS_ChecksumA = 0
+    _GPS_ChecksumB = 0
+    'Parse the received GPS frame/sentence to ensure it's the one expected and it's not corrupt.
+    do
+        _GPS_Error = 255                'Error codes: 0=OK; 1=Timeout; 2=SyncChar; 3=Header; 5=ChecksumA; 6=ChecksumB.
+        if timer > 20 then              'Timeout setting in tenths of a second.
+            _GPS_Error = 1
+            exit
+        endif
+        if ptr < hserptr then
+            select case ptr
+            case < 2                    'Match frame sync characters
+                _GPS_Error = 2
+                if @ptrinc <> @bptrinc then exit
+            case < 6                    'Match frame type and data length   
+                _GPS_Error = 3
+                if @ptr <> @bptrinc then exit
+                _GPS_ChecksumA = _GPS_ChecksumA + @ptrinc
+                _GPS_ChecksumB = _GPS_ChecksumB + _GPS_ChecksumA
+            case < _GPS_Length
+                _GPS_ChecksumA = _GPS_ChecksumA + @ptrinc
+                _GPS_ChecksumB = _GPS_ChecksumB + _GPS_ChecksumA
+            case = _GPS_Length          'Match ChecksumA
+                _GPS_Error = 5
+                if @ptrinc <> _GPS_ChecksumA then exit
+            case > _GPS_Length          'Match ChecksumB
+                _GPS_Error = 6
+                if @ptr <> _GPS_ChecksumB then
+                    exit
+                else
+                    _GPS_Error = 0
+                endif
+            endselect
+        endif
+    loop until _GPS_Error = 0
+
+#ifdef GPS_Debugging
+    if _GPS_Error > 0 then 
+        GPS_Debug("Bad packet: hserptr=",#hserptr,"   _GPS_Error=",#_GPS_Error)
+        select case _GPS_Error
+        case 1
+               GPS_Debug("(Timeout)")
+        case 2
+               GPS_Debug("(Sync Char)")
+        case 3
+               GPS_Debug("(Header)")
+        case 5
+               GPS_Debug("(CheckSumA)")
+        case 6
+               GPS_Debug("(ChecksumB)")
+        endselect
+        
+        GPS_Debug(cr,lf,"Data Dump from ptr 0 to ",#ptr,": ")
+        _GPS_ChecksumB = ptr            'Using _GPS_ChecksumB as a temp variable.
+        ptr = 0
+        for b10 = 0 to _GPS_ChecksumB
+            GPS_Debug(#b10,"=",#@ptrinc,",")
+        next
+    else
+        GPS_Debug("Good packet")
+    endif
+        GPS_Debug(cr,lf)
+#endif
+    
+    hsersetup B9600_8, %00000           'Turn off background receiving of hserin.
+
+    return
+  
+GPS_End:   
+#EndRegion
+
+#Region "License" 
+#Rem
+
+MIT License
+
+Copyright (c) 2025 Alan Hunt
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+#EndRem
+#EndRegion

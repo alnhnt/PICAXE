@@ -1,0 +1,175 @@
+#Region "Read Me"
+#REM
+
+            File: "Voltage_X2.basinc"
+         License: MIT (See end of file) 
+  Change History: 2024/10/23 by Alan Hunt - Corrected typos of Denominator to Dividend.
+                  2024/10/22 by Alan Hunt - 1st issue.
+
+
+Description
+===========
+This module provides some macros that calculate the power supply voltage and ADC input voltages with the 10bit ADC channels on an PICAXE X2 chip.  This is achieved with good accuracy and minimal program space and there's advice for a calibration method included in the notes too.
+
+Hopefully the macros are easy to use and understand, but sorry M2 chips are not supported.  
+
+The list of macros included:
+    GetVdd                      A word variable symbolised by Voltage_Vdd is updated with the power supply voltage in mV.
+    SetVdd(Val_mV)              If the power supply is accurately known and stable, Voltage_Vdd can be set manually.
+    VoltsByVdd(Var, Channel)    Updates a word variable, Var, with the voltage in mV from the specified Channel number.
+
+
+Limitations
+-----------
+M2 chips do not have the X2 operator "*/" that is used here for simplification.  It keeps the code simple and short by obtaining the middle word of a word multiplication, which goes most of the way towards making a division of 1024 while achieving good accuracy on the maths.
+
+In the PICAXE Forum there are several solutions to calculate Vdd and ADC input voltages with some accuracy.  There are methods to average ADC readings, or using large dividends and divisors to make the integer math easier, or a neat method of using the DAC to obtain higher value ADC readings for more accuracy etc.  Sadly, there's no DAC on my 20X2 and I was extremely short on program space too, even after swapping out a 20M2.
+
+The key problem in calculating Vdd seems to be the accuracy of the PICAXE 1.024V FVR (Fixed Voltage Reference).  In my case it was 1.1% high, which is expected as per Microchip application note AN1072 and datasheet PIC18(L)F1XK22.  If the power supply is known and stable it's preferable to use a fixed constant for Vdd to calculate ADC input voltages, which is what the SetVdd macro does.  If the supply voltage varies, perhaps being connected directly to a battery, another option to improve accuracy is to calibrate, as shown in a section below.
+
+Using the FVR to calculate Vdd presents another issue with the range of voltage uncertainty for each ADC step.  For example, each step is 5mV with a 5V supply and there's perhaps 1 bit error making 10mV, then because the calculated Vdd is roughly 5 times larger this value could be 50mV out.  A possible approach could be to reduce supply voltage making smaller ADC steps and less multiplication of uncertainty too.  In terms of percentage accuracy it's also worth noting that you need lots of steps, so you can't measure small voltages with 1% accuracy and you'd probably want a minimum ADC input of 1V when using a 5V supply.
+
+The good news is that the ADC does seem to be reasonably accurate and linear.  Measured with two 20X2 chips, if anything the readings start a little early perhaps by 1mV and finish early too by about 3mV.  At these voltage levels it's difficult to be accurate and noise will be a factor, but the readings were taken with an OWON XDM1041 bench multimeter and verified with a handheld digital multimeter. With 5.000V measured on the 20X2 PICAXE supply pins and using SetVdd(5000), the ADC was expected to read 1 between 2.4mV and 7.3mV but this reading started from a 1mV input.  Also, an ADC reading of 1023 was expected after 4997mV but the reading started to be seen at 4993mV and was consistent at 4994mV.  The table of the results is below:
+
+ADC mV | ADC Val | VoltsByVdd mV Value
+--------------------------------------
+5000     1023     4995
+4994     1023     4995
+4993     1022     4990 (occasional 1023, 4995mV)
+4000      819     3999
+3000      614     2998
+2000      410     2001 (some 409, 1997mV)
+1000      205     1000
+0200       41      200
+0100       21      102
+0050       10       48
+0027        6       29
+0021        5       24
+0016        4       19
+0012        3       14
+0007        2        9
+0006        1        4 (occasional 2, 9mV) 
+0002        1        4
+0001        0        0 (occasional 1, 4mV)
+0000        0        0
+
+
+Dithering around ADC step changes is a commonly reported issue. I found capacitance on the ADC input didn't help much when there's only 2 obvious ADC values at play.  If the readings are fluctuating more than this it probably points to the dynamics of your setup, like varying supply loads and ADC inputs, or noise.
+
+
+How it Works
+------------
+The maximum ADC value is 1023 and in basic configuration this approximately represents the PICAXE supply voltage, Vdd.  Actually, the specification states this should be a half value, so 1023 represents a voltage over 2047/2048 of Vdd, whereas a value of 1 should represent 1/2048 to 3/2048 of Vdd.  In testing the tipping point to 1023, it was found to be just under 1023/1024 of Vdd, which is a good approximation. 
+
+To measure Vdd this module simply takes an ADC reading for the internal FVR of 1.024V and scales that up.  The math is Vdd=1023*1.024/Val_ADC, but the ADC value is quite large divisor for integer maths.  Dependent on the chip and its supply voltage range of perhaps 1.8V to 5.2V, the ADC reading will be between 581 (1023*1.024V/1.8V) and 201 (1023*1.024V/5.2V).  The dividend is therefore scaled up to 10476, which is a rounding of 1023*1.024*10.  The remainder of this division is then scaled up by 100 for the final part of the division.  The integer result is then 1,000 times bigger and accurate to the last digit, meaning the answer for Vdd is given in millivolts.
+
+To calculate an ADC input voltage, the ADC reading is just scaled according to Vdd with ADC_Volts=Vdd*ADC_Val/1024.  This formula gives the lowest possible voltage at the input.  The math is performed with the X2 operator "*/", which returns the middle word of a multiplication.  This effectively divides the result by 256 and this is then divided by 4 to get the overall division of 1024.
+
+Calibration
+-----------
+The fixed voltage reference of 1.024V can vary by several percent between chips and it's also dependent on supply voltage and temperature. To halve the supply voltage errors across the possible range, Microchip AN1072 recommends calibrating at 4V.  Coincidently, 4V calibration is good when monitoring charge voltages on Li-ion cells too.
+
+To calibrate, set the supply voltage to 4000mV as monitored on the PICAXE supply pins.  Uncomment the line "'#define VoltageDebug_On", which will output information to the PICAXE Editor Terminal, then repeatedly call GetVdd from your program with 1 second pauses.  Note the ADC Value and adjust the supply up and down so you find voltages where the ADC value occasionally reads 1 higher and 1 lower.  The midpoint between these voltages is used to calculate a constant named VoltageDividend, using the formula VoltageDividend=Midpoint*ADC_Value*10.  If your FVR is accurate the reading should be 10476.  In my case, two 20X2 chips gave an ADC reading of 265, the edge voltages were 3991mV and 4004mV, the chosen midpoint was 3998mV, so VoltageDividend was 10595.  The FVR spec for the 20X2 chip is -8% to +6% and the error seen was +1.1%.
+
+
+Programming Guide
+=================
+You should use the ADCSETUP command to disable digital circuitry on the ADC Channels that you plan to use, see Manual 2.
+
+You must use the GetVdd or SetVdd macro before using the VoltsByVdd macro.  If you are using a stable regulated power supply, then it's only necessary to do this once.  The SetVdd macro is preferred if you have an accurate and stable supply to the PICAXE, the macro can be also be used for testing too.  If the PICAXE is connected to a battery where the supply voltage will change over time, then the GetVDD macro should be used immediately before every VoltsByVdd reading.
+
+To debug values to the PICAXE Editor Terminal window just uncomment this line in the module "'#define VoltageDebug_On".
+
+When monitoring battery voltages be careful not to Phantom Power your circuit through voltage protection diodes on ADC channels.  Ideally, batteries should be fully disconnected when your circuit is off to prevent battery drain, otherwise connect the ADC channel via a 1K to 10K resistor to protect the PICAXE chip.  Microchip recommends a minimum source impedance of 10K for ADC inputs.
+
+An example configuration is shown below and these statements should appear in your program before the macros are used:
+
+
+#Region "Resources"
+'Variables
+    '@Voltage_X2.basinc Variables
+    symbol Voltage_Vdd = w25                'Assign this symbol to any spare Word, it stores PICAXE supply voltage as mV.
+    symbol _VoltageADCval = w26             'Assign this symbol to any spare Word, it's an internal variable for maths.
+    symbol _VoltageModulus = w27            'Assign this symbol to any spare Word, it's an internal variable for maths.
+
+#Constants
+    '@Voltage_X2.basinc Constant
+    symbol VoltageDividend = 10595       'Adjust value for FVR inaccuracy, see "Voltage_X2.basinc" Calibration.
+
+'Modules
+    #include "Voltage_X2.basinc"
+#EndRegion
+
+#EndREM 
+#EndRegion
+
+#Region "Program"
+
+goto VoltageEnd                             'There is no code to execute, just macro definitions for the compiler.
+
+'Debugging
+'=========
+'Caution, debugging provides some nice info but causes serial transmission delays and consumes program space.
+'#define VoltageDebug_On                    'Uncomment this line to turn debugging on.
+#ifdef VoltageDebug_On
+    #define _VoltageDebug sertxd
+#else
+    #define _VoltageDebug 'Do nothing
+#endif
+
+'Macros
+'======
+#macro GetVdd
+    _VoltageDebug("@GetVdd")
+    calibadc10 _VoltageADCval                                   'Read reference 1.024V (Value = 1023 * 1.024V / Vdd)
+    Voltage_Vdd = VoltageDividend / _VoltageADCval * 100     'Obtain first 2 digits, nnxx. Max=5200(5211), Min=1800(1803)
+    _VoltageModulus = VoltageDividend // _VoltageADCval      'Find remainder. Max=580, Min=0
+    Voltage_Vdd = 100 * _VoltageModulus / _VoltageADCval + Voltage_Vdd  'Obtain last 2 digits, xxnn. Max=99(=100*580/581), Min=0
+    _VoltageDebug("  (Ref_1.024V=",#_VoltageADCval,",  Vdd=",#Voltage_Vdd," mV)",cr,lf)
+#endmacro
+
+#macro SetVdd(VoltsW)
+    _VoltageDebug("@SetVdd  (Val=",#VoltsW,")",cr,lf)
+    Voltage_Vdd = VoltsW
+#endmacro
+
+#macro VoltsByVdd(VoltsW, Channel)
+    'The measured voltage is Vdd(1800 mV to 5200 mV) * ADC_Reading(0 to 1023) / 1024(ADC_Range).  NB: ADC range is approximately 1024
+    _VoltageDebug("@VoltsByVdd")
+    readadc10 Channel, _VoltageADCval               'Read ADC Channel, the range is 0 to 1023 from Gnd to Vdd.
+    VoltsW = Voltage_Vdd */ _VoltageADCval          'Get the middle word of Vdd * ADC10, so the result is divided by 256.
+    VoltsW = VoltsW / 4                             'Then divide by 4, now we have Vdd * ADC_Reading / 1024.
+    _VoltageDebug("  (ADC",#Channel,"=",#_VoltageADCval,",  Voltage=",#VoltsW," mV)",cr,lf)
+#endmacro
+
+VoltageEnd:
+#Endregion
+
+#Region "License" 
+#Rem
+
+MIT License
+
+Copyright (c) 2024 Alan Hunt
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+#EndRem
+#EndRegion
+

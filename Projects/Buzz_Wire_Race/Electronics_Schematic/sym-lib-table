@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "MakerBuzz")(type "KiCad")(uri "${KIPRJMOD}/MakerBuzz.kicad_sym")(options "")(descr ""))
+)

@@ -1,0 +1,80 @@
+( { EESchema Netlist Version 1.1 created  2024-11-04T21:25:33+0000 }
+ ( /d0b5b8e9-7777-49bf-b9d2-dc2104da71f7 Connector_PinSocket_2.54mm:PinSocket_1x02_P2.54mm_Vertical  J1 Header
+  (    1 GNDPWR )
+  (    2 Net-(J1-Pin_2) )
+ )
+ ( /757d70ad-72cf-40bd-8c13-0efcca357be0 Potentiometer_THT:Potentiometer_Alpha_RD901F-40-00D_Single_Vertical  RV1 10K
+  (    1 Net-(D1-K) )
+  (    2 Net-(R2-Pad2) )
+  (    3 GNDPWR )
+ )
+ ( /9dc6f995-4e16-4ceb-86c9-7c2b4e80bb02 Package_TO_SOT_THT:TO-92_Inline  Q1 2N3906
+  (    1 Net-(D1-A) )
+  (    2 Net-(Q1-B) )
+  (    3 Net-(Q1-C) )
+ )
+ ( /dbc072a2-dc07-476c-b8fe-2fb9efd17c85 Capacitor_THT:C_Rect_L9.0mm_W2.5mm_P7.50mm_MKT  C3 100n
+  (    1 GNDPWR )
+  (    2 Net-(Q1-C) )
+ )
+ ( /96258362-f05f-4a9b-aa91-8eb02051ac47 Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R2 3K9
+  (    1 Net-(Q1-B) )
+  (    2 Net-(R2-Pad2) )
+ )
+ ( /a33eccf1-de30-4a6d-a962-2baffd524d00 Diode_THT:D_T-1_P10.16mm_Horizontal  D1 IN4004
+  (    1 Net-(D1-K) )
+  (    2 Net-(D1-A) )
+ )
+ ( /f3afb613-384e-4ae1-81f2-6b554ad8106f Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical  Pad2 
+  (    1 GNDPWR )
+ )
+ ( /1c813847-f0bc-4202-90e7-bcf4ab9f3e66 Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical  Pad1 
+  (    1 Net-(F1-Pad2) )
+ )
+ ( /8512f4cd-1b87-4dda-a99f-344f7595db3f Fuse:Fuseholder_Cylinder-5x20mm_Schurter_0031_8201_Horizontal_Open  F1 200mA
+  (    1 Net-(D1-A) )
+  (    2 Net-(F1-Pad2) )
+ )
+ ( /59c15159-4628-4a39-bfd9-5a56d4219fbf Capacitor_THT:C_Radial_D10.0mm_H16.0mm_P5.00mm  C2 100u
+  (    1 Net-(D1-A) )
+  (    2 GNDPWR )
+ )
+ ( /74f5b699-1ada-4385-a378-f6d9542a0b4c Package_DIP:DIP-8_W7.62mm  U1 PICAXE_08M2
+  (    1 Net-(D1-A) )
+  (    2 Net-(J2-Pin_1) )
+  (    3 unconnected-(U1-C.4_Touch/ADC/Out/In-Pad3) )
+  (    4 unconnected-(U1-C.3_In-Pad4) )
+  (    5 Net-(U1-In/Out/ADC/Touch/pwm/tune/SRQ/hi2c_sda_C.2) )
+  (    6 Net-(U1-In/Out/ADC/Touch/hserin/SRI/hi2c_scl_C.1) )
+  (    7 Net-(J1-Pin_2) )
+  (    8 GNDPWR )
+ )
+ ( /9e2bf482-56fb-4e47-98bc-7af7e840ae9b Capacitor_THT:C_Rect_L9.0mm_W2.5mm_P7.50mm_MKT  C1 100n
+  (    1 Net-(D1-A) )
+  (    2 GNDPWR )
+ )
+ ( /fff28d94-7fc8-4ef4-9ad8-4797ba0a153e Connector_PinHeader_2.54mm:PinHeader_1x01_P2.54mm_Vertical  J2 Header
+  (    1 Net-(J2-Pin_1) )
+ )
+ ( /cfdc3e72-f510-4f7f-bc17-58330637f591 Package_DIP:DIP-8_W7.62mm  U2 L9110
+  (    1 Net-(U2-OutA) )
+  (    2 Net-(Q1-C) )
+  (    3 Net-(Q1-C) )
+  (    4 Net-(U2-OutB) )
+  (    5 GNDPWR )
+  (    6 Net-(U1-In/Out/ADC/Touch/hserin/SRI/hi2c_scl_C.1) )
+  (    7 Net-(U1-In/Out/ADC/Touch/pwm/tune/SRQ/hi2c_sda_C.2) )
+  (    8 GNDPWR )
+ )
+ ( /3310f81f-6a9e-40ed-a77c-e86d412e56ef Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical  Pad4 
+  (    1 Net-(U2-OutA) )
+ )
+ ( /8627963c-931b-4539-bd14-098cd20a4d35 Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical  Pad3 
+  (    1 Net-(Pad3-Pad1) )
+ )
+ ( /20ef3914-4e4a-435a-a970-b402f94bac9b Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal  R1 33R
+  (    1 Net-(Pad3-Pad1) )
+  (    2 Net-(U2-OutB) )
+ )
+)
+*
