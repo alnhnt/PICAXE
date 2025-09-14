@@ -11,7 +11,7 @@ The device being powered was a Tigo CCA, providing solar panel optimisation, and
 ## Contents
 This project includes:	
 - [PDF Documentation](./Documents/Tigo_PSU.pdf) and its source file in LibreOffice Writer 25.2.
-- [Electronics Schematic](./Electronic_Schematic/Screenshot.jpg) and source files in  KiCad 9.0.
+- [Electronics Schematic](./Electronics_Schematic/Screenshot.jpg) and source files in  KiCad 9.0.
 - [Circuit Board Layout](./Circuit_Board/Top.jpg) based on stripboard and source file in VeroRoute v2.39.
 - [Physical Design](./Documents/Physical_Design.pdf) and source file in LibreOffice Draw 25.2.
 - [Pictures](./Pictures)
