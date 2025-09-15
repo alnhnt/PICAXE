@@ -13,7 +13,7 @@ The "basinc_Modules" folder is a library of PICAXE BASIC software modules that c
 ## Getting Started
 The easiest way to get started, without needing to understand GitHub, is to just download the files you want and then open the programs or modules in the PICAXE Editor.
 
-The easiest way to use a ``.basinc`` module is to copy it the same folder as your program, and then use ``#include "ModuleFileName.basinc"`` in your program initialization steps.  The modules contain inline documentation to help with their use.
+The easiest way to use a "`.basinc`" module is to copy the file to the same folder as your program. Then use ``#include "ModuleFileName.basinc"`` in the initialization steps of your program. Each module contains inline documentation to help with their use.
 
 ## Help and Feedback
 If you have any problems then you could read the [PICAXE Manuals](https://picaxe.com/getting-started/picaxe-manuals/), start a [Discussion](https://github.com/alnhnt/PICAXE/discussions/new/choose) or log an [Issue](https://github.com/alnhnt/PICAXE/issues/new) in this repository, or contact the [PICAXE Forum](https://picaxeforum.co.uk/).
