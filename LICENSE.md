@@ -1,8 +1,8 @@
 *Copyright (c) 2025 Alan Hunt*
 
-*Contents of this repository are covered by different licenses.*
+*Contents of this repository are covered by different licenses as defined by **`LICENSE.md`** files.*
 
-*A folder may contain a **`LICENSE.md`** file for its contents, including the contents of all subfolder descendants, and this license overrides any licenses declared at a higher level.*
+*If a folder contains a **`LICENSE.md`** file, that license applies to the contents of the entire folder structure, unless a subfolder contains another **`LICENSE.md`** file that will then apply from that level downwards.*
 
 *The license at this level is:*
 

@@ -1,10 +1,6 @@
 *Copyright (c) 2025 Alan Hunt*
 
-*Contents of this repository are covered by different licenses.*
-
-*A folder may contain a **`LICENSE.md`** file for its contents, including the contents of all subfolder descendants, and this license overrides any licenses declared at a higher level.*
-
-*The license at this level is:*
+*The following license applies to the contents of this project:*
 
 # CERN Open Hardware Licence Version 2 - Permissive
 
@@ -190,4 +186,3 @@ recipient of the Product has access to any Notices applicable to the Product.
 
   7.4 This Licence shall not be enforceable except by a Licensor acting as
       such, and third party beneficiary rights are specifically excluded.
-
