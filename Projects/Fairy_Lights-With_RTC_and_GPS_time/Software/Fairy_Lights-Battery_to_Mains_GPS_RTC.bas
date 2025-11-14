@@ -159,7 +159,6 @@ PWM Notes
 Init:
 	'Acknowledge power-up with lights and if in non-timed mode just hold there.
     LightsOn
-    stop
     low B.1
     do while Timed = 0 
         debugger("Jumper connected for non-timed mode - Just keeping the lights on.",cr,lf)
