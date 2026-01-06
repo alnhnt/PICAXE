@@ -3,12 +3,17 @@
 #REM
             File: "RTC_MCP7940N.basinc"
          License: MIT (See end of file) 
-  Change History: 2025/1/13 by Alan Hunt - 1st issue.
+  Change History: 2025/11/08 by Alan Hunt - Noted the approximate program space used.
+                  2025/1/13 by Alan Hunt - 1st issue.
 
 
 Description
 ===========
-This module provides a simple and basic interface for the MCP7940N Real-Time Clock. It provides these features:
+This module provides a simple and basic interface for the MCP7940N Real-Time Clock. 
+
+Approximately 243 bytes of program space is consumed if the main program uses a clock set, clock read, alarm set and alarm enable. The module itself is 215 bytes.
+
+The module provides these features:
     * Check the clock is running.
     * Set and read the time based on a 24 hour clock.
     * Set, clear, enable and disable an alarm.

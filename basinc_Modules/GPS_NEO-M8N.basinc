@@ -3,50 +3,59 @@
 #REM
             File: "GPS_NEO-M8N.basinc"
          License: MIT (See end of file) 
-  Change History: 2025/1/13 by Alan Hunt - 1st issue.
+  Change History: 2025/11/20 by Alan Hunt - Added support for serin and hserin commands, so M2 chips now supported too.
+                  2025/11/09 by Alan Hunt - Substantial rewrite. Removed weekday. Initialise, Snooze and Doze as Macros.
+                  2025/1/13 by Alan Hunt - 1st issue.
 
 
 Description
 ===========
-This module is used to set the configuration of a u-blox NEO-M8N GNSS board and to receive its time data, it could easily be expanded to receive position data too. The serial connection uses a PICAXE high speed serial port, receive data is buffered to Scratch Pad Memory, which limits the usage of this module to X2 type chips.
+This module provides a GPS interface to retrieve time data for PICAXE M2 and X2 chips. 
 
-If "#define GPS_Debugging" is specified in your program, debugging information will be sent via sertxd and the module will stop streaming various NMEA messages and save this config. After this, the module uses u-blox's UBX protocol to request data and the response data is thoroughly checked. 
+The physical connection is 9,600bps serial to a u-blox a NEO-M8N GNSS board. The board is configured to stop the streaming of ASCII NMEA messages and use the UBX protocol to retrieve byte values from fixed length message replies instead. The byte vales are usually easier to manage programatically for any maths, or to load data to an RTC (Real Time Clock). The received data is fully validated; debugging information is available; and power saving modes for the GPS board are provided.
 
-There are various power saving modes for the GPS and example routines and packet data are shown in this module. However, all of these still consume relatively high power, so externally disabling the power source with a MOSFET is recommended, and to save program space the power saving routines GPR_Doze and GPS_Snooze are normally commented out.
+Compiler directives instruct the module how it should operate, it can:
 
-The following routines are provided:
+    Use serial, serin and serout commands, on any GPIO pin; or
+    Use high speed serial pins in real time using peeksfr commands; or
+    Use high speed serial pins on X2 chips to read data in the background to Scratchpad RAM.
 
-gosub GPS_Initialise
---------------------
-This runs hsersetup to setup the PICAXE high speed serial port, stops the streaming of NMEA messages and saves this config. The routine contains a commented out UBX message that allows you to revert the NEO-M8N to its default configuration if needed.
 
-gosub GPS_GetTime
------------------
-This primes and calls "_GPS_Receive", specifying a "UBX-NAV-TIMEUTC" message response is needed. The response is then either loaded into year, month, day, hour, minute, second and weekday variables, or an error code is returned. If "_GPS_Error" is 0 the response is OK, if it's 255 the GPS is operating but still trying to determine the time, which could take 5 minutes. Other "_GPS_Error" values are rare, but you can look up their meanings in "_GPS_Receive".
+When using standard serial or high speed real time modes the chips must operate at 16MHz or above. When using background mode the X2 can operate with its default 8MHz clock.
 
-gosub _GPS_Receive
-------------------
-This is an internal routine that services message requests and checks their response. If there's an error the "_GPS_Error" symbol will contain a non-zero value.
-    
-    
+The following commands are provided:
+
+    GPS_GetTime         Retrieve GPS time data and load it to symbol names: year, month, day, hour, minute and second.
+    GPS_Initialise      Restores factory configuration, stops streaming NMEA messages and saves the config.
+    GPS_Snooze1d        GPS receiver powered once a day.
+    GPS_Snooze1h        GPS receiver powered once an hour.
+    GPS_Snooze1s        GPS receiver powered every 16.384 seconds.
+    GPS_SnoozeWake      GPS receiver powered on serial receive data only.
+    GPS_Doze12h         Reduce power and update every 12 hours for 300 seconds.
+    GPS_Doze1Hz         Reduce power and update once a second.
+
+
+The module consumes approximately 200 bytes of program space and uses 7 bytes of general purpose variables as the interface, which have the symbol names of year, month, day, hour, minute and second. There are a further 4 byte variables used inside the module, one of which must be assigned to b1. Dependent on the mode, either 28 bytes of either bptr or ptr memory is used; and either the time or timer system variables are set to zero during GPS_GetTime to help track timeouts of GPS messages.
+
+
 NEO-M8N Notes
 =============
-This module supported the NEO-M8N board named gy-gpsv3-neo it has 5V to 3.3V supply but IO is 3.3V so it needs a level converter. A simple approach is 3k3 ohms from PICAXE, tapped to module with 5k6 ohms to ground, which gives 3.14V. Baud rate is 9600. Antenna connector is IPEX MHF 1.uFL male.
+This module supported the NEO-M8N board named gy-gpsv3-neo it has 5V to 3.3V supply but IO is 3.3V so it needs a level converter. A simple approach is 3k3 ohms from PICAXE, tapped to module with 5k6 ohms to ground, which gives 3.14V. The serial configuration is  9600bps, True(idle high), 8 bit data, no parity, 1 stop bit. The antenna connector is an IPEX MHF 1.uFL male.
 
-Conventionally, GPS decoding often filters and decodes various streaming messages based on the NMEA protocol, which is ASCII based. Disabling these messages makes the serial connection from the NEO-M8N silent, apart from boot-up. U-Blox's own UBX protocol can then be used to request specific data and receive that response. UBX messages are binary rather than ASCII, which I found easier to process. The www.u-blox.com "u-blox M8 Receiver Description Including Protocol Specification" is your go to document, with the UBX-NAV-PVT providing all GPS data and UBX-NAV-TIMEUTC for just time.
+Conventionally, GPS decoding filters and decodes various streaming messages based on the NMEA protocol, which is ASCII based. Disabling these messages makes the serial connection from the NEO-M8N silent, apart from some boot-up messages. U-Blox's own UBX protocol can then be used to request specific data and receive that response. UBX messages are fixed length and binary rather than ASCII, which I found easier to process. The www.u-blox.com "u-blox M8 Receiver Description Including Protocol Specification" is your go to document, with the UBX-NAV-TIMEUTC message providing time data, or the UBX-NAV-PVT message providing all GPS data.
 
 To get a UBX response just poll the message with zero payload. The reply will be the expected payload plus 6 bytes, 2 for framing, 2 for message class and ID, and 2 for checksum. The u-blox u-centre software is an easy way to see the data you need to send, including the CRC checksums.
 
-The GPS module is a heavy power consumer. The power management settings seemed to have little effect in my case, with 
-UBX-CFG-PMS set as 1Hz or 12 hours, the power only dropped from 50mA to 47mA. Disabling the receiver with UBX-RXM-PMREQ dropped the 50mA to 15mA, but this would still be high for battery use. In my projects I aim to control the GPS power supply with a MOSFET to cut the drain completely and to save some PICAXE program space, but if you want to take the soft approaches to power reduction you can remove the surrounding REM and ENDREM around the GPS_Doze and GPS_Snooze subroutines.
+Like most GPS recievers, the NEO-M8N can't provide weekday information, you'd have to calculate that yourself if needed.
 
-If the board has been powered off, then dependent on signal quality, it may take up to 5 minutes to gain time information.
+The GPS board is a heavy power consumer. In my case, disabling the receiver with UBX-RXM-PMREQ reduced the current drain from 77mA to 32mA. In this mode message requests need to be preceded with a wake up, such as a duplicate request. An alternativer approach with the UBX-CFG-PMS power management settings seemed to have little effect, I tried 1Hz and 12 hours and current dropped from 77mA to 72mA. If power consumption is a concern, updating an RTC (Real Time Clock) on a daily basis and shutting down the GPS power supply with a MOSFET is a good option, but the initial GPS time retrieval could take up to 5 minutes, dependent on signal quality.
+    
 
 UBX Message Example
 -------------------
-U-blox uses the term "sentences" for the data sent and received. An example message is UBX-NAV-TIMEUTC, for which the reply and request is shown below:
+U-blox uses the term "sentences" for its UART interface messages. An example message is UBX-NAV-TIMEUTC, which provides just time data and this reply and request is shown below:
 
-UTC time Reply = B5 62 01 21 14 00 40 3D E3 03 11 00 00 00 7A 82 06 00 E8 07 0B 18 12 06 2E 37 3B 29 
+Example UBX-NAV-TIMEUTC message reply = B5 62 01 21 14 00 40 3D E3 03 11 00 00 00 7A 82 06 00 E8 07 0B 18 12 06 2E 37 3B 29 
 
 Explanation of the reply:
 
@@ -64,162 +73,264 @@ Byte        Hex Values
 23          06 (minutes = 6)
 24          2E (seconds = 46)
 25          37 (flags = $00110111, 20th byte (B19) is flags, bit2 high is validUTC.
-26,27          3B 29 (checksum)
+26,27       3B 29 (checksum)
        
-Get UTC time (UBX-NAV-TIMEUTC) = B5 62 01 21 00 00 22 67
-
-Another useful sentence is to Save Config (UBX-CFG-CFG) = $B5,$62,$06,$09,$0D,$00,$00,$00,$00,$00,$FF,$FF,$00,$00,$00,$00,$00,$00,$17,$31,$BF
+The UBX-NAV-TIMEUTC message request, notice the length is 0,0 bytes meaning this is a request = B5 62 01 21 00 00 22 67
 
 
 Programming Guide
 =================
-The PICAXE X2 "timer" variable is used as a timeout for the hserin port. The timer is expected to increment in tenths of second and it will be reset to 0 after a packet request is issued to the GPS.
+If "#define GPS_Debugging" is specified in your program, debugging information will be sent to the PICAXE Serial Out pin using sertxd.
 
-Your program must associate byte variables to these symbols: year, month, day, hours, minutes, seconds, weekday. The data will be binary values, not ASCII encoded text, which can be easier to alter or to send to a RTC.
+Ensure you run "GPS_Initialise" from your main program once. This will configure the GPS board to disable NMEA message and save the configuration permanently. After this, just comment out the line to save program space and reduce wear on the GPS board's EEPROM memmory.
 
-Four symbols named _GPS_ChecksumA, _GPS_ChecksumB, _GPS_Length and _GPS_Error also need assigning to byte variables.
+Time data is provided as binary values, not ASCII encoded text, which I found easier for math and to send to a RTC (Real Time Clock).
 
-8 bytes of bptr addressed memory is required to check the GPS message responses, the start location needs to be specified in a symbol called "GPS_Variables". 
+Your program must associate general purpose variables to the following symbols:
+    1 word for programming interface: year.
+    5 bytes for programming interface: month, day, hours, minutes and seconds.
+    4 bytes for internal module use: _GPS_ChecksumA, _GPS_ChecksumB, _GPS_Length and GPS_Error.
 
-Use "#define GPS_Debugging" at least once to disable NMEA messages and save that config change.
+If using an X2 chip with the high speed serial port in background mode there will be 28 bytes of scratchpad memory used from address zero, but this could easily overrun with errors or the use of alternate longer messages. The PICAXE X2 "timer" variable is used as a timeout for the hserin port. The timer is expected to increment in tenths of second and it will be reset to 0 after a packet request is issued to the GPS (setting up the timer is simple with Timing.basinc).
 
-To obtain a time reading use "gosub GPS_Initialise" once in your program, then call "gosub GPS_GetTime" repeatedly until "_GPS_Error = 0".
+In other modes, for X2 or M2 chips, there will be a maximum of 28 bytes of bptr memory used, starting from the location assigned by the symbol "GPS_MemStart". In the high speed serial foreground mode the hserin command is not used due to a PICAXE bug and its speed of response, instead system registers are read. So in this mode, b1 has to be reserved for the _GPS_ChecksumA symbol so that a bit check can be performed.
+
+To obtain a time reading use "GPS_GetTime" repeatedly until "GPS_Error = 0". The command issues a "gosub _GPS_GetTime" that sends a "UBX-NAV-TIMEUTC" message request and then receives and checks the reply message. If the data is Ok it will be loaded into the interface variables defined by the symbols year, month, day, hour, minute and second. If an error occurs, such as a timeout, failed checksum, or the GPS has not gained a time lock yet; then the "GPS_Error" symbol will be non-zero and the interface variables will keep their previous values. The "GPS_Error" values can be looked up in code below.
+
+The GPS_Doze commands will barely save any power consumption. The GPS_Snooze commands should reduce power by 50% but the GPS board needs waking up, which is sensed by it's receive data. A simple approach is to send a request message twice.
+
+The initialisation, doze and snooze commands are macros that intended to be used only in one program location, if at all. In particular, the initialisation is once in a lifetime to set the GPS board to stop the streaming of NMEA messages and keeping it present would wear the GPS permanent memory and consume approximately 92 bytes of extra program space.
+
+With this module loaded and one GPS_GetTime request the number of additional program bytes for each mode of operation was 222 for serial, 195 for high speed serial, and 259 for background/scratchpad.
+
+If running with clock rates above 16MHz you may need to increase timeouts for non-background/scratchpad modes.
 
 
 Sample Configuration
 ====================
 
-'@GPS_NEO-M8N.basinc Variables    
-    symbol _GPS_ChecksumA = b17             'Assign symbol to any byte.
-    symbol _GPS_ChecksumB = b18             'Assign symbol to any byte.
-    symbol _GPS_Length = b19                'Assign symbol to any byte.
-    symbol _GPS_Error = b20                 'Assign symbol to any byte.
+'Compiler Directives
+    '@GPS_NEO-M8N.basinc
+        'Debugging consumes considerable resources. Normally, comment out the line below to turn GPS debugging off.
+        '#define GPS_Debugging
+        
+        'Uncomment 1 line below to choose a serial interface mode:
+        '#define GPS_Mode_X2_Scratchpad
+        #define GPS_Mode_hser
+        '#define GPS_Mode_ser
 
-'@GPS_NEO-M8N.basinc Constants
-    symbol GPS_Variables = 113              '"GPS_NEO-M8N.basinc" requires 8 bptr variables to check packet(sentence) data.
+        'If using standard serial, edit for the pins and clock speed, but do not add equals sign or add to the lines:
+        #define GPS_Receive serin b.6,T9600_16
+        #define GPS_Send serout c.0,T9600_16
+
+        'If using high speed serial, edit for clock speed, but do not add equals sign or add to the line:
+        #define GPS_HSetup hsersetup B9600_16
+        
+        'Specify the starting bptr address for storage of GPS messages (28 bytes required when not using scratchpad):
+        symbol GPS_MemStart = 80
+    
+'Variables
+    '@GPS_NEO-M8N.basinc Variables
+    symbol _GPS_ChecksumA = b1              'Assign symbol to a byte (this has to be b1 if using "#define GPS_Mode_hser").
+    symbol _GPS_ChecksumB = b2              'Assign symbol to any byte.
+    symbol _GPS_Length = b3                 'Assign symbol to any byte.
+    symbol GPS_Error = b4                  'Assign symbol to any byte.
+    symbol seconds = b5                     'Assign symbol to any byte.
+    symbol minutes = b6                     'Assign symbol to any byte.
+    symbol hours = b7                       'Assign symbol to any byte.
+    symbol day = b8                         'Assign symbol to any byte.
+    symbol month = b9                       'Assign symbol to any byte.
+    symbol year = w5                        'Assign symbol to any word.
+
 
 'Modules
     #include "GPS_NEO-M8N.basinc"
+
+Initialisation:
+    'GPS_Initialise                         'Uncomment this line only once, this saves program space and wear on GPS EEPROM.
 
 
 #EndREM
 #EndRegion
 
-#Region "Programme Initialisation"
+#Region "Module Commands and Debugging"
+
+#define GPS_GetTime gosub _GPS_GetTime
+
 'Debugging
-    'Caution: Debugging provides some nice info but causes serial transmission delays and consumes program space.
-    '#define GPS_Debugging                       'Comment out this line to turn module debugging off.
-    #ifdef GPS_Debugging
-        #define GPS_Debug sertxd
-        #define GPS_DebugBin(val) b0=val : sertxd(", bin=",#bit7,#bit6,#bit5,#bit4," ",#bit3,#bit2,#bit1,#bit0,cr,lf)
-    #else
-        #define GPS_Debug                       'Do nothing.
-        #define GPS_DebugBin(val)               'Do nothing.
-    #endif
+#ifdef GPS_Debugging
+    #define GPS_Debug sertxd
+    #define GPS_DebugBin(val) b0=val : sertxd(", bin=",#bit7,#bit6,#bit5,#bit4," ",#bit3,#bit2,#bit1,#bit0,cr,lf)
+#else
+    #define GPS_Debug                       'Do nothing.
+    #define GPS_DebugBin(val)               'Do nothing.
+#endif
 
-    goto GPS_End
-    
-#Endregion
-
-#Region "GPS Subroutines"
-
-GPS_Initialise:
-    pause 500                                   'Ensure GPS has booted-up.
+'GPS_Initialisation
+#macro GPS_Initialise
     
     GPS_Debug("@GPS_Initialise")
-    'Setup hserout without background receive on hserin.
-    hsersetup B9600_8, %00000
-    #ifdef GPS_Debugging
-        'Revert to default configuration = B5 62 06 09 0D 00 FF FF 00 00 00 00 00 00 FF FF 00 00 17 2F AE
-        'hserout 0,(_
-        '    $B5,$62,$06,$09,$0D,$00,_
-        '    $FF,$FF,$00,$00,$00,$00,$00,$00,$FF,$FF,$00,$00,$17,_
-        '    $2F,$AE)
-        'pause 1000
-        
-        'The commands below stop the GPS streaming NMEA data and permanently save his config, it only needs to be run once.
-        GPS_Debug(" - Stopping NMEA streaming - ")
-        'Stop sending NMEA Data to UART port (Command UBX-CFG-PRT):
-        hserout 0,(_
-            $B5,$62,$06,$00,$14,$00,_
-            $01,$00,$00,$00,$D0,$08,$00,$00,$80,$25,$00,$00,$23,$00,$01,$00,$00,$00,$00,$00,_
-            $BC,$89)
-        pause 100
-        
-        GPS_Debug("Saving GPS config",cr,lf)
-        'Save PRT Config (UBX-CFG-CFG):
-        hserout 0,(_
-            $B5,$62,$06,$09,$0D,$00,_
-            $00,$00,$00,$00,$01,$00,$00,$00,$00,$00,$00,$00,$17,_
-            $34,$D9)
-        pause 1000
-    #endif
-    return
-
-#Rem   
-GPS_Snooze:
-    GPS_Debug("@GPS_Snooze")
-    'Sends UBX-RXM-PMREQ command to power down GPS receiver.
-    'In my case the 5V GPS supply current was reduced from 50mA to 15mA.
-    'Payload is 4 byte duration in ms, then 4 byte flag with byte0 bit1 as 1 to power down receiver.
+    pause 2000                              'Wait to ensure board has booted-up. Generous value in case of high clockrate.
     
-    'To acheive maximum power saving you could wake the receiver on receive data:
-    'UBX-RXM-PMREQ with 0ms (wake only on receive data) = B5 62 02 41 08 00 00 00 00 00 02 00 00 00 4D 3B
-    hserout 0,(_
-        $B5,$62,$02,$41,$08,$00,_
+    'Revert GPS board to default configuration = B5 62 06 09 0D 00 FF FF 00 00 00 00 00 00 FF FF 00 00 17 2F AE
+    GPS_Debug("- Reverting to default configuration",cr,lf)     'UBX-CFG-CFG message.
+    GPS_Send,($B5,$62,$06,$09,$0D,$00,_
+        $FF,$FF,$00,$00,$00,$00,$00,$00,$FF,$FF,$00,$00,$17,_
+        $2F,$AE)
+    pause 1000
+    
+    GPS_Debug("- Stopping NMEA streaming",cr,lf)                'UBX-CFG-PRT message.
+    GPS_Send,($B5,$62,$06,$00,$14,$00,_
+        $01,$00,$00,$00,$D0,$08,$00,$00,$80,$25,$00,$00,$23,$00,$01,$00,$00,$00,$00,$00,_
+        $BC,$89)
+    pause 1000
+
+    GPS_Debug("- Permanently saving GPS config",cr,lf)          'UBX-CFG-CFG message.
+    GPS_Send,($B5,$62,$06,$09,$0D,$00,_
+        $00,$00,$00,$00,$01,$00,$00,$00,$00,$00,$00,$00,$17,_
+        $34,$D9)
+    pause 1000
+#endmacro
+
+'Macros for low power operation
+'------------------------------
+'Snooze uses the UBX-RXM-PMREQ message to power down the GPS receiver for a set interval.
+'The message contains a 4 byte, LSB first, duration as mS; then a 4 byte flag with byte0 bit1 as 1 to power down receiver.
+#macro GPS_Snooze1d
+
+    GPS_Debug("@_GPS_Snooze1d - Wake once a day",cr,lf)   
+    'Wake after 1 day  = B5 62 02 41 08 00 00 5C 26 05 02 00 00 00 D4 BC
+    GPS_Send,($B5,$62,$02,$41,$08,$00,_
+        $00,$5C,$26,$05,$02,$00,$00,$00,_
+        $D4,$BC)
+#endmacro
+
+#macro GPS_Snooze1h
+    GPS_Debug("@_GPS_Snooze1h - Wake once an hour",cr,lf)   
+    'Wake after 1 hour  = B5 62 02 41 08 00 80 EE 36 00 02 00 00 00 F1 01
+    GPS_Send,($B5,$62,$02,$41,$08,$00,_
+        $00,$5C,$26,$05,$02,$00,$00,$00,_
+        $D4,$BC)  
+#endmacro
+
+#macro GPS_Snooze16s
+    GPS_Debug("@_GPS_Snooze16s - Wake every 16.384 seconds",cr,lf)   
+    'Wake after 16.384 seconds = B5 62 02 41 08 00 00 40 00 00 02 00 00 00 8D FB
+    GPS_Send,($B5,$62,$02,$41,$08,$00,_
+        $00,$40,$00,$00,$02,$00,$00,$00,_
+        $8D,$FB)
+#endmacro
+
+#macro GPS_SnoozeWake
+    GPS_Debug("@_GPS_SnoozeWake - Wake on serial data",cr,lf)     
+    'Wake on receive data (UBX-RXM-PMREQ with 0ms) = B5 62 02 41 08 00 00 00 00 00 02 00 00 00 4D 3B
+    GPS_Send,($B5,$62,$02,$41,$08,$00,_
         $00,$00,$00,$00,$02,$00,$00,$00,_
         $4D,$3B)
-    GPS_Debug(" - Wake on receive data only",cr,lf)
-    
-    'An alternative to the above is to refresh after a set time interval using the information below:
-    'UBX-RXM-PMREQ with 16384ms (wake after 16.384 seconds) = B5 62 02 41 08 00 00 40 00 00 02 00 00 00 8D FB
-    'hserout 0,(_
-    '    $B5,$62,$02,$41,$08,$00,_
-    '    $00,$40,$00,$00,$02,$00,$00,$00,_
-    '    $8D,$FB)
-    'GPS_Debug(" - Refresh every 16.384 seconds",cr,lf)
-    'Wake after 1 hour = B5 62 02 41 08 00 80 EE 36 00 02 00 00 00 F1 01
-    'Wake after 1 day  = B5 62 02 41 08 00 00 5C 26 05 02 00 00 00 D4 BC
-    
-    return
+#endmacro
 
-GPS_Doze:
-    GPS_Debug("@GPS_Doze",cr,lf)
-    
-    'UBX-CFG-PMS as 1 Hz aggressive = B5 62 06 86 08 00 00 03 00 00 00 00 00 00 97 6F
-    'In my case the NEO-M8N 5V supply current went from 50mA to 47mA, so externally powering down the GPS is preferred.
-    'hserout 0,(_
-    '    $B5,$62,$06,$86,$08,$00,_
-    '    $00,$03,$00,$00,$00,$00,$00,$00,_
-    '    $97,$6F)
-    'GPS_Debug(" - 1 Hz aggressive",cr,lf)
-    'return    
-    
-    'UBX-CFG-PMS as 12hr interval with 300s on = B5 62 06 86 08 00 00 02 C0 A8 2C 01 00 00 2B E3
-    hserout 0,(_
-        $B5,$62,$06,$86,$08,$00,_
+#macro GPS_Doze12h
+    GPS_Debug("@_GPS_Doze12h - Wake for 5 mins every 12 hours",cr,lf)
+    'Use UBX-CFG-PMS to specify a 12hr interval with 300s uptime = B5 62 06 86 08 00 00 02 C0 A8 2C 01 00 00 2B E3
+    GPS_Send,($B5,$62,$06,$86,$08,$00,_
         $00,$02,$C0,$A8,$2C,$01,$00,$00,_
         $2B,$E3)
-    GPS_Debug(" - 12 hr interval",cr,lf)
-    return
-    
-#EndRem
+#endmacro
 
-GPS_GetTime:
-    GPS_Debug("@GPS_GetTime",cr,lf)
-    'Setup pattern matching and checksum validation for received data.
-    bptr = GPS_Variables
-    @bptrinc = $B5 : @bptrinc = $62             'Frame start (UBX protocol). Decimal: 181, 98
-    @bptrinc = $01 : @bptrinc = $21             'Frame type (UBX-NAV-TIMEUTC). Decimal: 1, 33
-    @bptrinc = $14 : @bptrinc = $00             'Frame data length (20 bytes). Decimal: 20, 0
-    @bptrinc = $22 : @bptrinc = $67             'Frame checksums. Decimal: 34, 103
+#macro GPS_Doze1Hz
+    GPS_Debug("@_GPS_Doze1Hz - Wake once a second",cr,lf)
+    'UBX-CFG-PMS as 1 Hz aggressive = B5 62 06 86 08 00 00 03 00 00 00 00 00 00 97 6F
+    GPS_Send,($B5,$62,$06,$86,$08,$00,_
+        $00,$03,$00,$00,$00,$00,$00,$00,_
+        $97,$6F)
+#endmacro
+#Endregion
+
+#Region "GPS_Mode_X2_Scratchpad"
+
+#ifdef GPS_Mode_X2_Scratchpad
+    #undefine GPS_Send
+    #define GPS_Send hserout 0
     
-    gosub _GPS_Receive                          'Issue the UBX request and ensure the reply is valid.
+    goto GPS_End
+
+_GPS_GetTime:
+    GPS_Debug("@GPS_GetTime(Scratchpad)",cr,lf)
     
-    if _GPS_Error = 0 then
-        ptr = 25
-        weekday = @ptr AND %00000100            'Check Byte25(flags), bit2(validUTC=1). Weekday used as temp variable.
-        if weekday = 4 then
+    'Make hserin background receive to Scratchpad RAM. The GPS data is accessed by @prt or @ptrinc.
+    GPS_HSetup, %00001           'Sets hserptr=0. When data received hserinflag=1 and last byte is hserptr-1.
+    
+    'Request GPS Data by messaging with zero payload.
+    GPS_Send,($B5,$62,$01,$21,0,0,$22,$67)
+    
+    'Prepare to receive data.
+    ptr = 0                             'Start data storage from Scratchpad 0
+    @ptr = 0
+    timer = 0
+    _GPS_Length = 26                    'Total Length of Reply Message, excluding checksums.
+    _GPS_ChecksumA = 0
+    _GPS_ChecksumB = 0
+        
+    'Parse the received GPS frame/sentence to ensure it's the one expected and it's not corrupt.
+    do
+        GPS_Error = 255
+        if timer > 20 then              'Timeout setting in tenths of a second.
+            GPS_Debug("Timeout")
+            GPS_Error = 1
+            exit
+        endif
+        if ptr < hserptr then
+            select case ptr 
+            case < 2                    'Match header
+                if @ptr <> $B5 AND @ptrinc <> $62 then
+                     GPS_Debug("Bad Header")
+                    GPS_Error = 2
+                    exit
+                endif
+            case < 4                    'Match type   
+                if @ptr <> $01 AND @ptr <> $21 then
+                    GPS_Debug("Bad Type")
+                    GPS_Error = 3
+                    exit
+                endif
+                _GPS_ChecksumA = _GPS_ChecksumA + @ptrinc
+                _GPS_ChecksumB = _GPS_ChecksumB + _GPS_ChecksumA
+            case < 6                    'Match length   
+                if @ptr <> $00 AND @ptr <> $14 then
+                    GPS_Debug("Bad Length")
+                    GPS_Error = 4
+                    exit
+                endif
+                _GPS_ChecksumA = _GPS_ChecksumA + @ptrinc
+                _GPS_ChecksumB = _GPS_ChecksumB + _GPS_ChecksumA
+            case < _GPS_Length
+                _GPS_ChecksumA = _GPS_ChecksumA + @ptrinc
+                _GPS_ChecksumB = _GPS_ChecksumB + _GPS_ChecksumA
+            case = _GPS_Length          'Match ChecksumA
+                if @ptrinc <> _GPS_ChecksumA then
+                    GPS_Debug("Bad CheckSumA")
+                    GPS_Error = 5
+                    exit
+                endif
+            case > _GPS_Length          'Match ChecksumB
+                if @ptr <> _GPS_ChecksumB then
+                    GPS_Debug("Bad CheckSumB")    
+                    GPS_Error = 6
+                    exit
+                else
+                    GPS_Debug("Good Message")
+                    GPS_Error = 0
+                endif
+            endselect
+        endif
+    loop until GPS_Error = 0
+
+    GPS_HSetup, %00000           'Turn off background receiving of hserin. Hserin still enabled to keep logic high.
+
+    if GPS_Error = 0 then
+        ptr = 25                            'Set RAM Scratchpad pointer, ptr, to byte 25 (the message flags).
+        @ptr = @ptr AND %00000100           'Check the flag byte for bit2(validUTC=1).
+        if @ptr = 4 then
             GPS_Debug("GPS time acquired - ")
             ptr = 18    
             year = @ptrinc
@@ -229,114 +340,155 @@ GPS_GetTime:
             hours = @ptrinc
             minutes = @ptrinc
             seconds = @ptrinc
-            weekday = 1                         'NB: GPS receivers are usually incapable of providing the weekday.
-            GPS_Debug("Day 1 ",#hours,":",#minutes,":",#seconds," ",#day,"/",#month,"/",#year,cr,lf)
+            GPS_Debug(#hours,":",#minutes,":",#seconds," ",#day,"/",#month,"/",#year,cr,lf)
         else
             GPS_Debug("GPS Time Not Available",cr,lf)
-            _GPS_Error = 255
+            GPS_Error = 7
         endif
     else
-        GPS_Debug("No valid data",cr,lf)
-    endif
-    
-    return
-    
-_GPS_Receive:
-'This subroutine makes a full check of the received frame/sentence. 
-    
-    GPS_Debug("@_GPS_Receive - ")
-    'Prepare to receive data.
-    ptr = 0                             'Start data storage from Scratchpad 0 (ptr)
-    @ptr = 0
-    bptr = GPS_Variables + 4
-    _GPS_Length = 6 + @bptrinc          'Position of 1st checksum (6 + data length)
-    inc bptr
-    _GPS_ChecksumA = @bptrinc           'Variables used to calculate Fletcher-16 checksum.
-    _GPS_ChecksumB = @bptr
-    bptr = GPS_Variables
-    timer = 0
-    hserptr = 0
-    
-    'Make hserin background receive to Scratchpad RAM (not M2 parts). The GPS data is accessed by @prt or @ptrinc.
-    hsersetup B9600_8, %00001           'For Rx received: hserptr-1=last byte. hserinflag=1.
-
-    'Request GPS Data by polling the command with zero payload.
-    'hserout 0,($B5,$62,$01,$21,0,0,$22,$67)
-    hserout 0,(@bptrinc,@bptrinc,@bptrinc,@bptrinc,0,0,_GPS_ChecksumA,_GPS_ChecksumB)
-    bptr = GPS_Variables
-    _GPS_ChecksumA = 0
-    _GPS_ChecksumB = 0
-    'Parse the received GPS frame/sentence to ensure it's the one expected and it's not corrupt.
-    do
-        _GPS_Error = 255                'Error codes: 0=OK; 1=Timeout; 2=SyncChar; 3=Header; 5=ChecksumA; 6=ChecksumB.
-        if timer > 20 then              'Timeout setting in tenths of a second.
-            _GPS_Error = 1
-            exit
-        endif
-        if ptr < hserptr then
-            select case ptr
-            case < 2                    'Match frame sync characters
-                _GPS_Error = 2
-                if @ptrinc <> @bptrinc then exit
-            case < 6                    'Match frame type and data length   
-                _GPS_Error = 3
-                if @ptr <> @bptrinc then exit
-                _GPS_ChecksumA = _GPS_ChecksumA + @ptrinc
-                _GPS_ChecksumB = _GPS_ChecksumB + _GPS_ChecksumA
-            case < _GPS_Length
-                _GPS_ChecksumA = _GPS_ChecksumA + @ptrinc
-                _GPS_ChecksumB = _GPS_ChecksumB + _GPS_ChecksumA
-            case = _GPS_Length          'Match ChecksumA
-                _GPS_Error = 5
-                if @ptrinc <> _GPS_ChecksumA then exit
-            case > _GPS_Length          'Match ChecksumB
-                _GPS_Error = 6
-                if @ptr <> _GPS_ChecksumB then
-                    exit
-                else
-                    _GPS_Error = 0
-                endif
-            endselect
-        endif
-    loop until _GPS_Error = 0
-
 #ifdef GPS_Debugging
-    if _GPS_Error > 0 then 
-        GPS_Debug("Bad packet: hserptr=",#hserptr,"   _GPS_Error=",#_GPS_Error)
-        select case _GPS_Error
-        case 1
-               GPS_Debug("(Timeout)")
-        case 2
-               GPS_Debug("(Sync Char)")
-        case 3
-               GPS_Debug("(Header)")
-        case 5
-               GPS_Debug("(CheckSumA)")
-        case 6
-               GPS_Debug("(ChecksumB)")
-        endselect
-        
-        GPS_Debug(cr,lf,"Data Dump from ptr 0 to ",#ptr,": ")
-        _GPS_ChecksumB = ptr            'Using _GPS_ChecksumB as a temp variable.
-        ptr = 0
-        for b10 = 0 to _GPS_ChecksumB
-            GPS_Debug(#b10,"=",#@ptrinc,",")
-        next
-    else
-        GPS_Debug("Good packet")
-    endif
+        if GPS_Error > 0 then 
+            GPS_Debug(cr,lf,"ptr@",#ptr," Data Dump from byte 0 to 27: ")
+            ptr = 0
+            _GPS_ChecksumA = 0            'NB: Using _GPS_ChecksumA as a temp variable.
+            do
+                GPS_Debug(#ptr,"=",#@ptrinc,",")
+                inc _GPS_ChecksumA
+            loop until _GPS_ChecksumA = 27
+        endif
         GPS_Debug(cr,lf)
 #endif
+    endif   
     
-    hsersetup B9600_8, %00000           'Turn off background receiving of hserin.
+    return
+   
+#endif
+#EndRegion
+
+#Region "GPS_Mode_hser and GPS_Mode_ser"
+
+#ifndef GPS_Mode_X2_Scratchpad
+    goto GPS_End
+    
+_GPS_GetTime:
+    GPS_Debug("@GPS_GetTime - ")
+    
+    #ifdef GPS_Mode_ser
+        GPS_Debug("Serin")
+        'This mode is good for fixed length messages, like UBX protocol, on any input (tried with 20M2 at 16Mhz).
+        
+        'Message request for UBX-NAV-TIMEUTC data.
+        serout c.0,T9600_16,($B5,$62,$01,$21,0,0,$22,$67)
+        
+        'Get message reply.
+        bptr = GPS_MemStart                     'bptr is the RAM Variables pointer, where received data is written.
+        @bptrinc = 181
+        @bptrinc = 98
+        @bptrinc = 1
+        @bptrinc = 33
+        serin [4000],b.6,T9600_16,(181,98,1,33),@bptrinc,@bptrinc,@bptrinc,@bptrinc,@bptrinc,@bptrinc,@bptrinc,@bptrinc,@bptrinc,@bptrinc,@bptrinc,@bptrinc,@bptrinc,@bptrinc,@bptrinc,@bptrinc,@bptrinc,@bptrinc,@bptrinc,@bptrinc,@bptrinc,@bptrinc,@bptrinc,@bptrinc        '1s timeout for 16MHzM2 (2s for 16MhzX2), read 24 bytes after UBX-NAV-TIMEUTC is seen.
+             
+    #else        
+        GPS_Debug("HSerPeek")
+        'This mode is good for variable length messages on hser port with 20M2 at 16Mz. Hserin is not used due to a bug.
+        #undefine GPS_Send
+        #define GPS_Send hserout 0
+    
+        GPS_HSetup, %00000                      'Enable hserin with idle logic high and no background receive.
+        
+        GPS_Send,($B5,$62,$01,$21,0,0,$22,$67)  'Send message request.
+        time = 0                                'Time counter on M2 chips, increments 0.5s@8Mhz, 1s@16Mhz, 0.5s@32MHz.
+        bptr = GPS_MemStart
+        do
+            peeksfr $11, b1                     'Read the hardware serial status register.
+            if bit13 = 1 then                   'If bit13 is 1 then there's data to read.
+                peeksfr $79, b1                 'Read the byte from the receive buffer. 
+                @bptrinc = b1                   'Can't replace b1 with @bptrinc in the line above, it just gives zeros.
+            endif
+        loop until time > 2
+
+    #endif
+    _GPS_Length = bptr - GPS_MemStart
+    GPS_Debug(" - Read ",#_GPS_Length, " bytes",cr,lf)
+        
+    'Parse the received data to ensure integrity of a reply message.
+    'Error codes: 0=OK; 1=Timeout; 2=Header; 3=Type; 4=Length; 5=ChecksumA; 6=ChecksumB.
+    bptr = GPS_MemStart
+    if _GPS_Length = 0 then
+        GPS_Debug("Timeout")
+        GPS_Error = 1
+    elseif @bptrinc <> $B5 OR @bptrinc <> $62 then
+        GPS_Debug("Bad Header")
+        GPS_Error = 2
+    elseif @bptrinc <> $01 OR @bptrinc <> $21 then
+        GPS_Debug("Bad Type")
+        GPS_Error = 3
+    elseif _GPS_Length <> 28 then
+        GPS_Debug("Bad Length")
+        GPS_Error = 4
+    else
+        bptr = GPS_MemStart + 2            'No checksum check on header bytes.
+        _GPS_Length = 0                    
+        _GPS_ChecksumA = 0
+        _GPS_ChecksumB = 0
+        do
+            _GPS_ChecksumA = _GPS_ChecksumA + @bptrinc
+            _GPS_ChecksumB = _GPS_ChecksumB + _GPS_ChecksumA
+            inc _GPS_Length
+        loop until _GPS_Length = 24         'Stop checksum check on last byte of data.
+        _GPS_Length = 28
+        if @bptrinc <> _GPS_ChecksumA then
+            GPS_Debug("Bad CheckSumA")
+            GPS_Error = 5
+        else
+            if @bptr <> _GPS_ChecksumB then
+                GPS_Debug("Bad CheckSumB")
+                GPS_Error = 6
+            else
+                GPS_Debug("Good Message")
+                GPS_Error = 0
+                bptr = GPS_MemStart + 25
+                @bptr = @bptr AND %00000100           'Check Byte25(flags), bit2(validUTC=1).
+                if @bptr = 4 then
+                    GPS_Debug(" - GPS Time Acquired - ")
+                    bptr = GPS_MemStart + 18    
+                    year = @bptrinc
+                    year = @bptrinc * 256 + year
+                    month = @bptrinc
+                    day = @bptrinc
+                    hours = @bptrinc
+                    minutes = @bptrinc
+                    seconds = @bptrinc
+                    GPS_Debug(#hours,":",#minutes,":",#seconds," ",#day,"/",#month,"/",#year)
+                else
+                    GPS_Debug(" - GPS Time Not Available")
+                    GPS_Error = 7
+                endif
+            endif
+        endif
+    endif
+    
+    #ifdef GPS_Debugging
+        if GPS_Error > 0 then 
+            GPS_Debug(cr,lf,"Data Dump from byte 0 to 27: ")
+            bptr = GPS_MemStart
+            _GPS_ChecksumA = 0
+            do
+                GPS_Debug(#bptr,"=",#@bptrinc,",")
+                inc _GPS_ChecksumA
+            loop until _GPS_ChecksumA = 27
+        endif
+        GPS_Debug(cr,lf)
+    #endif
 
     return
-  
+#endif
+
 GPS_End:   
 #EndRegion
 
 #Region "License" 
-#Rem
+#REM
 
 MIT License
 
