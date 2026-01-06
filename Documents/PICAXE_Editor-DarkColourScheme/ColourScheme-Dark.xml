@@ -1,0 +1,373 @@
+<?xml version="1.0"?>
+<SyntaxLanguages>
+	<!-- PICAXE Language Definition -->
+	<SyntaxLanguage Key="PICAXE" LanguageDefinitionVersion="4.0" Secure="False" SyntaxLanguageTypeName="PicaxeEditor.PICAXEDynamicSyntax, PicaxeEditor" xmlns="http://ActiproSoftware/SyntaxEditor/4.0/LanguageDefinition">
+		<!-- String Properties -->
+		<Properties>
+			<Property Key="Creator" Value="Revolution Education Ltd" />
+			<Property Key="Copyright" Value="Copyright (c) 2014 Revolution Education Ltd.  All rights reserved." />
+			<Property Key="LineCommentDelimiter" Value=";" />
+		</Properties>
+		<!-- Triggers -->
+		<Triggers>
+			<AutoReplaceTrigger Key="AutoReplaceTrigger">
+				<AutoReplaceTriggerActivators>
+					<AutoReplaceTriggerActivator Character="	" />
+					<AutoReplaceTriggerActivator Character="&#xD;" />
+					<AutoReplaceTriggerActivator Character=" " />
+					<AutoReplaceTriggerActivator Character="$" />
+					<AutoReplaceTriggerActivator Character="%" />
+					<AutoReplaceTriggerActivator Character="'" />
+					<AutoReplaceTriggerActivator Character="(" />
+					<AutoReplaceTriggerActivator Character=";" />
+					<AutoReplaceTriggerActivator Character="[" />
+					<AutoReplaceTriggerActivator Character="`" />
+				</AutoReplaceTriggerActivators>
+				<AutoReplaceTriggerValidStates>
+					<AutoReplaceTriggerValidState State="DefaultState" />
+				</AutoReplaceTriggerValidStates>
+			</AutoReplaceTrigger>
+			<KeyPressTrigger Key="MemberListTrigger" Character=".">
+				<KeyPressTriggerValidStates>
+					<KeyPressTriggerValidState State="DefaultState" />
+				</KeyPressTriggerValidStates>
+			</KeyPressTrigger>
+		</Triggers>
+		<!-- Highlighting Styles -->
+		<Styles>
+			<Style Key="DefaultStyle" Name="Text" ForeColor="#D2691E" FontFamilyName="Liberation Mono" FontSize="12" />
+			<Style Key="SelectedText" Name="Selected Text" ForeColor="#FFFFFF" BackColor="#0078D7" />
+			<Style Key="CollapsedText" Name="Collapsed Text" ForeColor="#808080" BackColor="#FFFFFF" BorderColor="#808080" BorderStyle="Solid" />
+			<Style Key="BracketHighlightingStyle" Name="Bracket Highlighting" ForeColor="#000000" BackColor="#F2F9FB" BorderColor="#ADD8E6" BorderStyle="Solid" />
+			<Style Key="Comment" Name="Comment" ForeColor="#008000" />
+			<Style Key="Operator" Name="Operator" ForeColor="#30A89C" />
+			<Style Key="Keyword" Name="Keyword" ForeColor="#1E90FF" />
+			<Style Key="PreprocessorKeyword" Name="Preprocessor Keyword" ForeColor="#1E90FF" />
+			<Style Key="String" Name="String" ForeColor="#B22222" />
+			<Style Key="Number" Name="Number" ForeColor="#30A89C" />
+			<Style Key="Whitespace" Name="Whitespace" ForeColor="#808080" />
+			<Style Key="KeywordError" Name="Keyword Error" ForeColor="#0000FF" UnderlineColor="#FF0000" UnderlineStyle="Wave" />
+			<Style Key="PreprocessorKeywordError" Name="Preprocessor Keyword Error" ForeColor="#000080" UnderlineColor="#FF0000" UnderlineStyle="Wave" />
+			<Style Key="PreprocessorKeywordRegion" Name="Preprocessor Keyword Region" ForeColor="#808080" />
+			<Style Key="Variable" Name="Variable" ForeColor="#800080" />
+			<Style Key="VariableUser" Name="Variable User" ForeColor="#800080" />
+			<Style Key="Constant" Name="Constant" ForeColor="#4169E1" />
+			<Style Key="ConstantUser" Name="Constant User" ForeColor="#0000FF" />
+			<Style Key="Label" Name="Label" ForeColor="#0000FF" />
+			<Style Key="LabelSpecial" Name="Label Special" ForeColor="#0000FF" Bold="True" UnderlineColor="#0000FF" UnderlineStyle="Dot" />
+			<Style Key="NumberHex" Name="Number Hex" ForeColor="#30A89C" Bold="True" />
+			<Style Key="NumberBinary" Name="Number Binary" ForeColor="#30A89C" />
+			<Style Key="NumberOctal" Name="Number Octal" ForeColor="#30A89C" />
+			<Style Key="NumberFloat" Name="Number Float" ForeColor="#30A89C" UnderlineColor="#FF0000" UnderlineStyle="Wave" />
+			<Style Key="Assembler" Name="Assembler" ForeColor="#006400" />
+			<Style Key="CommentURLStyle" Name="Comment URL" ForeColor="#008000" UnderlineColor="#008000" UnderlineStyle="Dot" />
+		</Styles>
+		<!-- Macros -->
+		<Macros>
+			<Macro Key="URLMacro" Value="https?:// [\w\-]+ (\. [\w\-]+)* (/ [\w\-./?%=]*)?" />
+		</Macros>
+		<!-- States -->
+		<States>
+			<!-- DefaultState State -->
+			<State Key="DefaultState" TokenKey="DefaultToken" Style="DefaultStyle">
+				<!-- Pattern Groups -->
+				<PatternGroups>
+					<RegexPatternGroup TokenKey="WhitespaceToken" PatternValue="{WhitespaceMacro}+" IsWhitespace="True" />
+					<RegexPatternGroup TokenKey="LineTerminatorToken" PatternValue="{LineTerminatorMacro}" IsWhitespace="True" />
+					<ExplicitPatternGroup Key="OpenBracePatternGroup" TokenKey="BraceBegin" PatternValue="{" IsWhitespace="True" EndBracket="CloseBracePatternGroup" />
+					<ExplicitPatternGroup Key="CloseBracePatternGroup" TokenKey="BraceEnd" PatternValue="}" IsWhitespace="True" StartBracket="OpenBracePatternGroup" />
+					<ExplicitPatternGroup Key="OpenParenthesisPatternGroup" TokenKey="OpenParenthesisToken" PatternValue="(" EndBracket="CloseParenthesisPatternGroup" />
+					<ExplicitPatternGroup Key="CloseParenthesisPatternGroup" TokenKey="CloseParenthesisToken" PatternValue=")" StartBracket="OpenParenthesisPatternGroup" />
+					<ExplicitPatternGroup Key="OpenBracketPatternGroup" TokenKey="OpenBracketToken" PatternValue="[" EndBracket="CloseBracketPatternGroup" />
+					<ExplicitPatternGroup Key="CloseBracketPatternGroup" TokenKey="CloseBracketToken" PatternValue="]" StartBracket="OpenBracketPatternGroup" />
+					<ExplicitPatternGroup TokenKey="LabelSpecial" Style="LabelSpecial" LookBehind="[^a-zA-Z_0-9\.@#]|^|\n" CaseSensitivity="AutoCorrect">
+						<ExplicitPatterns>
+							interrupt: start0: start1: start2: start3: start4: start5: start6: start7: 
+						</ExplicitPatterns>
+					</ExplicitPatternGroup>
+					<ExplicitPatternGroup TokenKey="PreprocessorKeywordRegion" Style="PreprocessorKeywordRegion" PatternValue="#Region" LookBehind="[^a-zA-Z_0-9\.@#]|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|\z|\n" CaseSensitivity="AutoCorrect" />
+					<ExplicitPatternGroup TokenKey="PreprocessorKeywordEndRegion" Style="PreprocessorKeywordRegion" PatternValue="#Endregion" LookBehind="[^a-zA-Z_0-9\.@#]|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|\z|\n" CaseSensitivity="AutoCorrect" />
+					<RegexPatternGroup TokenKey="PreprocessorKeyword" Style="PreprocessorKeyword" PatternValue="#Picaxe[\s]*(08m2le|08m2|08m|08)" LookBehind="[^a-zA-Z_0-9\.@#]|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|\z|\n" />
+					<RegexPatternGroup TokenKey="PreprocessorKeyword" Style="PreprocessorKeyword" PatternValue="#Picaxe[\s]*(14m2|14m)" LookBehind="[^a-zA-Z_0-9\.@#]|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|\z|\n" />
+					<RegexPatternGroup TokenKey="PreprocessorKeyword" Style="PreprocessorKeyword" PatternValue="#Picaxe[\s]*(18a|18m2_c|18m2|18m|18x|18)" LookBehind="[^a-zA-Z_0-9\.@#]|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|\z|\n" />
+					<RegexPatternGroup TokenKey="PreprocessorKeyword" Style="PreprocessorKeyword" PatternValue="#Picaxe[\s]*(20m2|20m|20x2)" LookBehind="[^a-zA-Z_0-9\.@#]|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|\z|\n" />
+					<RegexPatternGroup TokenKey="PreprocessorKeyword" Style="PreprocessorKeyword" PatternValue="#Picaxe[\s]*(28a|28x1|28x2|28x|28)" LookBehind="[^a-zA-Z_0-9\.@#]|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|\z|\n" />
+					<RegexPatternGroup TokenKey="PreprocessorKeyword" Style="PreprocessorKeyword" PatternValue="#Picaxe[\s]*(40x1|40x2|40x)" LookBehind="[^a-zA-Z_0-9\.@#]|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|\z|\n" />
+					<RegexPatternGroup Key="PreprocessorKeywordIndentIf" TokenKey="PreprocessorKeywordIndent" Style="PreprocessorKeyword" PatternValue="#Ifdef|#Ifndef|#If" LookBehind="[^a-zA-Z_0-9\.@#]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" EndBracket="PreprocessorKeywordOutdentEndIf" />
+					<RegexPatternGroup TokenKey="PreprocessorKeywordInOutdent" Style="PreprocessorKeyword" PatternValue="#Else" LookBehind="[^a-zA-Z_0-9\.@#]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" />
+					<RegexPatternGroup Key="PreprocessorKeywordOutdentEndIf" TokenKey="PreprocessorKeywordOutdent" Style="PreprocessorKeyword" PatternValue="#Endif" LookBehind="[^a-zA-Z_0-9\.@#]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" StartBracket="PreprocessorKeywordIndentIf" />
+					<ExplicitPatternGroup TokenKey="PreprocessorKeyword" Style="PreprocessorKeyword" LookBehind="[^a-zA-Z_0-9\.@#]|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|\z|\n" CaseSensitivity="AutoCorrect">
+						<ExplicitPatterns>
+							#Com #Define #Else #Elseif #End #Endif #Endmacro #Endregion #Error #Freq 
+							#Gosubs #If #Ifdef #Ifndef #Include #Macro #No_data #No_debug #No_end #No_table 
+							#Picaxe #Simspeed #Simtask #Sim #Slot #Terminal #Title #Undefine 
+						</ExplicitPatterns>
+					</ExplicitPatternGroup>
+					<ExplicitPatternGroup TokenKey="LabelSpecial" Style="LabelSpecial" LookBehind="[^a-zA-Z_0-9\.@#]|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|\z|\n" CaseSensitivity="AutoCorrect">
+						<ExplicitPatterns>
+							Ppp_filename Ppp_filepath Ppp_includefilename Ppp_includefilepath Ppp_date Ppp_date_uk Ppp_date_us Ppp_datetime Ppp_time 
+						</ExplicitPatterns>
+					</ExplicitPatternGroup>
+					<ExplicitPatternGroup Key="KeywordIndentIf" TokenKey="Keyword" Style="Keyword" PatternValue="If" LookBehind="[^a-zA-Z_0-9\.@#]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" CaseSensitivity="AutoCorrect" EndBracket="KeywordOutdentEndIf" />
+					<ExplicitPatternGroup Key="KeywordIndentThen" TokenKey="KeywordIndent" Style="Keyword" PatternValue="Then" LookBehind="[^a-zA-Z_0-9\.@#]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" CaseSensitivity="AutoCorrect" />
+					<RegexPatternGroup Key="KeywordOutdentEndIf" TokenKey="KeywordOutdent" Style="Keyword" PatternValue="End[\s]*(If)" LookBehind="[^a-zA-Z_0-9\.@#]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" StartBracket="KeywordIndentIf" />
+					<RegexPatternGroup Key="KeywordIndentSelect" TokenKey="KeywordIndent" Style="Keyword" PatternValue="Select[\s]*Case|Select" LookBehind="[^a-zA-Z_0-9\.@#]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" EndBracket="KeywordOutdentEndSelect" />
+					<RegexPatternGroup Key="KeywordOutdentEndSelect" TokenKey="KeywordOutdent" Style="Keyword" PatternValue="End[\s]*(Select)" LookBehind="[^a-zA-Z_0-9\.@#]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" StartBracket="KeywordIndentSelect" />
+					<ExplicitPatternGroup Key="KeywordIndentFor" TokenKey="KeywordIndent" Style="Keyword" PatternValue="For" LookBehind="[^a-zA-Z_0-9\.@#]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" CaseSensitivity="AutoCorrect" EndBracket="KeywordOutdentNext" />
+					<ExplicitPatternGroup Key="KeywordOutdentNext" TokenKey="KeywordOutdent" Style="Keyword" PatternValue="Next" LookBehind="[^a-zA-Z_0-9\.@#]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" CaseSensitivity="AutoCorrect" StartBracket="KeywordIndentFor" />
+					<ExplicitPatternGroup Key="KeywordIndentDo" TokenKey="KeywordIndent" Style="Keyword" PatternValue="Do" LookBehind="[^a-zA-Z_0-9\.@#]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" CaseSensitivity="AutoCorrect" EndBracket="KeywordOutdentLoop" />
+					<ExplicitPatternGroup Key="KeywordOutdentLoop" TokenKey="KeywordOutdent" Style="Keyword" PatternValue="Loop" LookBehind="[^a-zA-Z_0-9\.@#]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" CaseSensitivity="AutoCorrect" StartBracket="KeywordIndentDo" />
+					<RegexPatternGroup TokenKey="KeywordInOutdent" Style="Keyword" PatternValue="Else[\s]*If" LookBehind="[^a-zA-Z_0-9\.@#]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" />
+					<ExplicitPatternGroup TokenKey="KeywordInOutdent" Style="Keyword" LookBehind="[^a-zA-Z_0-9\.@#]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" CaseSensitivity="AutoCorrect">
+						<ExplicitPatterns>
+							Case Else 
+						</ExplicitPatterns>
+					</ExplicitPatternGroup>
+					<ExplicitPatternGroup TokenKey="Keyword" Style="Keyword" LookBehind="[^a-zA-Z_0-9\.@#]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" CaseSensitivity="AutoCorrect" IsContentDivider="True">
+						<ExplicitPatterns>
+							End Stop Reset Return 
+						</ExplicitPatterns>
+					</ExplicitPatternGroup>
+					<RegexPatternGroup TokenKey="Keyword" Style="Keyword" PatternValue="switch[\s]*(off|on)" LookBehind="[^a-zA-Z_0-9\.@#]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" />
+					<ExplicitPatternGroup TokenKey="Keyword" Style="Keyword" LookBehind="[^a-zA-Z_0-9\.@#]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" CaseSensitivity="AutoCorrect">
+						<ExplicitPatterns>
+							Adcconfig Backward Bcdtoascii Bcdtobin Bintoascii Bintobcd Booti2c Branch Button Calibadc 
+							Calibadc10 Calibfreq Call Clearbit Compsetup Count Daclevel Dacsetup Data Debug 
+							Dec Disablebod Disabletime Disconnect Downto Doze Eeprom Enablebod Enabletime End 
+							Exit Forward Fvrsetup Get Gosub Goto Halt Hi2cin Hi2cout Hi2csetup 
+							Hibernate High Hintsetup Hpwm Hpwmduty Hpwmout Hserin Hserout Hsersetup Hshin 
+							Hshout Hspiin Hspiout Hspisetup I2cmaster I2cread I2cslave I2cwrite If Inc 
+							Infrain Infrain2 Infraout Input Inputtype Irin Irout Kbin Kbled Keyin 
+							Keyled Let Lookdown Lookup Low Nap Off On Output Owin 
+							Owout Pause Pauseus Pause_int Peek Peeksfr Play Poke Pokesfr Porta 
+							Portb Portc Portd Pop Popram Pot Pullup Pulsin Pulsout Push 
+							Pushram Put Pwm Pwmdiv4 Pwmdiv16 Pwmdiv64 Pwmduty Pwmout Random Read 
+							Readadc Readadc10 Readdac Readdac10 Readfirmware Readi2c Readinternaltemp Readmem Readoutputs Readowclk 
+							Readowsn Readpinsc Readportc Readrevision Readsilicon Readtable Readtemp Readtemp12 Reconnect Reset 
+							Resetowclk Restart Resume Return Reverse Rfin Rfout Run Sensor Serin 
+							Serout Serrxd Sertxd Servo Servopos Setbit Setfreq Setint Setintflags Settimer 
+							Shiftin Shiftout Shin Shout Sleep Sound Spiin Spiout Srlatch Srreset 
+							Srset Step Stop Suspend Swap Switch Switchoff Switchon Symbol Table 
+							Tablecopy Tmr3setup To Toggle Togglebit Touch Touch16 Tune Ultra Uniin 
+							Uniout Until Vartoascii Wait While Word Write Writei2c Writemem 
+						</ExplicitPatterns>
+					</ExplicitPatternGroup>
+					<RegexPatternGroup TokenKey="Number" Style="Number" PatternValue="[\-][0-9]+" LookBehind="[^a-zA-Z_0-9\-\.@]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" />
+					<ExplicitPatternGroup TokenKey="Operator" Style="Operator">
+						<ExplicitPatterns>
+							&amp;/ &amp; |/ | ^/ ^ + - ** * 
+							// / 
+						</ExplicitPatterns>
+					</ExplicitPatternGroup>
+					<ExplicitPatternGroup TokenKey="Operator" Style="Operator" LookBehind="[^a-zA-Z_0-9\.@#]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" CaseSensitivity="AutoCorrect">
+						<ExplicitPatterns>
+							Andnot And Nand Xornot Xor Xnor Ornot Or Nor Min 
+							Max Bit Set Clear Dig Rev 
+						</ExplicitPatterns>
+					</ExplicitPatternGroup>
+					<ExplicitPatternGroup TokenKey="Operator" Style="Operator" LookBehind="[^a-zA-Z_0-9\.@#]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" CaseSensitivity="AutoCorrect">
+						<ExplicitPatterns>
+							Atan Cos Dcd Inv Ncd Nob Not Sin Sqr 
+						</ExplicitPatterns>
+					</ExplicitPatternGroup>
+					<ExplicitPatternGroup TokenKey="Operator" Style="Operator" PatternValue="Is" LookBehind="[^a-zA-Z_0-9\.@#]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" CaseSensitivity="AutoCorrect" />
+					<ExplicitPatternGroup TokenKey="Operator" Style="Operator" CaseSensitivity="AutoCorrect">
+						<ExplicitPatterns>
+							= != &lt;&gt; &gt; &lt; &gt;= &lt;= 
+						</ExplicitPatterns>
+					</ExplicitPatternGroup>
+					<RegexPatternGroup TokenKey="Variable" Style="Variable" PatternValue="dir[abcd].[01234567]" />
+					<RegexPatternGroup TokenKey="Variable" Style="Variable" PatternValue="outpin[abcd].[01234567]" />
+					<RegexPatternGroup TokenKey="Variable" Style="Variable" PatternValue="pin[abcd].[01234567]" />
+					<ExplicitPatternGroup TokenKey="Variable" Style="Variable" LookBehind="[^a-zA-Z_0-9\.@]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" CaseSensitivity="AutoCorrect">
+						<ExplicitPatterns>
+							@bptr @bptrdec @bptrinc @ptr @ptrdec @ptrinc adcsetup adcsetup2 b0 b1 
+							b2 b3 b4 b5 b6 b7 b8 b9 b10 b11 
+							b12 b13 b14 b15 b16 b17 b18 b19 b20 b21 
+							b22 b23 b24 b25 b26 b27 b28 b29 b30 b31 
+							b32 b33 b34 b35 b36 b37 b38 b39 b40 b41 
+							b42 b43 b44 b45 b46 b47 b48 b49 b50 b51 
+							b52 b53 b54 b55 bit0 bit1 bit2 bit3 bit4 bit5 
+							bit6 bit7 bit8 bit9 bit10 bit11 bit12 bit13 bit14 bit15 
+							bit16 bit17 bit18 bit19 bit20 bit21 bit22 bit23 bit24 bit25 
+							bit26 bit27 bit28 bit29 bit30 bit31 bptr bptr0 bptr1 bptr2 
+							bptr3 bptr4 bptr5 bptr6 bptr7 compflag compvalue dir0 dir1 dir2 
+							dir3 dir4 dir5 dir6 dir7 dirs dirsa dirsb dirsc dirsd 
+							flag0 flag1 flag2 flag3 flag4 flag5 flag6 flag7 flag8 flag9 
+							flag10 flag11 flag12 flag13 flag14 flag15 flags flagsh flagsl hi2cflag 
+							hi2clast hint0flag hint1flag hint2flag hintflag hserflag hserinflag hserinptr hserptr infra 
+							input0 input1 input2 input3 input4 input5 input6 input7 keyvalue outpin0 
+							outpin1 outpin2 outpin3 outpin4 outpin5 outpin6 outpin7 outpins outpinsa outpinsb 
+							outpinsc outpinsd pin0 pin1 pin2 pin3 pin4 pin5 pin6 pin7 
+							pins pinsa pinsb pinsc pinsd ptr ptr0 ptr1 ptr2 ptr3 
+							ptr4 ptr5 ptr6 ptr7 ptr8 ptr9 ptr10 ptr11 ptr12 ptr13 
+							ptr14 ptr15 ptrh ptrl s_w0 s_w1 s_w2 s_w3 s_w4 s_w5 
+							s_w6 s_w7 task time timer timer3 toflag trisc w0 w1 
+							w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 
+							w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 
+							w22 w23 w24 w25 w26 w27 
+						</ExplicitPatterns>
+					</ExplicitPatternGroup>
+					<ExplicitPatternGroup TokenKey="Constant" Style="Constant" LookBehind="[^a-zA-Z_0-9\.@]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" CaseSensitivity="AutoCorrect">
+						<ExplicitPatterns>
+							_08 _08M _08M2 _14M _14M2 _18 _18A _18M _18X _18M2 
+							_20M _20M2 _20X2 _28 _28A _28X _28X1 _28X2 _40X _40X1 
+							_40X2 All B300_4 B300_8 B300_16 B300_20 B300_32 B300_40 B300_64 B600_4 
+							B600_8 B600_16 B600_20 B600_32 B600_40 B600_64 B1200_4 B1200_8 B1200_16 B1200_20 
+							B1200_32 B1200_40 B1200_64 B2400_4 B2400_8 B2400_16 B2400_20 B2400_32 B2400_40 B2400_64 
+							B4800_4 B4800_8 B4800_16 B4800_20 B4800_32 B4800_40 B4800_64 B9600_4 B9600_8 B9600_16 
+							B9600_20 B9600_32 B9600_40 B9600_64 B14400_4 B14400_8 B14400_16 B14400_20 B14400_32 B14400_40 
+							B14400_64 B19200_4 B19200_8 B19200_16 B19200_20 B19200_32 B19200_40 B19200_64 B28800_4 B28800_8 
+							B28800_16 B28800_20 B28800_32 B28800_40 B28800_64 B31250_4 B31250_8 B31250_16 B31250_20 B31250_32 
+							B31250_40 B31250_64 B38400_4 B38400_8 B38400_16 B38400_20 B38400_32 B38400_40 B38400_64 B57600_4 
+							B57600_8 B57600_16 B57600_20 B57600_32 B57600_40 B57600_64 B76800_4 B76800_8 B76800_16 B76800_20 
+							B76800_32 B76800_40 B76800_64 B115200_4 B115200_8 B115200_16 B115200_20 B115200_32 B115200_40 B115200_64 
+							Cls Cr Em4 Em8 Em16 Em20 Em32 Em40 Em64 Fvr1024 
+							Fvr2048 Fvr4096 I2cbyte I2cword I2cfast I2cfast4 I2cfast8 I2cfast16 I2cfast20 I2cfast32 
+							I2cfast40 I2cfast64 I2cfast_4 I2cfast_8 I2cfast_16 I2cfast_20 I2cfast_32 I2cfast_40 I2cfast_64 I2cslow 
+							I2cslow4 I2cslow8 I2cslow16 I2cslow20 I2cslow32 I2cslow40 I2cslow64 I2cslow_4 I2cslow_8 I2cslow_16 
+							I2cslow_20 I2cslow_32 I2cslow_40 I2cslow_64 It_raw_h It_raw_l It_5v0 It_4v5 It_3v5 It_4v0 
+							It_3v3 It_3v0 K31 K62 K125 K250 K500 Lf Lsbfirst Lsbfirst_h 
+							Lsbfirst_l Lsbpost Lsbpost_h Lsbpost_l Lsbpre Lsbpre_h Lsbpre_l Msbfirst_h Msbfirst_l Msbfirst 
+							Msbpost Msbpost_h Msbpost_l Msbpre Msbpre_h Msbpre_l M1 M2 M4 M8 
+							M16 M32 M64 Mdefault N300 N300_4 N600 N600_4 N600_8 N1200 
+							N1200_4 N1200_8 N2400 N2400_4 N2400_8 N2400_16 N4800 N4800_4 N4800_8 N4800_16 
+							N4800_32 N9600 N9600_8 N9600_16 N9600_32 N9600_64 N19200 N19200_16 N19200_32 N19200_64 
+							N38400 N38400_32 N38400_64 N76800 N76800_64 Output0 Output1 Output2 Output3 Output4 
+							Output5 Output6 Output7 Ownoreset Ownoreset_bit Owresetafter Owresetafter_bit Owresetbefore Owresetbefore_bit Owresetboth 
+							Owresetboth_bit Owresetfirst Owresetfirst_bit Pwmfull_f Pwmfull_r Pwmhalf Pwmsingle Pwmhhhh Pwmhlhl Pwmlhlh 
+							Pwmllll Simulating Spifast Spimedium Spislow Spimode00 Spimode00e Spimode01 Spimode01e Spimode10 
+							Spimode10e Spimode11 Spimode11e Tab T1s_4 T1s_8 T1s_16 T1s_20 T1s_32 T1s_40 
+							T1s_64 T300 T300_4 T600 T600_4 T600_8 T1200 T1200_4 T1200_8 T2400 
+							T2400_4 T2400_8 T2400_16 T4800 T4800_4 T4800_8 T4800_16 T4800_32 T9600 T9600_8 
+							T9600_16 T9600_32 T9600_64 T19200 T19200_16 T19200_32 T19200_64 T38400 T38400_32 T38400_64 
+							T76800 T76800_64 Uni_crrd Uni_eral Uni_rdsr Uni_read Uni_setal Uni_wren Uni_wrdi Uni_write 
+							Uni_wrsr 
+						</ExplicitPatterns>
+					</ExplicitPatternGroup>
+					<RegexPatternGroup TokenKey="Constant" Style="Constant" PatternValue="[abcd]\.[01234567]" LookBehind="[^a-zA-Z_0-9\.@]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" />
+					<RegexPatternGroup TokenKey="Constant" Style="Constant" PatternValue="s\.[0123456789]+" LookBehind="[^a-zA-Z_0-9\.@]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" />
+					<RegexPatternGroup TokenKey="Constant" Style="Constant" PatternValue="sa\.[012345]" LookBehind="[^a-zA-Z_0-9\.@]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" />
+					<ExplicitPatternGroup TokenKey="VariableUser" Style="VariableUser" LookBehind="[^a-zA-Z_0-9\.@]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" CaseSensitivity="AutoCorrect" />
+					<ExplicitPatternGroup TokenKey="ConstantUser" Style="ConstantUser" LookBehind="[^a-zA-Z_0-9\.@]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" CaseSensitivity="AutoCorrect" />
+					<RegexPatternGroup TokenKey="NumberHex" Style="NumberHex" PatternValue="0[Xx]([0-9a-fA-F]+)" LookBehind="[^a-zA-Z_0-9\.@]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" />
+					<RegexPatternGroup TokenKey="NumberHex" Style="NumberHex" PatternValue="\$[0-9a-fA-F]+" LookBehind="[^a-zA-Z_0-9\.@]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" />
+					<RegexPatternGroup TokenKey="NumberBinary" Style="NumberBinary" PatternValue="0[Bb][01]+" LookBehind="[^a-zA-Z_0-9\.@]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" />
+					<RegexPatternGroup TokenKey="NumberBinary" Style="NumberBinary" PatternValue="\%[01]+" LookBehind="[^a-zA-Z_0-9\.@]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" />
+					<RegexPatternGroup TokenKey="NumberOctal" Style="NumberOctal" PatternValue="0[Oo][0-7]+" LookBehind="[^a-zA-Z_0-9\.@]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" />
+					<RegexPatternGroup TokenKey="NumberFloat" Style="NumberFloat" PatternValue="[0-9]+\.[0-9]+" LookBehind="[^a-zA-Z_0-9\.@]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" />
+					<RegexPatternGroup TokenKey="NumberDouble" Style="NumberFloat" PatternValue="[\-]?[0-9]+\.[0-9]+([eE][\+\-]?[0-9]+)?" LookBehind="[^a-zA-Z_0-9\.@]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" />
+					<RegexPatternGroup TokenKey="Number" Style="Number" PatternValue="[0-9]+" LookBehind="[^a-zA-Z_0-9\.@]|:|^|\n" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" />
+					<ExplicitPatternGroup TokenKey="ColonToken" PatternValue=":" />
+				</PatternGroups>
+				<!-- Child States -->
+				<ChildStates>
+					<ChildState Key="CommentState" />
+					<ChildState Key="BlockCommentState" />
+					<ChildState Key="SplitDirectiveState" />
+					<ChildState Key="DirectiveState" />
+					<ChildState Key="PppDirectiveState" />
+					<ChildState Key="AssemblerDirectiveState" />
+					<ChildState Key="ErrorDirectiveTextState" />
+					<ChildState Key="SplitCommandState" />
+					<ChildState Key="CommandState" />
+					<ChildState Key="OperatorState" />
+					<ChildState Key="NamedOperatorState" />
+					<ChildState Key="FunctionOperatorState" />
+					<ChildState Key="ComparisonState" />
+					<ChildState Key="VariableState" />
+					<ChildState Key="ConstantState" />
+					<ChildState Key="LabelState" />
+					<ChildState Key="NumberState" />
+					<ChildState Key="AssemblerNumberState" />
+					<ChildState Key="StringState" />
+				</ChildStates>
+			</State>
+			<!-- CommentState State -->
+			<State Key="CommentState" TokenKey="DefaultToken" Style="Comment">
+				<!-- Scopes -->
+				<Scopes>
+					<Scope>
+						<RegexPatternGroup Type="StartScope" TokenKey="CommentStartToken" PatternValue="[;'`]" />
+						<RegexPatternGroup Type="EndScope" TokenKey="CommentEndToken" PatternValue="{LineTerminatorMacro}" IsWhitespace="True" />
+					</Scope>
+					<Scope>
+						<ExplicitPatternGroup Type="StartScope" TokenKey="RemCommentStartToken" PatternValue="Rem" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" />
+						<RegexPatternGroup Type="EndScope" TokenKey="RemCommentEndToken" PatternValue="{LineTerminatorMacro}" IsWhitespace="True" />
+					</Scope>
+				</Scopes>
+				<!-- Pattern Groups -->
+				<PatternGroups>
+					<RegexPatternGroup TokenKey="CommentURLToken" Style="CommentURLStyle" PatternValue="{URLMacro}" />
+				</PatternGroups>
+			</State>
+			<!-- BlockCommentState State -->
+			<State Key="BlockCommentState" TokenKey="DefaultToken" Style="Comment">
+				<!-- Scopes -->
+				<Scopes>
+					<Scope>
+						<ExplicitPatternGroup Type="StartScope" TokenKey="PreprocessorKeywordRem" PatternValue="#Rem" LookAhead="[^a-zA-Z_0-9\.@#]|:|\z|\n" CaseSensitivity="AutoCorrect" IsWhitespace="True" />
+						<ExplicitPatternGroup Type="EndScope" TokenKey="PreprocessorKeywordEndRem" PatternValue="#Endrem" CaseSensitivity="AutoCorrect" IsWhitespace="True" />
+					</Scope>
+				</Scopes>
+				<!-- Pattern Groups -->
+				<PatternGroups>
+					<RegexPatternGroup TokenKey="BlockCommentURLToken" Style="CommentURLStyle" PatternValue="{URLMacro}" />
+				</PatternGroups>
+			</State>
+			<!-- SplitDirectiveState State -->
+			<State Key="SplitDirectiveState" TokenKey="DefaultToken" Style="PreprocessorKeyword" />
+			<!-- DirectiveState State -->
+			<State Key="DirectiveState" TokenKey="DefaultToken" Style="PreprocessorKeyword" />
+			<!-- PppDirectiveState State -->
+			<State Key="PppDirectiveState" TokenKey="DefaultToken" Style="PreprocessorKeyword" />
+			<!-- AssemblerDirectiveState State -->
+			<State Key="AssemblerDirectiveState" TokenKey="DefaultToken" Style="PreprocessorKeyword" />
+			<!-- ErrorDirectiveTextState State -->
+			<State Key="ErrorDirectiveTextState" TokenKey="DefaultToken" Style="String">
+				<!-- Pattern Groups -->
+				<PatternGroups>
+					<ExplicitPatternGroup TokenKey="String" PatternValue="[\.]" LookBehind="#Error[\s]" />
+					<RegexPatternGroup TokenKey="String" PatternValue="{LineTerminatorMacro}" IsWhitespace="True" />
+				</PatternGroups>
+			</State>
+			<!-- SplitCommandState State -->
+			<State Key="SplitCommandState" TokenKey="DefaultToken" Style="Keyword" />
+			<!-- CommandState State -->
+			<State Key="CommandState" TokenKey="DefaultToken" Style="Keyword" />
+			<!-- OperatorState State -->
+			<State Key="OperatorState" TokenKey="DefaultToken" Style="Operator" />
+			<!-- NamedOperatorState State -->
+			<State Key="NamedOperatorState" TokenKey="DefaultToken" Style="Operator" />
+			<!-- FunctionOperatorState State -->
+			<State Key="FunctionOperatorState" TokenKey="DefaultToken" Style="Operator" />
+			<!-- ComparisonState State -->
+			<State Key="ComparisonState" TokenKey="DefaultToken" Style="Operator" />
+			<!-- VariableState State -->
+			<State Key="VariableState" TokenKey="DefaultToken" Style="Variable" />
+			<!-- ConstantState State -->
+			<State Key="ConstantState" TokenKey="DefaultToken" Style="Constant" />
+			<!-- LabelState State -->
+			<State Key="LabelState" TokenKey="DefaultToken" Style="LabelSpecial" />
+			<!-- NumberState State -->
+			<State Key="NumberState" TokenKey="DefaultToken" Style="Number" />
+			<!-- AssemblerNumberState State -->
+			<State Key="AssemblerNumberState" TokenKey="DefaultToken" Style="Number" />
+			<!-- StringState State -->
+			<State Key="StringState" TokenKey="DefaultToken" Style="String">
+				<!-- Scopes -->
+				<Scopes>
+					<Scope>
+						<ExplicitPatternGroup Type="StartScope" TokenKey="String" PatternValue="&quot;" />
+						<RegexPatternGroup Type="EndScope" TokenKey="String" PatternValue="[\&quot;\n]" />
+					</Scope>
+				</Scopes>
+				<!-- Pattern Groups -->
+				<PatternGroups>
+					<ExplicitPatternGroup TokenKey="String" PatternValue="&quot;&quot;" />
+					<RegexPatternGroup TokenKey="String" PatternValue="[^\&quot;\n]+" />
+				</PatternGroups>
+			</State>
+		</States>
+	</SyntaxLanguage>
+</SyntaxLanguages>
