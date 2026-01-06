@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-16"?>
+<ApplicationSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RecentDocuments>
+    <string>C:\users\alan\Documents\PICAXE Editor\Fairy_Lights-Morse_Code.bas</string>
+    <string>C:\users\alan\Documents\PICAXE Editor\Debugger.basinc</string>
+    <string>C:\users\alan\Documents\PICAXE Editor\GPS_NEO-M8N.basinc</string>
+    <string>C:\users\alan\Documents\PICAXE Editor\Morse_Encoder.basinc</string>
+    <string>C:\users\alan\Documents\PICAXE Editor\Timing.basinc</string>
+    <string>C:\users\alan\Documents\PICAXE Editor\fromWinPC\Fairy_Lights-Morse_Code.bas</string>
+    <string>C:\Users\alan\Maker\HiDrive_Maker_Backup\Fairy_Lights-Morse_Code\Software\Fairy_Lights-Morse_Code.bas</string>
+    <string>C:\Users\alan\Maker\HiDrive_Maker_Backup\Fairy_Lights-Morse_Code\Software\Morse_Encoder.basinc</string>
+    <string>C:\Users\alan\Maker\HiDrive_Maker_Backup\Fairy_Lights-Morse_Code\Software\GPS_NEO-M8N.basinc</string>
+  </RecentDocuments>
+  <RecentWorkspaces />
+  <UseRibbon>true</UseRibbon>
+  <PICAXETypesEnabled>
+    <string>PICAXE-08M2</string>
+    <string>PICAXE-08M2LE</string>
+    <string>PICAXE-14M2</string>
+    <string>PICAXE-18M2</string>
+    <string>PICAXE-20M2</string>
+    <string>PICAXE-20X2</string>
+    <string>PICAXE-28X2</string>
+    <string>PICAXE-40X2</string>
+  </PICAXETypesEnabled>
+  <PICAXETypesDisabled>
+    <string>PICAXE-08</string>
+    <string>PICAXE-08M</string>
+    <string>PICAXE-14M</string>
+    <string>PICAXE-18</string>
+    <string>PICAXE-18A</string>
+    <string>PICAXE-18M</string>
+    <string>PICAXE-18X</string>
+    <string>PICAXE-20M</string>
+    <string>PICAXE-28</string>
+    <string>PICAXE-28A</string>
+    <string>PICAXE-28X</string>
+    <string>PICAXE-28X1</string>
+    <string>PICAXE-40X</string>
+    <string>PICAXE-40X1</string>
+    <string>PICAXE-18M2(v2.C)</string>
+    <string>PICAXE-18M2(WJEC-ASSEMBLER)</string>
+    <string>PICAXE-18X(V8.0-8.1)</string>
+    <string>PICAXE-28X(V7.0-7.3)</string>
+    <string>PICAXE-28X1(AQA-ASSEMBLER)</string>
+    <string>PICAXE-28X1(OCR-ASSEMBLER)</string>
+    <string>PICAXE-28X1(VA.0)</string>
+    <string>PICAXE-40X(V7.2-7.3)</string>
+  </PICAXETypesDisabled>
+  <UsePreProcessor>true</UsePreProcessor>
+  <UserAutoReplaceList />
+  <LoadLastWorkspace>true</LoadLastWorkspace>
+  <WorkspaceActive>false</WorkspaceActive>
+  <WorkspaceAddFiles>true</WorkspaceAddFiles>
+  <WorkspaceAddManuals>false</WorkspaceAddManuals>
+  <LargeToolbarIcons>false</LargeToolbarIcons>
+  <ShowRibbonSectionTitles>true</ShowRibbonSectionTitles>
+  <TabbedLayout>true</TabbedLayout>
+  <ShowLineNumbers>true</ShowLineNumbers>
+  <SelectLineOnNumberClick>false</SelectLineOnNumberClick>
+  <UseCollapsingBlocks>true</UseCollapsingBlocks>
+  <ShowOutlineTooltips>true</ShowOutlineTooltips>
+  <ShowBookmarkMargin>true</ShowBookmarkMargin>
+  <MarkChangedLines>true</MarkChangedLines>
+  <MarkSavedLines>true</MarkSavedLines>
+  <WordWrap>true</WordWrap>
+  <WordWrapMarker>true</WordWrapMarker>
+  <AutoIndent>true</AutoIndent>
+  <AutoIndentSmart>true</AutoIndentSmart>
+  <DisplayWhiteSpace>false</DisplayWhiteSpace>
+  <DisplayWhiteSpaceSpace>true</DisplayWhiteSpaceSpace>
+  <DisplayWhiteSpaceTab>true</DisplayWhiteSpaceTab>
+  <DisplayWhiteSpaceReturn>true</DisplayWhiteSpaceReturn>
+  <SimulationDelay>100</SimulationDelay>
+  <WatchRows>16</WatchRows>
+  <TabSize>4</TabSize>
+  <TabUseSpaces>true</TabUseSpaces>
+  <TabStop>true</TabStop>
+  <TabStopRespect>true</TabStopRespect>
+  <ShowContentDividers>true</ShowContentDividers>
+  <ShowEditorStatusbar>true</ShowEditorStatusbar>
+  <UseAutoReplace>false</UseAutoReplace>
+  <UseTemplate>false</UseTemplate>
+  <TemplateFilename>template.bas</TemplateFilename>
+  <ShowHorizontalSplitters>false</ShowHorizontalSplitters>
+  <ShowVerticalSplitters>false</ShowVerticalSplitters>
+  <AllowDrop>true</AllowDrop>
+  <ShowBookmarkTooltips>false</ShowBookmarkTooltips>
+  <ShowContextTooltips>true</ShowContextTooltips>
+  <ShowContextTooltipsPinDescriptions>true</ShowContextTooltipsPinDescriptions>
+  <ShowContextTooltipsCommands>true</ShowContextTooltipsCommands>
+  <ShowContextTooltipsVariables>true</ShowContextTooltipsVariables>
+  <ShowContextTooltipsNumbers>true</ShowContextTooltipsNumbers>
+  <ShowIndentationBlockBorders>false</ShowIndentationBlockBorders>
+  <ShowIndentationGuidelines>true</ShowIndentationGuidelines>
+  <ToolTipDelay>500</ToolTipDelay>
+  <ReformattingCommand>0</ReformattingCommand>
+  <ReformattingVariable>0</ReformattingVariable>
+  <ReformattingConstant>0</ReformattingConstant>
+  <AutoBackup>true</AutoBackup>
+  <AutoBackupToWorkingFolder>false</AutoBackupToWorkingFolder>
+  <AutoBackupToDocs>false</AutoBackupToDocs>
+  <AutoBackupToCloud>true</AutoBackupToCloud>
+  <AutoBackupCloudFolder>C:\Users\alan\Documents\PICAXE Editor\Backups</AutoBackupCloudFolder>
+  <AutoBackupFrequency>10</AutoBackupFrequency>
+  <BackupOnDownload>true</BackupOnDownload>
+  <AddTimeStampToBackupFilename>true</AddTimeStampToBackupFilename>
+  <DefaultNewLineStyle>Windows</DefaultNewLineStyle>
+  <DefaultEncodingTypeEnum>ASCII</DefaultEncodingTypeEnum>
+  <CustomSavePath />
+  <LastSavePath>C:\users\alan\Documents\PICAXE Editor\Documents</LastSavePath>
+  <CustomTempPath />
+  <CustomFlowchartToolboxFolder />
+  <CustomColourSchemePath>C:\Users\alan\AppData\Roaming\Revolution Education\PICAXE Editor\Settings\ColourScheme-Dark.xml</CustomColourSchemePath>
+  <CustomFontType>0</CustomFontType>
+  <CustomFontSize>12</CustomFontSize>
+  <CustomFontName>Liberation Mono</CustomFontName>
+  <UseCustomColours>true</UseCustomColours>
+  <CustomLanguage />
+  <ColorBackground>Black</ColorBackground>
+  <ColorSimulationBackground>LightYellow</ColorSimulationBackground>
+  <ColorIndicatorMargin />
+  <ColorLineNumbers>RoyalBlue</ColorLineNumbers>
+  <ColorCurrentLineHighlight>White</ColorCurrentLineHighlight>
+  <ColorSelectionMarginBackground>Black</ColorSelectionMarginBackground>
+  <ColorSelectionMarginForeground>Maroon</ColorSelectionMarginForeground>
+  <ColorSavedLinesMarkingLine>YellowGreen</ColorSavedLinesMarkingLine>
+  <ColorChangedLinesMarkingLine>Khaki</ColorChangedLinesMarkingLine>
+  <FlowchartHidePanels>true</FlowchartHidePanels>
+  <BlocklyHidePanels>true</BlocklyHidePanels>
+  <FlowchartAddLines>true</FlowchartAddLines>
+  <KindleGenPath>C:\KindleGen\KindleGen.exe</KindleGenPath>
+  <KindleGenDownload>http://www.amazon.com/gp/feature.html?ie=UTF8&amp;docId=1000765211</KindleGenDownload>
+  <DiagnosticsTranslationTooltips>false</DiagnosticsTranslationTooltips>
+  <DiagnosticsTranslationReferenceNumbers>false</DiagnosticsTranslationReferenceNumbers>
+  <DiagnosticsPreprocessorOutput>false</DiagnosticsPreprocessorOutput>
+  <DiagnosticsPreprocessorOutputList>false</DiagnosticsPreprocessorOutputList>
+  <DiagnosticsSimulationOutput>false</DiagnosticsSimulationOutput>
+  <DiagnosticsFlowchartsBASIC>false</DiagnosticsFlowchartsBASIC>
+  <DiagnosticsWineUseTTY>false</DiagnosticsWineUseTTY>
+  <DiagnosticsWineTTYPort>/dev/ttyUSB0</DiagnosticsWineTTYPort>
+  <DiagnosticsBlocklyPath />
+  <DiagnosticsBlocklyBASIC>false</DiagnosticsBlocklyBASIC>
+  <DiagnosticsBlocklyRemoteDebug>false</DiagnosticsBlocklyRemoteDebug>
+  <DiagnosticsBlocklyDisableGPU>false</DiagnosticsBlocklyDisableGPU>
+  <DiagnosticsLegacyEditor>false</DiagnosticsLegacyEditor>
+  <DiagnosticsFullParsing>true</DiagnosticsFullParsing>
+  <TerminalPromptExit>false</TerminalPromptExit>
+  <TerminalAutoClose>true</TerminalAutoClose>
+  <DebugAutoClose>true</DebugAutoClose>
+  <SimLabels>true</SimLabels>
+  <SimIrin>true</SimIrin>
+  <SimKeyin>true</SimKeyin>
+  <SimUltra>true</SimUltra>
+  <SimSound>true</SimSound>
+  <SimSoundSoundcard>true</SimSoundSoundcard>
+  <SimPlay>true</SimPlay>
+  <SimTune>true</SimTune>
+  <SimI2CRTC>false</SimI2CRTC>
+  <SimI2CEEPROM>false</SimI2CEEPROM>
+  <SimI2CEEPROM24LC16B>true</SimI2CEEPROM24LC16B>
+  <SimI2CAll>true</SimI2CAll>
+  <SimLCD>false</SimLCD>
+  <SimLCDLCD>true</SimLCDLCD>
+  <SimLCD16x2>true</SimLCD16x2>
+  <SimLCDPin>8</SimLCDPin>
+  <SimTooltipsPinFunctions>true</SimTooltipsPinFunctions>
+  <SimTooltips>true</SimTooltips>
+  <SimTooltipsPinNames>true</SimTooltipsPinNames>
+  <SimToolTipDelay>1000</SimToolTipDelay>
+</ApplicationSettings>

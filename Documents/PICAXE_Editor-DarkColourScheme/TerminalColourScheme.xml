@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ArrayOfConfigLanguage>
+
+  <ConfigLanguage name="Terminal" CaseInsensitive="true">
+    <formats>
+
+	<!-- Default Enum Types -->
+
+	<!-- Those marked * not currently used, reserved for future use
+	Text				= Normal Text
+	SelectedText			= Selected Text
+	* InactiveSelectedText	
+	* Error	
+	* Bookmark	
+	* EnabledBreakPoint	
+	* DisabledBreakPoint	
+	* WrongBreakPoint	
+	* CurrentStatement	
+	CollapsedText			= Title block text when text area is collapsed
+	* ReadOnlyRegion	
+	* WizardCode	
+	Comment				= Comment
+	Operator			= Operator	
+	KeyWord				= Command for PICAXE use
+	PreprocessorKeyword		= Directive for PICAXE use
+	String				= String
+	* SingleCharacter	
+	* URI	
+	Number				= Number (Decimal. Custom types used for hex and binary)
+	Whitespace			= Whitespace special characters (when visible)
+	Custom				= Custom Type
+	-->
+	<!--   ORIGINAL
+      <format name="Text" Font="Courier New, 13pt style=Bold" FontColor="Red" />
+      <format name="SelectedText" Font="Courier New, 13pt style=Bold" BackColor="Highlight" FontColor="HighlightText" />
+      <format name="CollapsedText" Font="Courier New, 13pt style=Bold" FontColor="Gray" BackColor="White" BorderColor="Gray" BorderStyle="Solid" />
+      <format name="Comment" Font="Courier New, 13pt style=Bold" FontColor="GreenYellow" />
+      <format name="Operator" Font="Courier New, 13pt style=Bold" FontColor="DarkCyan" />
+      <format name="Keyword" Font="Courier New, 13pt style=Bold" FontColor="Blue" />
+      <format name="PreprocessorKeyword" Font="Courier New, 13pt style=Bold" FontColor="White" />
+      <format name="String" Font="Courier New, 13pt style=Bold" FontColor="Red" />
+      <format name="Number" Font="Courier New, 13pt, style=Bold" FontColor="White" />
+      <format name="Whitespace" Font="Courier New, 13pt style=Bold" FontColor="Gray" />
+	-->
+	
+			<format name="Text" FontColor="#008000" Font="Liberation Mono, 13pt style=Bold" />
+			<format name="Selected Text" FontColor="#008000" />
+			<format name="Collapsed Text" FontColor="#008000" />
+			<format name="Comment" FontColor="#008000" />
+			<format name="Operator" FontColor="#008000" />
+			<format name="Keyword" FontColor="#008000" />
+			<format name="Preprocessor Keyword" FontColor="#008000"  />
+			<format name="String" FontColor="#008000" />
+			<format name="Number" FontColor="#008000" />
+			<format name="Whitespace" FontColor="#FFFFFF" />
+
+
+	<!--	
+			<format name="Bracket Highlighting" FontColor="#000000" BackColor="#FFFFC0" ontFamilyname="Courier New" FontSize="13" />
+			<format name="Keyword Error" FontColor="#FF0000"  Font="Courier New, 13pt style=Bold" UnderlineColor="#FF0000" Underlineformat="Wave" />
+			<format name="Preprocessor Keyword Error" FontColor="#FF0000"  Font="Courier New, 13pt style=Bold" UnderlineColor="#FF0000" Underlineformat="Wave" />
+			<format name="Preprocessor Keyword Region" FontColor="#32CD32"  Font="Courier New, 13pt style=Bold" />
+			<format name="Variable" FontColor="#FFFF00"  Font="Courier New, 13pt style=Bold" />
+			<format name="Variable User" FontColor="#FFFF00"  Font="Courier New, 13pt style=Bold" />
+			<format name="Constant" FontColor="#ADFF2F"  Font="Courier New, 13pt style=Bold" />
+			<format name="Constant User" FontColor="#00C000"  Font="Courier New, 13pt style=Bold" />
+			<format name="Label" FontColor="#9370DB"  Font="Courier New, 13pt style=Bold" />
+			<format name="Label Special" FontColor="#FFFF80"  Font="Courier New, 13pt style=Bold" UnderlineColor="#0000FF" />
+			<format name="Assembler" FontColor="#006400"  Font="Courier New, 13pt style=Bold" />
+			<format name="Comment URL" FontColor="#008000"  Font="Courier New, 13pt style=Bold" Italic="True" UnderlineColor="#008000" UnderlineStyle="Dot" />
+	-->
+
+	
+      <!-- Custom Terminal formats 
+	  
+	NumberHex			= Hex Number
+	NumberBinary		= Binary Number
+	NumberOctal			= Octal Number
+	NumberFloat			= Float Number
+-->
+	<!--  ORIGINAL
+
+
+      <format name="NumberHex" Font="Courier New, 13pt, style=Bold" FontColor="White" />
+      <format name="NumberBinary" Font="Courier New, 13pt, style=Bold" FontColor="White" />
+      <format name="NumberOctal" Font="Courier New, 13pt, style=Bold" FontColor="White" />
+      <format name="NumberFloat" Font="Courier New, 13pt, style=Bold" FontColor="White" />
+	-->
+	
+	  <format name="NumberHex" Font="Liberation Mono, 13pt, style=Bold" FontColor="#C0FFFF" />
+      <format name="NumberBinary" Font="Liberation Mono, 13pt, style=Bold" FontColor="#80FFFF" />
+      <format name="NumberOctal" Font="Liberation Mono, 13pt, style=Bold" FontColor="#00FFFF" />
+      <format name="NumberFloat" Font="Liberation Mono, 13pt, style=Bold" FontColor="#E0E0E0" />
+	
+
+
+    </formats>
+
+    <extensions>
+      <extension>txt</extension>
+    </extensions>
+
+    <lexems>
+
+      <!-- String -->
+
+      <lexem BeginBlock='"' ContinueBlock=".*" EndBlock='"' IsContinueRegex="true" Type="String"
+				OnlyLocalSublexems="true" IsComplex="true" />
+
+      <!-- Numbers -->
+
+      <lexem BeginBlock="[0-9a-fA-F]+" IsBeginRegex="true" Type="Number" />  		
+      <lexem BeginBlock="(0[xX]+[0-9a-fA-F]+)" IsBeginRegex="true" Type="Custom" Formatname="NumberHex" />
+      <lexem BeginBlock="(0[bB]+[01]+)" IsBeginRegex="true" Type="Custom" Formatname="NumberBinary" />
+      <lexem BeginBlock="(0[oO]+[0-7]+)" IsBeginRegex="true" Type="Custom" Formatname="NumberOctal" />   
+
+      <lexem BeginBlock="%" EndBlock="^[0-1]+$" IsEndRegex="true" Type="Custom" Formatname="NumberBinary" />
+      <lexem BeginBlock="$" EndBlock="^[0-9a-fA-F]+$" IsEndRegex="true" Type="Custom" Formatname="NumberHex" />
+
+      <!-- matching brackets use comment style -->
+
+      <lexem BeginBlock='[' ContinueBlock=".*" EndBlock=']' IsContinueRegex="true" Type="Comment"
+				OnlyLocalSublexems="true" IsComplex="true" />
+
+
+    </lexems>
+
+  </ConfigLanguage>
+
+</ArrayOfConfigLanguage>
