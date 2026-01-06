@@ -1,22 +1,27 @@
 # Fairy Lights - Outdoor Solar to USB
+
 This project converted a set of outdoor solar powered fairly lights to an indoor USB powered set with increased brightness.  The circuit is also compatible with some battery powered lights that drive their LEDs with about 2.7V AC too.
 
 The original circuitry turned on with darkness and provided fading and flashing sequences, which can be distracting indoors.  To keep things simple this design provides a steady light that's much brighter and relies on manually switching off the USB charger that provides the power supply.
 
 ## Contents
-This file contains:	
-- [Pre-conversion_Details](./README.md#Pre-conversion_Details)
-- [Design](./README.md#Design)
-- [License](./README.md#License)
+
+This file contains:
+
+* [Pre-conversion\_Details](./README.md#Pre-conversion_Details)
+* [Design](./README.md#Design)
+* [License](./README.md#License)
 
 Other key files include:
-- [Electronics_Schematic](./Pictures/FairlyLights_SolarToUSB_7Schematic.jpg), produced in KiCad v8.0.6.
-- [Circuit_Board_Layout](./Pictures/FairlyLights_SolarToUSB_8Board.png), based on stripboard and produced in VeroRoute v2.39 from the KiCad netlist.
-- [Program](./Software/Fairy_Lights-Solar_to_USB.bas) written in PICAXE BASIC with the PICAXE Editor v6.2.0.0.
+
+* [Electronics\_Schematic](./Pictures/FairlyLights_SolarToUSB_7Schematic.jpg), produced in KiCad v8.0.6.
+* [Circuit\_Board\_Layout](./Pictures/FairlyLights_SolarToUSB_8Board.png), based on stripboard and produced in VeroRoute v2.39 from the KiCad netlist.
+* [Program](./Software/Fairy_Lights-Solar_to_USB.bas) written in PICAXE BASIC with the PICAXE Editor v6.2.0.0.
 
 Sub-folders contain pictures and source files.
 
-## Pre-conversion_Details
+## Pre-conversion\_Details
+
 The original system contained a Ni-MH AA 1.2V 600mAh battery and the circuit drew 40 mA when active. The controller box included a small solar panel for self-charging, a button to set flashing modes and a power button.
 
 The LEDs were quite dim and needed to be much brighter, especially for indoor use. All 50 LEDs were wired in parallel, with blue and green operating in 1 polarity, and yellow and red operating in the other. This configuration runs the risk of too much load on specific LEDs if forward voltages are different.
@@ -24,6 +29,7 @@ The LEDs were quite dim and needed to be much brighter, especially for indoor us
 The controller fed the LED string with 2.7V AC at 9.8kHz, the forward and reverse currents were +13.6mA and -12.4mA, but with short spikes of 400 mA.
 
 ## Design
+
 An old USB charger was upcycled as a 5V power supply and it’s certainly better on the wallet and environment than using batteries.
 
 Using a programmable PICAXE 08M2 lowered the component count and allowed the opportunity to play with BASIC.
@@ -38,8 +44,9 @@ A potentiometer controlled the brightness of the LEDs, but the household thought
 
 There are further notes in the program, and in the electronics schematic there are some circuit measurements too.
 
-## License
-Contents of this project are covered by different licenses:
+## Licence
 
-- The PICAXE BASIC software has the [MIT](https://choosealicense.com/licenses/mit/) License.  
-- All other materials have the [CERN OHL v2 Permissive](https://choosealicense.com/licenses/cern-ohl-p-2.0/) license.
+Contents of this project are covered by different licences:
+
+* The PICAXE BASIC software has the [MIT](https://choosealicense.com/licenses/mit/) Licence.
+* All other materials have the [CERN OHL v2 Permissive](https://choosealicense.com/licenses/cern-ohl-p-2.0/) licence.

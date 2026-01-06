@@ -147,9 +147,9 @@ The base of the game had various stickers with the Cars movie theme. These were 
 10. *Wood Glue Cleaning* - Take more care cleaning off any wood glue residue before varnishing.
 11. *Visuals and Personalisation* - It would be nice to add a leaderboard screen and name inputs but this seems too over-the-top.
 
-## License
-Contents of this project are covered by different licenses:
+## Licence
+Contents of this project are covered by different licences:
 
-- The PICAXE BASIC software has the [MIT](https://choosealicense.com/licenses/mit/) License.
+- The PICAXE BASIC software has the [MIT](https://choosealicense.com/licenses/mit/) Licence.
 - The audio file restrictions are bespoke as outlined in the Audio section above and detailed in the LICENSE.md file located in the Audio folder.
-- All other materials have the [CERN OHL v2 Permissive](https://choosealicense.com/licenses/cern-ohl-p-2.0/) license.
+- All other materials have the [CERN OHL v2 Permissive](https://choosealicense.com/licenses/cern-ohl-p-2.0/) licence.

@@ -1,6 +1,6 @@
 *Copyright (c) 2025 Alan Hunt*
 
-*The following license applies to the contents of this project:*
+*The following licence applies to the contents of this project:*
 
 # CERN Open Hardware Licence Version 2 - Permissive
 

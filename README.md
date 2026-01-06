@@ -19,11 +19,11 @@ The easiest way to use a "`.basinc`" module is to copy the file to the same fold
 If you have any problems then you could read the [PICAXE Manuals](https://picaxe.com/getting-started/picaxe-manuals/), start a [Discussion](https://github.com/alnhnt/PICAXE/discussions/new/choose) or log an [Issue](https://github.com/alnhnt/PICAXE/issues/new) in this repository, or contact the [PICAXE Forum](https://picaxeforum.co.uk/).
 
 
-## License
-Contents of this repository are covered by different licenses as defined by LICENSE.md files.
+## Licence
+Contents of this repository are covered by different licences as defined by LICENSE.md files.
 
-If a folder contains a LICENSE.md file, that license applies to the contents of the entire folder structure, unless a subfolder contains another LICENSE.md file that will then apply from that level downwards. 
+If a folder contains a LICENSE.md file, that licence applies to the contents of the entire folder structure, unless a subfolder contains another LICENSE.md file that will then apply from that level downwards. 
 
-With the exception of software, the preferred license is [CERN OHL v2 Permissive](https://choosealicense.com/licenses/cern-ohl-p-2.0/) as defined for this top-level folder.
+With the exception of software, the preferred licence is [CERN OHL v2 Permissive](https://choosealicense.com/licenses/cern-ohl-p-2.0/) as defined for this top-level folder.
 
-For software, the preferred license is [MIT](https://choosealicense.com/licenses/mit/) and this license is typically present in each project's Software sub-folder. 
+For software, the preferred licence is [MIT](https://choosealicense.com/licenses/mit/) and this license is typically present in each project's Software sub-folder. 

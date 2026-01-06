@@ -10,11 +10,11 @@ Full details are contained in the:
 - [Electronics_Schematic](./Electronics_Schematic) produced in KiCad v8.0.6.
 - [Software](./Software/Fairy_Lights-Simple_Experiment.bas) written in PICAXE BASIC with the PICAXE Editor v6.2.0.0.
 
-## License
-Contents of this project are covered by different licenses:
+## Licence
+Contents of this project are covered by different licences:
 
-- The PICAXE BASIC software has the [MIT](https://choosealicense.com/licenses/mit/) License.  
-- All other materials have the [CERN OHL v2 Permissive](https://choosealicense.com/licenses/cern-ohl-p-2.0/) license.
+- The PICAXE BASIC software has the [MIT](https://choosealicense.com/licenses/mit/) Licence.  
+- All other materials have the [CERN OHL v2 Permissive](https://choosealicense.com/licenses/cern-ohl-p-2.0/) licence.
 
 
 ![Electronics Schematic](./Pictures/Fairy_lights-Simple_Experiment.png)
