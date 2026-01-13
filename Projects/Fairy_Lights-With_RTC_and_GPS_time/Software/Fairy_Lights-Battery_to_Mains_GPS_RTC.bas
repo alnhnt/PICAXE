@@ -3,7 +3,8 @@
 #REM
             File: "Fairy_Lights-Battery_to_Mains_GPS_RTC.bas"
          License: MIT (See end of file) 
-  Change History: 2025/1/13 by Alan Hunt - 1st issue.
+  Change History: 2026/1/13 Changed on time to 15:30 and enabled RTC debug output.
+                  2025/1/13 by Alan Hunt - 1st issue.
 
 
 Microcontroller Pin Usage
@@ -68,7 +69,7 @@ PWM Notes
     #define Debugger_SplashExtra "https://github.com/alnhnt/PICAXE"
     
     '@RTC_MCP7940N.basinc 
-    '#define RTC_Debugging
+    #define RTC_Debugging
     '#define RTC_Debugging_Registers
     '#define RTC_Battery_Backup
 
@@ -121,7 +122,7 @@ PWM Notes
     symbol GPS_SYNC_MASK = $A0              'Alarm mask for hour check, to create a daily alarm.
     symbol GPS_SYNC_HOUR = 14               'NB: The GPS time update must be before the lights on time.
     symbol LIGHTS_MASK = $F0                'Alarm mask for precise match of all time and date parameters.
-    symbol LIGHTS_ON_MINS = 923             'Use 24hr clock and set to hour * 60 + minute. E.g. 923 is 15:23.
+    symbol LIGHTS_ON_MINS = 930             'Use 24hr clock and set to hour * 60 + minute. E.g. 930 is 15:30.
     symbol LIGHTS_OFF_MINS = 1350           'As above 1350 = 22:30.
     symbol START_DATE = 373                 'Use month * 31 + day. E.g. 1st Dec = 373.
     symbol END_DATE = 35                    'As above 35 = 4th Jan. 
@@ -264,7 +265,7 @@ SetState:
             LightsOn
             hours = LIGHTS_OFF_MINS / 60
             minutes = LIGHTS_OFF_MINS // 60
-            seconds = 0 
+            seconds = 0
             alarmSetting = LIGHTS_MASK
             debugger("Lights should be on - Setting alarm to turn off.",cr,lf)
         else
