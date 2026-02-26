@@ -1,0 +1,334 @@
+
+#Region "Program Notes"
+#REM
+
+            File: "Morse_Encoder.basinc"
+         License: MIT (See end of file)
+  Change History: 2026/02/19 by Alan Hunt - First issued version.
+
+
+Description
+===========
+This module provides morse code signalling based on either character input, or strings held in RAM or EEPROM storage. The module uses 189 program bytes, 4 general variable bytes and 58 bytes of EEPROM for an ASCII to Morse Encoding lookup table.
+
+At the start of an active dit or dah signal the module runs a 'MorseOn' macro that you define in you own program. This could be as simple as setting a pin high with '#define MorseOn high b.7', or something more complicated in a subroutine such as '#define MorseOn gosub MyBeeper'. At the end of an active dit or dah the module runs 'MorseOff', which again you define. To keep accurate morse timing, MorseOn and MorseOff should be fairly quick to run, such as below 10ms, but you can also compensate for processing delays too.
+
+The speed of morse is measured in WPM (Words Per Minute) and set by the dit time. The dahs and spacings are multiples of the dit time, which is set in you program in units of milliseconds, with a command such as 'symbol MorseDitTime = 40'. To help learning, Farnsworth timing is often used to extend the gap between letters and words, so these specific timings reference a Farnsworth dit time instead. To use standard morse timing make the FarnsworthDitTime = MorseDitTime, such as 'symbol MorseDitTime = 40' and 'symbol FarnsworthDitTime = 40' for 30 WPM.
+
+Morse messages only use letters in uppercase and these ASCII characters are mapped to morse coding bytes in an EEPROM lookup table, from address 198 to 255. For each byte, the morse is encoded from the most significant bit, with a zero being a dit, or a one being the longer dah. After the morse symbols are complete a final sentinel bit is added with a value of one, so when the last 1 is encountered the algorithm knows the variable length morse character has completed.
+
+Morse ProSigns convey special meanings, like CT for commencing transmission.  These ProSigns are 2 or more characters joined together without the usual inter-character spacing. To process these characters correctly this module does not add the inter-character pause at the beginning of lowercase letters.  For example, "Ct HELLO" will send the CT Prosign followed by a word gap and then the word "hello".
+
+The list of macros include:
+    MorseTxChar(Char)           Sends a character as morse code by running MorseOn and MorseOff that you define. 
+    MorseTxEEPROM(Location)     Sends the string that starts at the EEPROM location and ends with a NULL terminator, $00.
+    MorseTxRAM(Location)        Sends the string that starts at the General Storage location and ends with a NULL terminator, $00. Note, the value of the PICAXE BPTR variable will be modified.
+
+For example, 'eeprom 0, ("Ct HELLO WORLD Ar",0)' stores a message in EEPROM starting at address zero. To send this string, use the command 'MorseTxEEPROM(0)'. The mores sends the starting prosign CT, then "HELLO WORLD", then finishes with the end of message prosign AR. This message started from EEPROM location 0 and was 18 bytes, so the next message can start from EEPROM location 18. The maximum usable EEPROM space for messages is 198 bytes due to the ASCII to morse encoding lookup table starting at location 198.
+
+
+Morse Code Notes
+================
+
+Timing and Words Per minute
+---------------------------
+The minimum timing in morse is the dit time, ".". The dah time, "-", is equivalent to 3 dits. A character has a dit time space between its dits and dahs. Spacing between characters is 3 dit times, and between words its 7 dit times.
+
+In morse, WPM (Words Per Minute) is measured by the number of times the word "PARIS" can be repeated in 1 minute. "PARIS" (.--. .- .-. .. ...) has 50 dit times made up of 10 dits, 4 dahs, 9 intra character gaps, 4 inter character gaps and 1 word gap, so 10 + 12 + 9 + 12 + 7.  For a given WPM the dit time is calculated as: Dit time =  60 seconds / (WPM * 50 dits) = 1.2 / WPM.
+
+For familiar morse keyers about 30 WPM is common. *Beginners often learn with the Farnsworth Method, which starts with a fast dit-dah character rate of about 20 WPM, but with long inter character gaps and word gaps. This helps to recognise characters as sounds, rather than counting dit-dahs, which is impossible at fast rates. The extended Farnsworth gaps are measured like morse as 3 Farnsworth dits and 7 Farnsworth dits. So, using the standard dit time of 60ms for 20 wpm, the formula for Farnsworth dit time is ((60/wpm)-60ms)/19:
+
+WPM     Standard Dits(x50)  Keying Dits(x31)    Farnsworths Dit(x19)
+5       230ms*              60ms                628ms
+7       171ms*              60ms                448ms
+10      120 mS*             60ms                313ms
+15      80 mS*              60ms                207ms
+20      60 mS               60ms                60ms
+30      40 mS               40ms                40ms
+
+
+Mapping of ASCII to Morse Code for Byte Encoding
+------------------------------------------------
+Below is a table that shows the ASCII to Morse code to Encoding stored in the EEPROM lookup table. The lookup is simply performed by adding 165 to the ASCII value, so the first EEPROM location is address 198. The table includes all of ITU-R M.1677-1 (10/2009) characters with the exception of an accented E, which is not available in 7 bit ASCII. Some common punctuation marks are added too, ";!&", but the underscore character "..--.-" was intentionally left out due to rare use and additional EEPROM usage to cope with ASCII 95 instead of ASCII 90.
+
+During morse sending, the most significant bit is checked first to determine whether a dit or dah should be created, then the byte is left shifted. When the byte reaches the value of 128 the module stops left shifting because the final sentinel bit has been reached:
+
+
+ASCII           Morse       Encoded (dah=1, dit=0, sentinel end=1)
+Val     Char    Code        Binary      Hex     Notes
+-----------------------------------------------------------------
+33      !       -.-.--      1010 1110   $AE     Not in ITU spec.
+34      "       .-..-.      0100 1010   $4A
+35      #                               0       Not used.
+36      $                               0       Not used.
+37      %                               0       Not used.
+38      &       .-...       0100 0100   $44     Not an ITU character, but is the ITU Prosign <AS> for Wait.
+39      ?       .----.      0111 1010   $7A
+40      (       -.--.       1011 0100   $B4
+41      )       -.--.-      1011 0110   $B6
+42      *                               0       Not used.
+43      +       .-.-.       0101 0100   $54
+44      ,       --..--      1100 1110   $CD
+45      ?       -....-      1000 0110   $86
+46      .       .-.-.-      0101 0110   $56
+47      /       -..-.       1001 0100   $94
+eeprom 198,($AE,$4A,0,0,0,$44,$7A,$B4,$B6,0,$54,$CD,$86,$56,$94)
+
+48      0       -----       1111 1100   $FC
+49      1       .----       0111 1100   $7C
+50      2       ..---       0011 1100   $3C
+51      3       ...--       0001 1100   $1C
+52      4       ....-       0000 1100   $0C
+53      5       .....       0000 0100   $04
+54      6       -....       1000 0100   $84
+55      7       --...       1100 0100   $C4
+56      8       ---..       1110 0100   $E4
+57      9       ----.       1111 0100   $F4
+eeprom 213,($FC,$7C,$3C,$1C,$0C,$04,$84,$C4,$E4,$F4)
+
+58      :       ---...      1111 0000   $F0
+59      ;       -.-.-.      1010 1010   $AA     Not in ITU spec.
+60      <                               0       Not used in morse, but program interprets as start of ProSign.
+61      =       -...-       1000 1100   $8C
+62      >                               0       Not used in morse, but program interprets as end of ProSign.
+63      ?       ..--..      0011 0010   $32
+64      @       .--.-.      0110 1010   $6A
+eeprom 223,($F0,$AA,0,$8C,0,$32,$6A)
+
+65      A       .-          0110 0000   $60
+66      B       -...        1000 1000   $88
+67      C       -.-.        1010 1000   $A8
+68      D       -..         1001 0000   $90
+69      E       .           0100 0000   $40
+70      F       ..-.        0010 1000   $28
+71      G       --.         1101 0000   $D0
+72      H       ....        0000 1000   $08
+73      I       ..          0010 0000   $20
+74      J       .---        0111 1000   $78
+75      K       -.-         1011 0000   $B0     ITU Invitation to Send sign.
+76      L       .-..        0100 1000   $48
+77      M       --          1110 0000   $E0
+eeprom 230,($60,$88,$A8,$90,$40,$28,$D0,$08,$20,$78,$B0,$48,$E0)
+
+78      N       -.          1010 0000   $A0
+79      O       ---         1111 0000   $F0
+80      P       .--.        0110 1000   $68
+81      Q       --.-        1101 1000   $D8
+82      R       .-.         0101 0000   $50
+83      S       ...         0001 0000   $10
+84      T       -           1100 0000   $C0
+85      U       ..-         0011 0000   $30
+86      V       ...-        0001 1000   $18
+87      W       .--         0111 0000   $70
+88      X       -..-        1001 1000   $98
+89      Y       -.--        1011 1000   $B8
+90      Z       --..        1100 1000   $C8
+eeprom 243,($A0,$F0,$68,$D8,$50,$10,$C0,$30,$18,$70,$98,$B8,$C8)
+
+
+ITU Prosigns
+------------
+ProSigns are 2 or more characters joined together without the usual inter-character spacing of 3 dits, some common examples are shown below:
+
+CT(KA)  -.-.-       Starting Signal (Commencing Transmission, used to wake up and sync transmission speed)
+AA      .-.-        New line
+AR      .-.-.       End of Message
+SK(VA)  ...-.-      End of Work (Stopped Keying, end of all messages)
+CL      -.-..-..    Closing down 
+SN      ...-.       Understood
+AS      .-...       Wait (also used as "&" outside of the ITU spec)
+HH      ........    Error
+
+
+Audio Tone
+----------
+When sending audio, the tone frequency is a matter of personal choice.  I like 600 Hz.
+
+
+Programming Notes
+=================
+Characters have a 1 dit pause, _MorseDitTime, between every dit or dah symbol.
+Characters have a 3 dit pause, _MorseCharGap, unless it's a lowercase letter indicating a ProSign.
+A ProSign has a 1 dit pause, _MorseProsignGap, which can be tuned instead of using _MorseDitTime.
+A space signifies a new word, with a 7 dit pause, made up of the character pause plus an extra 4 dit pause, _MorseWordGap.
+New characters or words use the FarnsworthDitTime symbol, instead of the MorseDitTime symbol.
+
+
+Programming Guide
+=================
+This module is dependent on resources, such as Variables and Constants, that must be declared before the inclusion of this file. See the Morse_Sender Project for example usage. The key items with examples are shown below:
+
+    'Pins
+        symbol MorseLED = C.1
+        symbol MorseSound = C.2
+
+    'Constants
+        symbol MORSE_PERIOD = 103               'Sets the morse tone to 600Hz @ 4MHz with pwmdiv16. 
+        symbol MORSE_DUTY = 207                 '50% duty cyle for above.
+
+    'Variables
+        '@Morse_Encoder.basinc Variables
+        symbol _MorseCharLocation = b16         'Any byte variable.
+        symbol _MorseChar = b17                 'Any byte variable.
+        symbol _MorseEncoding = w9              'Any word variable.
+        symbol _MorseEncoding.lsb = b18         'The least significant byte of _MorseEncoding.
+
+    'Modules
+        '@Morse_Encoder.basinc (The #defines below can affect morse timing. Keep MorseOn and MorseOff as quick as possible).
+        symbol MorseDitTime = 60                    '60ms = 20 WPM.
+        symbol FarnsworthDitTime = 313              'Character space = 939ms, Word space = 2.191s, Makes 10 WPM.
+        #define MorseOn high MorseLED : pwmduty MorseSound, MORSE_DUTY
+        #define MorseOff low MorseLED : pwmduty MorseSound, 0
+        #include "Morse_Encoder.basinc"
+
+    'Initialisation
+        pwmout pwmdiv16, MorseSound, MORSE_PERIOD, 0    'Initialise PWM for morse sound. Initally 0 duty, so off.
+    
+#EndRem
+#EndRegion
+
+'Macros
+'======
+    #macro MorseTxChar(Char)
+        _MorseChar = Char
+        gosub _MorseTxChar
+    #endmacro
+
+    #macro MorseTxEEPROM(Location)
+        _MorseCharLocation = Location
+        gosub _MorseTxEEPROM
+    #endmacro
+    
+    #macro MorseTxRAM(Location)
+        bptr = Location
+        gosub _MorseTxRAM
+    #endmacro
+
+    #define MorseTxCharGap pause MorseCharGap
+    #define MorseTxWordGap pause MorseWordGap
+    
+    #ifndef MorseOn
+        #error "Define MorseON in your main program, this should toggle an output to an active dit/dah."
+    #endif
+    #ifndef MorseOff
+        #error "Define MorseOff in your main program, this should toggle an output to an inactive state."
+    #endif
+    
+'Constants
+    'Note: The eeprom command does not work if #no_data or #no_table are present.
+    'Load Morse Encoder Data during programming (location 198 to 255)
+    eeprom 198,($AE,$4A,0,0,0,$44,$7A,$B4,$B6,0,$54,$CD,$86,$56,$94)    '15 characters from " to /
+    eeprom 213,($FC,$7C,$3C,$1C,$0C,$04,$84,$C4,$E4,$F4)                '10 characters from 0 to 9
+    eeprom 223,($F0,$AA,0,$8C,0,$32,$6A)                                ': to @
+    eeprom 230,($60,$88,$A8,$90,$40,$28,$D0,$08,$20,$78,$B0,$48,$E0)    'A to M
+    eeprom 243,($A0,$F0,$68,$D8,$50,$10,$C0,$30,$18,$70,$98,$B8,$C8)    'N to Z
+
+'Pre-Calculation of Morse Timings
+'--------------------------------
+'MorseDitTime and FarnsworthDitTime are specified in your main program and they correspond to words per minute. Processing delays affect the morse encoder timings but the impact should be unnoticeable at default clock rates and its minimised with higher clock rates. Just for fun, the timing configuration below was tuned to within 0.5% at 20WPM for an M2 chip with default clock rate when using the MorseTxEEPROM or MorseTxRAM macro that repeatedly calls the MorseTxChar(Char) macro. If instead you programmatically use the MorseTxChar macro directly for individual characters then large and variable processing delays should be avoided.
+    
+'The symbols below provide pre-processor timings that can be manually altered to compensate for any processing delays in your final program. The timings are accurate to 0.5% based on using the following MorseOn and MorseOff definitions, with an 08M2 defaul clock rate where the high/low commands need about 2ms and the pwmduty commands need 8ms:
+    '   #define MorseOn high MorseLED : pwmduty MorseSound, MORSE_DUTY
+    '   #define MorseOff low MorseLED : pwmduty MorseSound, 0
+    symbol _MorseDitTime = MorseDitTime - 10            'Subtract 10ms for processing delay.
+    symbol _MorseDahTimeIdeal = MorseDitTime * 3
+    symbol _MorseDahTime = _MorseDahTimeIdeal - 10      'Subtract 10ms for processing delay.
+    symbol _MorseDitGap = MorseDitTime - 10             'Subtract 10ms for processing delay.
+    symbol _MorseProsignGap = MorseDitTime - 23         'Subtract 23ms for processing of next character.
+    symbol _MorseCharGapIdeal = FarnsworthDitTime * 3
+    symbol _MorseCharGap = _MorseCharGapIdeal - 21      'Subtract 21ms for processing of next character.
+    symbol _MorseWordGap = FarnsworthDitTime * 4        'The algorithym includes a Char gap of *3 already.
+
+'Initialisation
+    goto _MorseEncoderEnd
+
+_MorseTxChar:
+    'Outputs morse for the character held in MorseChar. Invalid characters are skipped.
+    if _MorseChar = " " then
+        pause _MorseWordGap                 'Space character, so make word gap.
+    else
+        if _MorseChar < "a" then
+            pause _MorseCharGap             'Normal uppercase character, so make character gap.
+        else
+            _MorseChar = _MorseChar - 32    'Lowercase letter, so ProSign is converted to uppercase for the lookup table.
+            pause _MorseProsignGap          'The ProsignGap should equal a normal DitGap when measured.
+        endif
+
+        'Encode the character if valid, so above a space (ASCII 32) and up to letter Z (ASCII 90).
+        if _MorseChar > 32 and _MorseChar < 91 then
+            _MorseChar = _MorseChar + 165           'Map the ASCII Character to EEPROM lookup table location.
+            read _MorseChar, _MorseEncoding.lsb
+            do
+                MorseOn
+                if _MorseEncoding.lsb < 128 then
+                    pause _MorseDitTime             'If less than 128 the bit value is zero, so a dit.
+                else
+                    pause _MorseDahTime             'Else the bit value is one, so a dah.
+                endif
+                MorseOff
+                'Shift the encoding byte left. Note, using addition is quicker than multipying by 2, and using a word variable allows the lsb to zero instead of wrapping.
+                _MorseEncoding = _MorseEncoding + _MorseEncoding
+
+                if _MorseEncoding.lsb = 128 then exit
+                pause _MorseDitGap                  'If it's not the last symbol, add a dit gap.
+            loop
+        endif
+    endif
+    return
+
+_MorseTxEEPROM:
+    'Outputs morse for a string held in EEPROM. Called by the macro MorseTxEEPROM(Location).
+    'The string starts at _MorseLocation set by Location and is terminated by the NULL character, 0.
+    'ProSigns can be entered using a leading uppercase letter followed by lowercase letters.
+    do
+        'Read the character from EEPROM
+        read _MorseCharLocation, _MorseChar
+        if _MorseChar = 0 then exit             'If zero(End of string) reached then exit.
+        MorseTxChar(_MorseChar)
+        inc _MorseCharLocation
+    loop until _MorseCharLocation = 255
+
+return
+
+_MorseTxRAM:
+    'Outputs morse for a string held in General Storage space. Called by the macro MorseTxRAM(Location).
+    'The string starts at the BPTR address set by Location and is terminated by the NULL character, 0.
+    'ProSigns can be entered using a leading uppercase letter followed by lowercase letters.
+    do
+        'Read the character and increment to the next one.
+        _MorseChar = @bptrinc
+        if _MorseChar = 0 then exit             'If zero(End of string) reached then exit.
+        MorseTxChar(_MorseChar)
+    loop until _MorseCharLocation = 255
+
+return
+
+_MorseEncoderEnd:
+
+#Region "License" 
+#Rem
+
+MIT License
+
+Copyright (c) 2026 Alan Hunt
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+#EndRem
+#EndRegion
