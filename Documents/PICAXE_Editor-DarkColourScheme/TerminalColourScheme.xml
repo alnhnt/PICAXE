@@ -87,10 +87,10 @@
       <format name="NumberFloat" Font="Courier New, 13pt, style=Bold" FontColor="White" />
 	-->
 	
-	  <format name="NumberHex" Font="Liberation Mono, 13pt, style=Bold" FontColor="#C0FFFF" />
-      <format name="NumberBinary" Font="Liberation Mono, 13pt, style=Bold" FontColor="#80FFFF" />
-      <format name="NumberOctal" Font="Liberation Mono, 13pt, style=Bold" FontColor="#00FFFF" />
-      <format name="NumberFloat" Font="Liberation Mono, 13pt, style=Bold" FontColor="#E0E0E0" />
+	  <format name="NumberHex" Font="Liberation Mono, 13pt, style=Bold" FontColor="#008000" />
+      <format name="NumberBinary" Font="Liberation Mono, 13pt, style=Bold" FontColor="#008000" />
+      <format name="NumberOctal" Font="Liberation Mono, 13pt, style=Bold" FontColor="#008000" />
+      <format name="NumberFloat" Font="Liberation Mono, 13pt, style=Bold" FontColor="#0080000" />
 	
 
 
@@ -108,6 +108,7 @@
 				OnlyLocalSublexems="true" IsComplex="true" />
 
       <!-- Numbers -->
+	<!--  ORIGINAL
 
       <lexem BeginBlock="[0-9a-fA-F]+" IsBeginRegex="true" Type="Number" />  		
       <lexem BeginBlock="(0[xX]+[0-9a-fA-F]+)" IsBeginRegex="true" Type="Custom" Formatname="NumberHex" />
@@ -116,7 +117,7 @@
 
       <lexem BeginBlock="%" EndBlock="^[0-1]+$" IsEndRegex="true" Type="Custom" Formatname="NumberBinary" />
       <lexem BeginBlock="$" EndBlock="^[0-9a-fA-F]+$" IsEndRegex="true" Type="Custom" Formatname="NumberHex" />
-
+	-->
       <!-- matching brackets use comment style -->
 
       <lexem BeginBlock='[' ContinueBlock=".*" EndBlock=']' IsContinueRegex="true" Type="Comment"

@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="utf-16"?>
 <ApplicationSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RecentDocuments>
-    <string>C:\users\alan\Documents\PICAXE Editor\Fairy_Lights-Morse_Code.bas</string>
-    <string>C:\users\alan\Documents\PICAXE Editor\Debugger.basinc</string>
-    <string>C:\users\alan\Documents\PICAXE Editor\GPS_NEO-M8N.basinc</string>
-    <string>C:\users\alan\Documents\PICAXE Editor\Morse_Encoder.basinc</string>
-    <string>C:\users\alan\Documents\PICAXE Editor\Timing.basinc</string>
-    <string>C:\users\alan\Documents\PICAXE Editor\fromWinPC\Fairy_Lights-Morse_Code.bas</string>
-    <string>C:\Users\alan\Maker\HiDrive_Maker_Backup\Fairy_Lights-Morse_Code\Software\Fairy_Lights-Morse_Code.bas</string>
-    <string>C:\Users\alan\Maker\HiDrive_Maker_Backup\Fairy_Lights-Morse_Code\Software\Morse_Encoder.basinc</string>
-    <string>C:\Users\alan\Maker\HiDrive_Maker_Backup\Fairy_Lights-Morse_Code\Software\GPS_NEO-M8N.basinc</string>
+    <string>Z:\home\alan\Git\Play.private\Math\Math_Binary-Test.bas</string>
   </RecentDocuments>
   <RecentWorkspaces />
   <UseRibbon>true</UseRibbon>
@@ -67,11 +59,11 @@
   <WordWrapMarker>true</WordWrapMarker>
   <AutoIndent>true</AutoIndent>
   <AutoIndentSmart>true</AutoIndentSmart>
-  <DisplayWhiteSpace>false</DisplayWhiteSpace>
-  <DisplayWhiteSpaceSpace>true</DisplayWhiteSpaceSpace>
+  <DisplayWhiteSpace>true</DisplayWhiteSpace>
+  <DisplayWhiteSpaceSpace>false</DisplayWhiteSpaceSpace>
   <DisplayWhiteSpaceTab>true</DisplayWhiteSpaceTab>
-  <DisplayWhiteSpaceReturn>true</DisplayWhiteSpaceReturn>
-  <SimulationDelay>100</SimulationDelay>
+  <DisplayWhiteSpaceReturn>false</DisplayWhiteSpaceReturn>
+  <SimulationDelay>0</SimulationDelay>
   <WatchRows>16</WatchRows>
   <TabSize>4</TabSize>
   <TabUseSpaces>true</TabUseSpaces>
@@ -108,7 +100,7 @@
   <DefaultNewLineStyle>Windows</DefaultNewLineStyle>
   <DefaultEncodingTypeEnum>ASCII</DefaultEncodingTypeEnum>
   <CustomSavePath />
-  <LastSavePath>C:\users\alan\Documents\PICAXE Editor\Documents</LastSavePath>
+  <LastSavePath>Z:\home\alan\Git\Play.private\Math</LastSavePath>
   <CustomTempPath />
   <CustomFlowchartToolboxFolder />
   <CustomColourSchemePath>C:\Users\alan\AppData\Roaming\Revolution Education\PICAXE Editor\Settings\ColourScheme-Dark.xml</CustomColourSchemePath>
